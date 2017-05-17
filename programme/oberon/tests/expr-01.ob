@@ -1,0 +1,32 @@
+(* Examples from Report §8.1 and §8.2 *)
+
+MODULE test;
+
+PROCEDURE t();
+BEGIN
+
+f(
+ x = (x DIV y) * y + (x MOD y)
+,0 <= (x MOD y)
+,(x MOD y) < y
+,i
+,a[i]
+,w[3].ch
+,t.key
+,t.left.right
+,t(CenterNode).subnode
+,1987
+,i DIV 3
+,~p OR q
+,(i+j) * (i-j)
+,s - {8, 9, 13}
+,i + x
+,a[i+j] * a[i-j]
+,(0<=i) & (i<100)
+,t.key = 0
+,k IN {i .. j-1}
+,t IS CenterNode
+);
+END test;
+
+END test.

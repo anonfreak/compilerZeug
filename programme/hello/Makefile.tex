@@ -1,0 +1,14 @@
+all: folien.sty copyright.tex
+	pdflatex hello.tex
+
+folien.sty:
+	ln -s ../../../tex/folien* .
+
+copyright.tex:
+	ln -s ../../neue-folien/copyright.tex .
+
+clean:
+	rm -f *.dvi *.out *.aux *.log *.idx *.tmp copyright.tex folien.*
+
+real-clean: clean
+	rm -f *.pdf *.ps *.sty

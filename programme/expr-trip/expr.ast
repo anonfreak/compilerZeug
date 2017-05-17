@@ -1,0 +1,62 @@
+/* Project:  COCKTAIL training
+ * Descr:    Build an Abstract Syntax Tree for an expression language
+ * Kind:     AST specification
+ * Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+ * $Id: expr.ast,v 1.3 2010/04/26 14:07:47 vollmer Exp $
+ */
+MODULE abstract_syntax
+TREE   Tree
+
+EXPORT {
+  # include "Position.h"
+  # include "Idents.h"
+
+  /* tIdent's for function names */
+  extern tIdent id_sin, id_cos, id_tan;
+} // EXPORT
+
+GLOBAL {
+  tIdent id_sin, id_cos, id_tan;
+} // GLOBAL
+
+BEGIN {
+  id_sin = MakeIdent1 ("sin");
+  id_cos = MakeIdent1 ("cos");
+  id_tan = MakeIdent1 ("tan");
+} // BEGIN
+
+PROPERTY INPUT
+
+RULE
+
+/* list of expressions */
+EXPRS = <
+  no_exprs	= /* end of list */
+		.
+  exprs		= Next: EXPRS   REV
+		  Expr: EXPR
+		.
+> .
+
+/* expressions */
+EXPR = [Pos: tPosition] <
+   int_const	= [Value: int]
+		.
+   float_const	= [Value: double]
+		.
+   unary_expr   = [Op     : char ]  /* unary expressions */
+		  Argument: EXPR
+		.
+   binary_expr	= [Op  : char ]     /* binary expressions */
+		  Left : EXPR
+		  Right: EXPR
+  		.
+   cond_expr    = Cond:  EXPR       /* conditional expressions */
+		  Then:  EXPR
+		  Else:  EXPR
+		.
+   call_expr    = [Name: tIdent]   /* function call */
+		  Arguments:  EXPRS
+		.
+> .
+END abstract_syntax

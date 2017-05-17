@@ -1,0 +1,127 @@
+/* Project:  COCKTAIL training
+ * Descr:    Build an Abstract Syntax Tree for an expression language
+ * Kind:     Evaluate an AST (PUMA)
+ * Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+ * $Id: expr.puma.in,v 1.10 2009/05/12 13:42:05 vollmer Exp $
+ */
+
+TRAFO  expr
+
+TREE   Tree
+
+IMPORT {
+ # include "stdio.h"
+ # include "Position.h"
+ # include "Idents.h"
+ # include "util.h"
+ # include "eval.h"
+}
+
+GLOBAL {
+   /* Each variable used in the program must be declared once somewhere in the source
+    * The declared data type is stored ion the global array `declarations', indexed by the
+    * tIdent value of the variable.
+    * `declarations' --> eval.ag / eval.h
+   */
+   FILE *g_file; /* used by the xref()-routines */
+} // GLOBAL
+
+
+PUBLIC PROCEDURE declare_variables (tree: PROGRAM)
+// 1. declare the variables, i.e. add their types to the array `types'
+// 2. check that no identifier is redeclared
+// 3. check that all identifiers are declared
+p:program (..)
+	:- TraverseTreeTD (p::Stmts, declare);
+	   TraverseTreeTD (p::Stmts, check_declared);
+	.
+
+//-----------------------------------------------------------------------------
+PROCEDURE declare (tree: Tree)
+// 1. declare the variables, i.e. add their types to the array `types'
+// 2. check that no identifier is redeclared
+// this routine has to be called by TraverseTreeTD()
+s:decl_stmt (..)
+	:- IF   declarations[s::Ident] == type_none
+	   THEN declarations[s::Ident] := s::Type;
+	   ELSE MessageI ("identifier redeclared", xxError, s::Pos, xxIdent, {(char*)&s::Ident});
+	        declarations[s::Ident] := type_error;
+	   END
+	.
+...	:- // ignore all other nodes
+	.
+
+//-----------------------------------------------------------------------------
+
+PROCEDURE check_declared (tree: Tree)
+// check that all identifiers are declared
+// for an undeclared indtifier emit the message only once by setting its type to 'type_error'
+// this routine has to be called by TraverseTreeTD(), after the variables have been declared
+n:name (..)
+	:- CONDITION declarations[n::Ident] == type_none;
+	   MessageI ("identifier not declared", xxError, n::Pos, xxIdent, {(char*)&n::Ident});
+	   declarations[n::Ident] := type_error;   // emit message only once
+	.
+...	:- // ignore all other nodes
+	.
+
+//-----------------------------------------------------------------------------
+
+PUBLIC PROCEDURE xref (tree: Tree, file: {FILE*})
+p:program (..), ...
+	:- g_file := file;  // routines called by TraverseTree() take only one parameter
+	                    // therefore we nee a global variable
+	   TraverseTreeTD (p::Stmts, xref_decls);
+	   TraverseTreeTD (p::Stmts, xref_expr);
+	.
+
+//-----------------------------------------------------------------------------
+PROCEDURE xref_decls (tree: Tree)
+// Emit all declared variables and their type
+// this routine has to be called by TraverseTreeTD()
+s:decl_stmt (..)
+	:- WritePosition (g_file, s::Pos);
+	   fprintf (g_file, " : %-10s : %s\n", GetCStr (s::Ident), type2string (s::Type));
+	.
+...	:- // ignore all other nodes
+	.
+//-----------------------------------------------------------------------------
+PROCEDURE xref_expr (tree: Tree)
+// Emit for all expressions their types
+// this routine has to be called by TraverseTreeTD()
+e:name (..)
+	:- WritePosition (g_file, e::Pos);
+	   fprintf (g_file, " : %-15s %-5s : TypeIn = %-8s Type = %-8s",
+		    Tree_NodeName[e->Kind],  GetCStr (e::Ident),
+		    type2string (e::TypeIn), type2string (e::Type));
+	   IF e::NeedCoerce THEN fprintf (g_file, " need coercion"); END
+	   fprintf (g_file, "\n");
+	.
+e:binary_expr (..)
+	:- WritePosition (g_file, e::Pos);
+	   fprintf (g_file, " : %-15s %-5s : TypeIn = %-8s Type = %-8s",
+		    Tree_NodeName[e->Kind],  operator2string(e::Op),
+		    type2string (e::TypeIn), type2string (e::Type));
+	   IF e::NeedCoerce THEN fprintf (g_file, " need coercion"); END
+	   fprintf (g_file, "\n");
+	.
+e:unary_expr (..)
+	:- WritePosition (g_file, e::Pos);
+	   fprintf (g_file, " : %-15s %-5s : TypeIn = %-8s Type = %-8s",
+		    Tree_NodeName[e->Kind],  operator2string(e::Op),
+		    type2string (e::TypeIn), type2string (e::Type));
+	   IF e::NeedCoerce THEN fprintf (g_file, " need coercion"); END
+	   fprintf (g_file, "\n");
+	.
+e:EXPR (..)
+	:- WritePosition (g_file, e::Pos);
+	   fprintf (g_file, " : %-15s  %-5s: TypeIn = %-8s Type = %-8s",
+		    Tree_NodeName[e->Kind], " ",
+		    type2string (e::TypeIn), type2string (e::Type));
+	   IF e::NeedCoerce THEN fprintf (g_file, " need coercion"); END
+	   fprintf (g_file, "\n");
+	.
+...	:- // ignore all other nodes
+	.
+//-----------------------------------------------------------------------------
+

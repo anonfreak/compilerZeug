@@ -1,0 +1,134 @@
+/* Project:  COCKTAIL training
+ * Descr:    Code generation for an expression language
+ * Kind:     Codegenerator for a simple stack machine (stub)
+ * Author:   Dr. Juergen Vollmer <juergen.vollmer@informatik-vollmer.de>
+ * $Id: stack.puma,v 1.7 2012/06/14 12:43:07 vollmer Exp $
+ */
+
+/* For source program represented by the AST (generated during parsing)
+ * some code for a simple stack machine should be generated.
+ * The generated code is written to stdout.
+ *
+ * The architecture of the machine is:
+ * -----------------
+ * The stack is of arbitrary depth.
+ * Let <top>  denote the top element of the stack.
+ * The following instructions are defined:
+ *       pop            : remove <top> from the stack
+ *       push arg       : push literal arg onto the stack
+ *
+ *       dup            : duplicate top of stack:     push <top>
+ *       rev            : Revert both top-elements:
+ *                        x := <top>; pop; y := <top>; pop; push x; push y;
+ *
+ *       print          : print <top>
+ *                        note: the stack is not modified
+ *       add            : x := <top>; pop; y := <top>; pop; push y + x
+ *       sub            : x := <top>; pop; y := <top>; pop; push y - x
+ *       mult           : x := <top>; pop; y := <top>; pop; push y * x
+ *       div            : x := <top>; pop; y := <top>; pop; push y / x
+ *	 load  variable : push Memory[variable]
+ *       store variable : Memory[variable] := <top>
+ *                        note: the stack is not modified
+ *       goto  label    : continue with instruction named label
+ *	 jez   label    : x = <top>; pop; if x == 0.0 then continue with
+ *                        instruction named label, else continue
+ *                        with the next instruction.
+ *       jlz   label    : like jez. if x <  0.0
+ *       jlez  label    : like jez. if x <= 0.0
+ *
+ * Each instruction may be named by a label.
+ *
+ * Due to this restricted instruction set, we have to transform the
+ * AST representing a source expression into another one, feasible for
+ * code generation. After that transformation, the AST contains only such
+ * operations which could be directly translated into code.
+ * See simplify.puma
+ */
+
+TRAFO  stack            /* That's the name of the transformation.
+	                 * generated files: stack.[ch] and yystack.h
+			 */
+TREE   expr_tree	/* We operate on that tree.
+			 * Several tree definitions may be given, e.g.
+			 * cobol+sql+cics, if we have a COBOL parser with
+			 * embeeded languages SQL and CICS
+			 */
+
+EXPORT {
+  /* target code placed into  TRAFO.h */
+  # include <stdio.h>
+} // EXPORT
+
+IMPORT "simplify.puma"   // here we implement the simplification of expressions
+
+GLOBAL {
+  /* target code placed into  TRAFO.c */
+} // GLOBAL
+
+GLOBAL f: {FILE*},       // write code to this file, set in stack_gen
+       NextLabel: int;   // counter for labels
+
+//-----------------------------------------------------------------------------
+
+// PUBLIC produces an "extern" declaration, all non-PUBLIC are "static"
+
+PUBLIC PROCEDURE stack_gen (l: EXPRS)
+// Generate for each expression of the <exprs>-expression list code for
+// the stack machine.
+...	:- // set up some global variables
+	   f         := stdout;
+           NextLabel := 0;
+
+	   // and start the job
+	   exprs2stack (l);
+	.
+
+//-----------------------------------------------------------------------------
+
+PROCEDURE exprs2stack (EXPRS)
+// Visit all expressions of the list, and generate code for each expression.
+l:exprs (Expr := e)
+	:- fprintf     (f, "# %s (%l:%hu)\n",
+				GetCStr (e::Pos.FileName),
+			        e::Pos.Line, e::Pos.Column);
+
+   	   // l::Expr := simplify (e);
+
+	   // generate the code for the transformed expression
+	   expr2stack  (l::Expr);
+	   fprintf     (f, " print\n");   // output the result
+	   fprintf     (f, " pop\n");     // clean up the stack
+
+	   // continue with the next expression in the list
+	   exprs2stack (l::Next);
+	.
+no_exprs (..)
+	:- // end of the list, nothing to do.
+	.
+
+//-----------------------------------------------------------------------------
+
+PROCEDURE expr2stack (EXPR)
+// Generate code for the EXPR by visiting all nodes of the EXPR in a bottom-up
+// fashion.
+n:identifier (..)
+        :- // "read" an identifier, i.e. not as LHS of an assignment
+	   fprintf (f, " load %s\n", GetCStr(n::Ident));
+        .
+i:int_const (..)
+	:- fprintf (f, " push %d\n", i::Value);
+	.
+i:float_const (..)
+	:- fprintf (f, " push %s\n", StGetCStr (i::Value));
+	.
+e:binary_expr (Op := (plus_op))
+	:- expr2stack (e::Left);
+	   expr2stack (e::Right);
+	   fprintf    (f, " add\n");
+	.
+
+e	:- fprintf (stderr, "can not compile this code\n");
+	   Drawexpr_tree (e);
+	.
+//-----------------------------------------------------------------------------

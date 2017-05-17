@@ -1,0 +1,27 @@
+/* Project:  COCKTAIL training
+ * Descr:    Build an Abstract Syntax Tree for an expression language
+ * Kind:     Evaluate an AST (PUMA)
+ * Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+ * $Id: expr.puma.in,v 1.16 2010/05/20 20:47:38 vollmer Exp $
+ */
+
+TRAFO  expr
+
+/* Exercises
+ * - Implement the interpreter, so that the new language constructs are
+ *   interpreted correctly.
+ */
+
+TREE   Tree
+
+IMPORT {
+ # include "Position.h"
+ # include "Idents.h"
+}
+
+GLOBAL {
+ # include <stdlib.h>
+ # include <math.h>
+
+} // GLOBAL
+

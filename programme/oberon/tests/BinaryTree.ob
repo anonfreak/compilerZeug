@@ -1,0 +1,74 @@
+MODULE BinaryTree ;
+
+(*
+Category:
+    Basic Data Structures
+Title:
+    Binary Tree
+Author:
+    Patrik Reali ( reali@inf.ethz.ch )
+*)
+
+(*
+	Invariants:
+		* root node is used (not an anchor)
+		* no duplicate keys in tree
+*)
+
+TYPE
+	Node = POINTER TO NodeDesc;
+	NodeDesc = RECORD
+		key: LONGINT;
+		left, right: Node
+	END;
+
+
+PROCEDURE Insert(VAR root: Node;  key: LONGINT);
+BEGIN
+	IF root = NIL THEN
+		NEW(root);  root.key := key;
+		root.left := NIL;  root.right := NIL
+	ELSIF root.key > key THEN
+		Insert(root.left, key)
+	ELSIF root.key < key THEN
+		Insert(root.right, key)
+	END
+END Insert;
+
+PROCEDURE Search(root: Node;  key: LONGINT): Node;	(*Recursive version*)
+BEGIN
+	IF (root = NIL) OR (root.key = key) THEN
+		RETURN root
+	ELSIF root.key > key THEN
+		RETURN Search(root.left, key)
+	ELSE
+		RETURN Search(root.right, key)
+	END
+END Search;
+
+
+PROCEDURE Search(root: Node;  key: LONGINT): Node;	(*Iterative version*)
+BEGIN
+	WHILE (root # NIL) & (root.key # key) DO
+		IF  root.key < key  THEN  root := root.right  ELSE  root := root.left  END
+	END;
+	RETURN root
+END Search;
+
+PROCEDURE Delete(VAR node: Node);
+BEGIN
+	IF node.left = NIL THEN  node := node.right
+	ELSIF  node.right = NIL THEN  node := node.left
+	ELSE	(* (r.left # NIL) & (r.right # NIL) *)
+		s := r.right;
+		IF  s.left = NIL  THEN  s.left := node.left;  node := s
+		ELSE
+			t := s.left;
+			WHILE  t.left # NIL  DO  s := t;  t := t.left  END;
+			s.left := t.right;
+			t.right := node.right;  t.left := node.left;  node := t
+		END
+	END
+END Delete;
+
+END BinaryTree .

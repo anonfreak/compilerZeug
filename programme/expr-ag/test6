@@ -1,0 +1,8 @@
+-- an expression language
+-- semantic error, sin(), cos(), tan() takes only one argument
+sin (pi, pi),
+cos (pi, pi),
+tan (pi, pi),
+
+-- SIN is not a legal function name in our language, see expr.sca, expr.pars
+SIN (pi)

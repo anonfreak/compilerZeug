@@ -1,0 +1,79 @@
+/* Project:  COCKTAIL training
+ * Kind:     Compute types of the expressions and coercions
+ * Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+ * $Id: expr.ag.in,v 1.13 2009/05/18 20:15:42 vollmer Exp $
+ */
+
+MODULE types
+TREE Tree
+EVAL eval
+
+EXPORT {
+   #include "../util.h"
+
+   /* Each variable used in the program must be declared once somewhere in the source
+    * The decalred data type is stored ion the global array `declarations', indexed by the
+    * tIdent value of the variable.
+   */
+   extern tType declarations[];
+} // EXPORT
+
+GLOBAL {
+   # include "Errors.h"
+   /* The array elements are automatically initialized to 0 = type_none.
+    * TODO: check that no more than MAX_VARIABLES are used in your program source.
+    *       ==> MaxIdents variable in the Idents-module (Idents.h)
+    */
+   # define MAX_VARIABLES 100
+   tType declarations[MAX_VARIABLES];
+}
+
+PROPERTY
+DECLARE
+   EXPR  = // [TypeIn: tType INH]
+	   [Type:       tType SYN]
+	   [TypeIn:     tType INH]
+	   [NeedCoerce: rbool SYN]
+	 .
+
+RULE
+   EXPR        = {NeedCoerce := TypeIn != Type;
+		  Type       := type_none;
+		 }.
+
+   bool_const  = {Type := type_bool;          }.
+   int_const   = {Type := type_int;           }.
+   float_const = {Type := type_float;         }.
+
+   name        = {Type := declarations[Ident];}.
+   assign_stmt = {Rhs:TypeIn := Lhs:Type;
+	          Lhs:TypeIn := type_none;
+		 }.
+   cond_expr   = {Cond:TypeIn := type_bool;
+	          Type        := {
+			 if (is_numeric_type (Then:Type) && is_numeric_type (Else:Type)) {
+		           Type = (Then:Type == Else:Type)? Then:Type \: type_float;
+		         } else if (Then:Type == type_bool && Else:Type == type_bool) {
+		           Type = type_bool;
+		         } else {
+		           Message ("Type Mismatch", xxError, Pos);
+		           Type = type_error;
+	         	 }};
+		  Then:TypeIn := Type;
+		  Else:TypeIn := Type;
+		 }.
+   unary_expr  = {Type            := result_type   (Op, Argument:Type, type_none, Pos);
+		  Argument:TypeIn := argument_type (Op, Argument:Type, type_none, Pos);
+	         }.
+   binary_expr = {Type         := result_type   (Op, Left:Type, Right:Type, Pos);
+		  Left:TypeIn  := argument_type (Op, Left:Type, Right:Type, Pos);
+		  Right:TypeIn := Left:TypeIn;
+	         }.
+   if_stmt     = {Cond:TypeIn := type_bool;   }.
+   while_stmt  = {Cond:TypeIn := type_bool;   }.
+
+   exprs       = {Expr:TypeIn := type_none;   }.
+
+END types
+
+/*****************************************************************************/

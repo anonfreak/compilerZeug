@@ -1,0 +1,191 @@
+/* Project:  COCKTAIL training
+ * Descr:    Code generation for an expression language
+ * Kind:     Simplify expressions (solution)
+ * Author:   Dr. Juergen Vollmer <juergen.vollmer@informatik-vollmer.de>
+ * $Id: simplify-solution.puma,v 1.3 2011/05/31 09:35:53 vollmer Exp $
+ */
+
+/*
+ * Due to restricted instruction sets (or if we're lazy when writing a
+ * code generator :-), we have to transform the AST representing a source
+ * expression into another one, feasible for code generation. After that
+ * transformation, the AST contains only such operations which could be
+ * directly translated into code.
+ * Example:
+ *    - There is no operation for testing equality of expressions,
+ *      the stack machine knows only comparison with 0, so
+ *         e1 == e2   using the equivalent equation e1 - e2 == 0 this
+ *                    can be transformed  to  !(e1 - e2)
+ *                    We assume: false = 0, true = any other value
+ *         e1 != e2   is transformed in a first step to !(e1 == e2) and in a
+ *                    second step as shown above
+ *                    Therefore the transformation must be called several
+ *                    times.
+ *    - unary-: -expr is transformed to 0 - expr
+ *    - optimization:    -constant is rplaced by a negative value of the
+ *                       constant
+ *                       (Remember the parser handles the the sign of constants
+ *                        and not the scanner)
+ */
+
+TRAFO  simplify         /* That's the name of the transformation.
+	                 * generated files: simplify.[ch] and yysimplify.h
+			 */
+TREE   expr_tree	/* We operate on that tree.
+			 * Several tree definitions may be given, e.g.
+			 * cobol+sql+cics, if we have a COBOL parser with
+			 * embeeded languages SQL and CICS
+			 */
+
+//-----------------------------------------------------------------------------
+
+PUBLIC PROCEDURE simplify_l (EXPRS)
+// simplify all expressions of the list
+l:exprs (...)
+	:- l::Expr := simplify (l::Expr);
+	   simplify_l (l::Next);
+	.
+no_exprs (..)
+	:- // nothing
+	.
+
+//-----------------------------------------------------------------------------
+
+PUBLIC FUNCTION simplify (expr: EXPR) EXPR
+...	:-
+	   // transform until no more transformation take place
+           // printf ("befor trafo:\n"); Drawexpr_tree (l::Expr );
+	   changed: rbool := rtrue;
+	   WHILE changed
+	   DO
+              changed := rfalse;
+	      expr    := transform (expr, changed);
+	      // printf ("after trafo:\n"); Drawexpr_tree (e;
+	   END
+	   RETURN expr;
+	.
+
+//-----------------------------------------------------------------------------
+
+FUNCTION transform (EXPR, REF changed: rbool) EXPR
+/* Transforms and simplifies a single expression and its children
+ * If a transformation takes place, <changed> is set to true
+ * Note: the positions (BPos, EPos, Pos) attributes of new created nodes are
+ *       set implicitly to NoPosition.
+ *
+ */
+e:binary_expr (Op := (eq_op)), ...
+// `e1 == e2' --> `!(e1 - e2)'
+	:- changed := rtrue;
+	   RETURN unary_expr (Op   := not_op,
+			      Expr := binary_expr (Op    := minus_op,
+						   Left  := transform (e::Left,
+								       changed),
+						   Right := transform (e::Right,
+								       changed))
+			    );
+	.
+e:binary_expr (Op := (lt_op)), ...;
+e:binary_expr (Op := (le_op)), ...
+// `e1 <  e2' -->  `<(e1 - e2)',
+// `e1 <= e2' --> `<=(e1 - e2)',
+// Where the unary "<" and "<=" operator results true, if the argument
+// is < or <= 0 respectively.
+	:- changed := rtrue;
+	   RETURN unary_expr (Op   := e::Op,
+			      Expr := binary_expr (Op    := minus_op,
+						   Left  := transform (e::Left,
+								       changed),
+						   Right := transform (e::Right,
+								       changed))
+			    );
+	.
+
+e1:unary_expr (Op  := (minus_op), Expr := e2:int_const (..)), ...
+// `- const (value)' --> `const (-value)'
+	:- changed := rtrue;
+	   e2::Value := -e2::Value;
+	   RETURN e2;
+	.
+e:unary_expr (Op  := (minus_op)), ...
+// `-e' --> `0 - e'
+	:- changed := rtrue;
+	   RETURN binary_expr (Op    := minus_op,
+			       Left  := int_const (Value := 0),
+			       Right := transform (e::Expr, changed)
+			      );
+	.
+e:unary_expr (Op  := (plus_op)), ...
+// `+e' --> `e'
+	:- changed := rtrue;
+	   RETURN transform (e::Expr, changed);
+	.
+e:binary_expr (Op := (ne_op)), ...
+// `e1 != e2' --> `!(e1 == e2)'
+	:- changed := rtrue;
+	   e::Op := eq_op;
+	   RETURN unary_expr(Op   := not_op,
+			     Expr := transform (e, changed));
+	.
+e:binary_expr (Op := (gt_op)), ...;
+e:binary_expr (Op := (ge_op)), ...
+// `e1 >  e2' --> `e2 <  e1'
+// `e1 >= e2' --> `e2 <= e1'
+	:- changed := rtrue;
+	   t: EXPR  := e::Left;
+	   e::Left  := e::Right;
+	   e::Right := t;
+	   e::Op    := (e::Op == gt_op) ? lt_op : le_op;
+	   RETURN transform (e, changed);
+	.
+e:binary_expr (Op := (and_op)), ...
+// `e1 & e2' --> `e1 ? e2 : 0'
+	:- changed := rtrue;
+	   RETURN cond_expr (Cond := transform (e::Left,  changed),
+			     Then := transform (e::Right, changed),
+			     Else := int_const (Value := 0));
+	.
+e:binary_expr (Op := (or_op)), ...
+// `e1 | e2' --> `e1 ? 1 : e2'
+	:- changed := rtrue;
+	   RETURN cond_expr (Cond := transform (e::Left, changed),
+			     Then := int_const (Value := 1),
+			     Else := transform (e::Right, changed));
+	.
+e1:unary_expr (Op  := (not_op), Expr := e2:unary_expr (Op := (not_op))), ...
+// `!!e' --> `e'
+	:- changed := rtrue;
+	   RETURN transform (e2::Expr, changed);
+	.
+e:cond_expr (Cond := cond:unary_expr (Op  := (not_op))), ...
+// `(!cond) ? then : else' --> `cond ? else : then'
+	:- changed := rtrue;
+	   e::Cond := transform (cond::Expr, changed);
+	   t: EXPR := e::Then;
+	   e::Then := transform (e::Else,   changed);
+	   e::Else := transform (t,         changed);
+	   RETURN e;
+	.
+
+// fall-through: transform all children of the nodes:
+e:binary_expr (..), ...
+	:- e::Left  := transform (e::Left,  changed);
+	   e::Right := transform (e::Right, changed);
+	   RETURN e;
+	.
+e:unary_expr (..), ...
+	:- e::Expr := transform (e::Expr, changed);
+	   RETURN e;
+	.
+e:cond_expr (..), ...
+	:- e::Cond := transform (e::Cond, changed);
+	   e::Then := transform (e::Then, changed);
+	   e::Else := transform (e::Else, changed);
+	   RETURN e;
+	.
+// no need to transfrom these:
+e:const_expr (..), ...;
+e:identifier (..), ...
+	:- RETURN e;
+	.
+//-----------------------------------------------------------------------------

@@ -1,0 +1,4 @@
+main.o: main.c tree.h write.h eval.h
+tree.o: tree.c tree.h
+write.o: write.c tree.h write.h
+eval.o: eval.c tree.h eval.h

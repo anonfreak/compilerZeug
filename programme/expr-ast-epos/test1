@@ -1,0 +1,4 @@
+-- an expression language, with computed EPos (end Position)
+
+a + 3 + 4,
+12 * (3 + 4)

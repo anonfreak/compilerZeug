@@ -1,0 +1,144 @@
+/* Project:  COCKTAIL training
+ * Descr:    Build an AST for an expression language, compute end-positions
+ * Kind:     Parser specification
+ * Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+ * $Id: expr.pars,v 1.1 2007/06/03 17:38:30 vollmer draft $
+ */
+
+SCANNER expr_scan
+
+PARSER  expr_pars
+
+GLOBAL {
+ # include <stdio.h>
+ # include "Idents.h"
+ # include "expr_tree.h"
+
+ /* a macro to get the BPos of an expr-node
+  * E is the reference to the AST node, which must be of type expr
+  */
+ # define EXPR_BPOS(E) (E)->EXPR.BPos
+
+ /* computation of the end-position of the last accepted token */
+ static tPosition PrevEPos, CurrentEPos;
+
+ /* The following macros's are "called" by the generated parser at some
+  * points. They are used to compute the end-position of the last reduced
+  * grammar rule.
+  */
+
+ # define TOKENOP	PrevEPos    = CurrentEPos; 			\
+			CurrentEPos = expr_scan_Attribute.identifier.EPos;
+
+ # define BEFORE_TRIAL	tPosition SavePrevEPos	  = PrevEPos;    \
+			tPosition SaveCurrentEPos = CurrentEPos;
+
+ # define AFTER_TRIAL	PrevEPos    = SavePrevEPos;    \
+			CurrentEPos = SaveCurrentEPos;
+
+ /* If the parser does not use trial parsering or similar, the TOKENOP macro
+  * will never be called, therefore, we need a wrapper to call it.
+  * (see the yyGetToken() function/macro in expr_pars.c).
+  */
+ static int expr_scan_GetToken_parser (void)
+ {
+   int tok = expr_scan_GetToken();
+   TOKENOP;
+   return tok;
+ }
+ # define expr_scan_GetToken expr_scan_GetToken_parser
+}
+
+
+PREC LEFT  '+'
+     LEFT  '*'
+     LEFT UNARY
+
+RULE
+root 	= l:expr_l
+	  {=> {expr_treeRoot = Reverseexpr_tree (l:Exprs);};
+	      /* Since the exprs-grammar rule constructs the expression
+	       * list in reverse order, we have to revert the list.
+	       * After that the node are in source order.
+	       */
+	  }
+	.
+
+expr_l	= <
+	= /* epsilon */
+	  {Exprs := mno_exprs();}
+	.
+ exprs  = <
+	= e:expr
+	  {Exprs := mexprs (mno_exprs(), e:Expr);}
+	.
+	= l:exprs ',' e:expr
+	  /* Note:   The list is constructed in the wrong order
+           * Reason: The grammar is left-recursive.
+           */
+	  {Exprs := mexprs (l:Exprs, e:Expr);}
+	.
+ > . /* exprs  */
+> . /* expr_l */
+
+expr = <
+	= i:identifier
+	  // The BPos (= Attribute.Position) is computed automatically by the
+	  // scanner. The EPos is computed in the scanner "manually", see
+	  // expr.scan.
+	  {Expr := midentifier (i:Position, i:EPos, i:Ident);}
+	.
+	= c:int_const
+	  {Expr := mint_const (c:Position, c:EPos, c:Value);}
+	.
+	= c:float_const
+	  {Expr := mfloat_const (c:Position, c:EPos, c:Value);}
+	.
+	= l:expr '+' r:expr
+	  // The BPos (EPos) of the entire addition expression is the BPos
+	  // (EPos) of its left (right) operand.
+	  // Instead of using the EPos stored already in the AST of the right
+	  // operand, we use the global variable "PrevEPos", which is computed
+	  // whenever a token is read (see TOKENOP above).
+	  {Expr := mbinary_expr (EXPR_BPOS (l:Expr), PrevEPos,
+				 plus_op,  l:Expr, r:Expr);
+	  }
+	.
+	= l:expr '*' r:expr
+	  // The BPos (EPos) of the entire addition expression is the BPos
+	  // (EPos) of its left (right) operand.
+	  {Expr := mbinary_expr (EXPR_BPOS (l:Expr), PrevEPos,
+				 mult_op,  l:Expr, r:Expr);
+	  }
+	.
+	= '(' e:expr ')'
+	  // Note: set the BPOs/EPos to the position of the ( and )
+	  {Expr := {Expr = e:Expr;
+		    Expr->EXPR.BPos = '(':Position;
+		    Expr->EXPR.EPos = ')':Position;
+		   };
+	  }
+	.
+> . /* expr */
+
+/* Tokens */
+Tokens:        [EPos:  tPosition ] {EPos    := NoPosition;	    } <
+ /* All the following tokens will have a EPos attribute defined
+  * and by a trick, all other (keyword)-tokens will have the EPos
+  * attribute too, see expr.scan.
+  */
+ identifier:   [Ident: tIdent] {Ident := NoIdent;  } .
+ int_const:    [Value: long]   {Value := 0;        } .
+ float_const:  [Value: double] {Value := 0.0;      } .
+> . // Tokens
+
+/* Nonterminal attributes for the construction of the AST */
+MODULE attributes
+PROPERTY SYN
+DECLARE
+ designator
+ expr	= [Expr:  tEXPR].
+ expr_l	= [Exprs: tEXPRS].
+
+END attributes
+

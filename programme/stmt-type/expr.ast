@@ -1,0 +1,62 @@
+/* Project:  COCKTAIL training
+ * Descr:    Build an Abstract Syntax Tree for an expression language
+ * Kind:     AST specification
+ * Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+ * $Id: expr.ast.in,v 1.7 2009/04/27 12:28:52 vollmer Exp $
+ */
+MODULE abstract_syntax
+
+TREE   Tree
+IMPORT {
+} // IMPORT
+
+EXPORT {
+  # include "Position.h"
+  # include "Idents.h"
+  # include "util.h"
+} // EXPORT
+
+GLOBAL {
+} // GLOBAL
+
+PROPERTY INPUT
+
+RULE
+
+/* Add statements:
+ * node names:  STMTS, STMT, no_stmt, assign_stmt, if_stmt, while_stmt. print_stmt
+ */
+
+/* list of expressions */
+EXPRS = <
+  no_exprs	= /* end of list */
+		.
+  exprs		= Next: EXPRS   REV /* a PROPERTY of a node child
+                                     * REV: "this is the list-next-pointer"
+				     * `ReverseTREE' reverses the list "over" this field
+				     */
+		  Expr: EXPR
+		.
+> .
+
+/* expressions */
+EXPR = [Pos: tPosition] <
+   int_const	= [Value: int]
+		.
+   float_const	= [Value: double]
+		.
+/* add AST for identifiers, node name "name", and attribute name "Ident" */
+
+   unary_expr   = [Op     : tOperator ]   /* unary expressions */
+		  Argument: EXPR
+		.
+   binary_expr	= [Op  : tOperator ]     /* binary expressions */
+		  Left : EXPR
+		  Right: EXPR
+  		.
+   cond_expr    = Cond:  EXPR           /* conditional expressions */
+		  Then:  EXPR
+		  Else:  EXPR
+		.
+> .
+END abstract_syntax

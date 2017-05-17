@@ -1,0 +1,41 @@
+###############################################################################
+# Project:  Vorlesung Übersetzerbau
+# Descr:    Definition und Aufbau eines AST mittels JAVA
+# Kind:     README
+# Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+# $Id: README,v 1.5 2010/04/23 21:33:33 vollmer Exp $
+###############################################################################
+
+Diese Verzeichnis enthält die Klassendefinition für die Definition für den
+Aufbau eines abstrakten Syntaxbaumes, implmentiert in JAVA.
+
+Die Dateien:
+   EXPR.java  		Abstrakte Klasse für EXPR
+   IntConst.java  	Klasse für int_const-Knoten
+   BinaryExpr.java  	Klasse für binary_expr-Knoten
+   Main.java  		Main-Klasse
+   Main			(entsteht durch "make") Shell-Script, welches
+   			java mit der Main-Klasse aufruft.
+   Makefile
+   README
+
+   Zu im plementieren:
+   UnaryExpr.java	Rumpf
+   CondExpr.java	Rumpf
+   EXPRS.java 		Rumpf
+   Exprs.java 		Rumpf
+   NoExprs.java		Rumpf
+
+Aufgaben:
+   - Ergänzen Sie die Definitionen um den unären Ausdruck (unary_expr)
+     mit "+" und "-" als Operator.
+   - Egänzen Sie den binären Operator um die Vergleichsoperatoren "<" und "=".
+   - Ergänzen Sie die Definitionen um den bedingtem Ausdruck (cond_expr)
+     	      condition ? then-expr : else-expr
+     Wobei "false" durch 0.0 dargestellt werden soll und "true" durch einen
+     Wert != 0.0
+   - Implementieren Sie eine Funktion "eval()", welche einen Ausdruck
+     auswertet.
+   - Implementieren Sie Listen von Ausdrücke.
+   - Implementieren Sie eine Funktion write_and_eval() für Listen von Ausdrücken.
+   - Implementieren die Funktion reverse(), welche eine Liste "umdreht".

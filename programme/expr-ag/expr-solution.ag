@@ -1,0 +1,218 @@
+/* Project:  COCKTAIL training
+ * Kind:     Evaluate an AST (attribute grammar)
+ * Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+ * $Id: expr.ag.in,v 1.4 2010/04/26 15:14:05 vollmer Exp $
+ */
+
+// Exercises
+//  - calculate: the AG to compute the double value of an expression.
+//    (SYN-attribute)
+//    add rules for binary_expr, cond_expr and call_expr, use the helper functions
+//    shown below
+//  - enumerate: the AG to enumerate all EXPRE nodes uniquly
+//    (INH-attribute)
+//    add rules for binary_expr, cond_expr and call_expr
+//  - depth: the AG to compute for each expression-node its "depth" in the tree
+//    (SYN and INH-attributes)
+//    add rules for binary_expr, cond_expr and call_expr
+//  Check your results by viewing the AST after calling  the AG evaluator
+
+MODULE calculate
+// Compute for each expression, its value.
+// This must be done as an synthetiszed attribute
+TREE Tree
+EVAL eval
+
+// ------------------------------------------------------------------------------------------
+
+GLOBAL {
+ # include <stdlib.h>
+ # include <math.h>
+
+ # define FATAL_ERROR() 								      \
+  {fprintf (stderr, "***** FATAL ERROR *****: file %s, line %d\n", __FILE__ , __LINE__); abort(); }
+/* Indicate a programming error
+ * __FILE__  the filename of the source file "calling" the macro
+ * __LINE__  the line "calling" this macro
+ */
+
+ static double evalBinary (char op, double left, double right, tPosition pos)
+ /* compute "left op right"
+  * "pos" is the source position of the expression
+  *       in case an error message must be emitted.
+  * Note: boolean values are represented as double values:
+  *          FALSE   ==  0.0
+  *          TRUE    ==  any other value
+  */
+ {
+  switch (op) {
+  case '+': return left+right;
+  case '-': return left-right;
+  case '*':  return left*right;
+  case '/':  if (right == 0.0) {
+               WritePosition (stderr, pos);
+               fprintf (stderr, " division by zero\n");
+               return 0.0;
+             } else {
+               return left/right;
+             }
+  case '^': return pow (left,right);
+  case '<': return left <  right;
+  case '>': return left >  right;
+  case '=': return left == right;
+  case '&': return left && right;
+  case '|': return left || right;
+  default:   	 FATAL_ERROR();
+  }
+ }
+
+ static double evalUnary (char op, double argument, tPosition pos)
+ /* compute "op argument" */
+ {
+  switch (op) {
+  case '-': return -argument;
+  case '+': return argument;
+  case '!': return argument == 0? 1 : 0;
+  default:  FATAL_ERROR();
+  }
+ }
+
+ static double evalFunction (tIdent name, double argument, tPosition pos)
+ {
+    if (name == id_sin) return sin (argument);
+    if (name == id_cos) return cos (argument);
+    if (name == id_tan) return tan (argument);
+    WritePosition (stderr, pos);
+    fprintf (stderr, " Illegal function name `%s'\n", GetCStr (name));
+    return 0.0;
+ }
+} // GLOBAL
+
+// ------------------------------------------------------------------------------------------
+
+DECLARE
+   program
+   EXPRS
+   EXPR  = [Val: double SYN].
+
+RULE
+   EXPRS       = {Val := 0.0;}.
+   EXPR        = {Val := 0.0;}.
+
+   program     = {Val := Exprs:Val;}				        .
+   exprs       = {Val := Expr:Val + Next:Val;}				.
+   int_const   = {Val := Value;}					.
+   float_const = {Val := Value;}					.
+   unary_expr  = {Val := evalUnary  (Op, Argument:Val, Pos);}		.
+
+   // TODO:
+   // Add rules for binary_expr, cond_expr.
+   // Think: is there a difference between the evaluation of cond_expr
+   //        by the Attribute Grammar and the PUMA implementation?
+   binary_expr = {Val := evalBinary (Op, Left:Val, Right:Val, Pos);}	.
+   cond_expr   = {Val := Cond:Val? Then:Val \: Else:Val;}		.
+   // Yes: in PUMA the Then and Else-part are evaluated only if needed, depending
+   //      on the value of Cond
+   //      in AG   both values are computed in any case
+
+   // TODO:
+   // Add rules for call_expr.
+   // The ckeck for correct function names is done by the helper evalFunction()
+   // Implemenent a check that the number of function arguments == 1
+   //    Hint: either add a PUMA routine, whcich checks the tree or write simple
+   //          C tests and use the following syntax
+   //
+   // call_expr = {....
+   //              CHECK condition ==> { ... emit message if condition fails .... };
+   //             }
+   call_expr   = {Val := evalFunction (Name, Arguments:Val, Pos);
+		  CHECK Arguments->Kind == kexprs &&
+			Arguments->exprs.Next->Kind == kno_exprs
+	 		==> {WritePosition (stderr, Pos);
+			     fprintf (stderr,
+				      " Too many arguments for function `%s'\n",
+				      GetCStr (Name));
+			    };
+	 	 }
+		.
+
+END calculate
+
+/*****************************************************************************/
+
+MODULE depth
+// Compute for each expression-node its "depth" in the tree
+// i.e. the number nodes on the way to the
+// top-level expression, which has depth 0
+TREE Tree
+EVAL eval
+
+DECLARE
+   EXPRS
+   EXPR  = [Depth: int INH].
+
+RULE
+   program     = {Exprs:Depth     := 0;      }  .
+   exprs       = {Expr:Depth      := Depth;  }	.
+   unary_expr  = {Argument:Depth  := Depth+1;}	.
+   binary_expr = {Left:Depth      := Depth+1;
+		  Right:Depth 	  := Depth+1;}	.
+   cond_expr   = {Cond:Depth      := Depth+1;
+	          Then:Depth      := Depth+1;
+  		  Else:Depth      := Depth+1;}	.
+   call_expr   = {Arguments:Depth := Depth+1;}  .
+END depth
+
+/*****************************************************************************/
+
+MODULE enumerate
+// Enumerate all EXPRE nodes uniquly, EXPRS-nodes are not counted.
+TREE Tree
+EVAL eval
+
+DECLARE
+  program = [Count: int SYN]     // number of all EXPR nodes
+	  .
+  EXPR
+  EXPRS = [Nr_in: int INH]   // used to compute Nr
+          [Nr   : int SYN]   // The unique number of the expression
+	.
+RULE
+  program     = {Exprs:Nr_in := 0;
+	         Count       := Exprs:Nr;
+		}
+	      .
+
+  EXPRS       = {Nr          := Nr_in; } .  // Note: this covers no_exprs()
+
+  exprs       = {Expr:Nr_in  := Nr_in;
+	         Next:Nr_in  := Expr:Nr;
+	         Nr          := Next:Nr;
+	        }
+	      .
+
+  EXPR        = {Nr          := Nr_in+1;} .
+		// this rule covers constants too   (**)
+
+  unary_expr  = {Argument:Nr_in := Nr_in;
+		 Nr             := Argument:Nr + 1;  // this rule overwrites the above (**) one
+	        }
+	      .
+  binary_expr = {Left:Nr_in  := Nr_in;
+	         Right:Nr_in := Left:Nr;
+	         Nr          := Right:Nr + 1;       // this rule overwrites the above (**) one
+	        }
+	      .
+  cond_expr   = {Cond:Nr_in  := Nr_in;
+	         Then:Nr_in  := Cond:Nr;
+	         Else:Nr_in  := Then:Nr;
+		 Nr          := Else:Nr + 1;          // this rule overwrites the above (**) one
+		}
+	      .
+  call_expr   = {Arguments:Nr_in := Nr_in;
+	         Nr              := Arguments:Nr + 1; // this rule overwrites the above (**) one
+		}
+	      .
+END enumeate
+
+//----------------------------------------------------------------------------

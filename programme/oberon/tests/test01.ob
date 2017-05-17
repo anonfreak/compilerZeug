@@ -1,0 +1,105 @@
+MODULE test;
+
+IMPORT Texts := schalala, Oberon;
+
+(* abwechselnde declarations *)
+VAR a,b,c : INT;
+CONST a = 1; b = 2;
+VAR bla : REAL;
+TYPE b = INT; c = STRING; arr = ARRAY 1,2 OF ARRAY 10 OF INT; p = POINTER TO REAL;
+TYPE r = RECORD day, month, year: INTEGER END;
+
+(* procedure_declarations *)
+PROCEDURE ReadInt;
+VAR i : INTEGER; ch: CHAR;
+
+BEGIN
+i := 0; Read(ch);
+WHILE ("0" <= ch) & (ch <= "9") DO
+i := 10*i + (ORD(ch)-ORD("0")); Read(ch)
+END ;
+x := i
+
+END ReadInt;
+
+PROCEDURE WriteInt* (x, n : LONGINT);
+VAR i: INTEGER; a: ARRAY 16 OF CHAR;
+
+BEGIN i := 0;
+IF x < 0 THEN Texts.Write(W, "-"); x := -x END ;
+REPEAT a[i] := CHR(x MOD 10 + ORD("0")); x := x DIV 10; INC(i) UNTIL x = 0;
+REPEAT Texts.Write(W, " "); DEC(n) UNTIL n <= i;
+REPEAT DEC(i); Texts.Write(W, a[i]) UNTIL i = 0
+
+END WriteInt;
+
+(* begin des modules *)
+BEGIN
+
+(* assigns *)
+a := "penny";
+b := {a,1..10};
+c(x) := y;
+d := c + 2 * 4;
+e := 22X;
+a := 1.;
+
+
+(* calls *)
+
+f;
+f();
+f(1);
+f(a,b);
+
+
+(* if *)
+IF (ch >= "A") & (ch <= "Z") THEN ReadIdentifier
+   ELSIF (ch >= "0") & (ch <= "9") THEN ReadNumber
+   ELSIF ch = 22X THEN ReadString
+END;
+
+
+(* while *)
+WHILE j > 0 DO
+   j := j DIV 2; i := i+1;
+   WHILE (t # NIL) & (t.key # i) DO
+   t := t.left
+   END
+END;
+
+
+(* repeat *)
+REPEAT
+   a1 := a1 + 1
+UNTIL a1 <= 10;
+
+
+(* loop *)
+LOOP
+   IF t1 = NIL THEN EXIT END ;
+   IF k < t1.key THEN t2 := t1.left; p := TRUE
+      ELSIF k > t1.key THEN t2 := t1.right; p := FALSE
+      ELSE EXIT
+   END ;
+   t1 := t2
+END;
+
+
+(* with *)
+WITH t: CenterNode DO name := t.name; L := t.subnode END;
+
+
+(* case *)
+CASE ch OF
+"A" .. "Z": ReadIdentifier
+| 0,1,2,3 : DoSomething
+| "0" .. "9": ReadNumber
+| 22X : ReadHexChar
+ELSE SpecialCharacter
+END
+
+
+END test.
+
+(* teh end *)

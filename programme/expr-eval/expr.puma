@@ -1,0 +1,130 @@
+/* Project:  COCKTAIL training
+ * Descr:    Build an Abstract Syntax Tree for an expression language
+ * Kind:     Evaluate an AST (PUMA)
+ * Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+ * $Id: expr.puma,v 1.1 2011/05/10 10:19:34 vollmer Exp vollmer $
+ */
+
+// Exercises:
+//  - implement missing parts of sum_exprs()
+//  - implement missing parts of evalExpr()
+//  - implement needed helper functions.
+//    <math.h> provides the needed mathematical routines
+
+TRAFO  expr
+
+TREE   Tree
+
+EXPORT {
+	/* to be placed in generated .h file */
+
+# include <stdlib.h>
+# define FATAL_ERROR() 								      \
+  {fprintf (stderr, "***** FATAL ERROR *****: file %s, line %d\n", __FILE__ , __LINE__); abort(); }
+/* Indicate a programming error
+ * __FILE__  the filename of the source file "calling" the macro
+ * __LINE__  the line "calling" this macro
+ */
+
+} // EXPORT
+
+IMPORT {
+ # include "Position.h"
+ # include "Idents.h"
+}
+
+GLOBAL {
+  	/* to be placed in the generated .c file */
+ # include <math.h>
+
+ static double evalBinary (char op, double left, double right, tPosition pos)
+ /* compute "left op right"
+  * "pos" is the source position of the expression
+  *       in case an error message must be emitted.
+  * Note: boolean values are represented as double values:
+  *          FALSE   ==  0.0
+  *          TRUE    ==  any other value
+  */
+ {
+  switch (op) {
+  case '+': return left+right;
+  case '-': return left-right;
+  /* fill in all other operators */
+  default:   	 FATAL_ERROR();
+  }
+ }
+
+} // GLOBAL
+
+// ----------------------------------------------------------------------------
+
+PUBLIC PROCEDURE work_on_tree (tree: Tree)
+/* 1) output the value of each expression of the list
+ * 2) ouput the sum of all expressions of the list.
+ * Example:
+ *  input:         1+2, 3+4
+ *  output 1) -->  3, 7
+ *  output 2) -->  10
+ */
+list:EXPRS (..)
+	:- visit_exprs (list);
+	   printf ("SUM of all exprssion in the list: %6.2f\n", sum_exprs (list));
+	.
+
+// ----------------------------------------------------------------------------
+
+PROCEDURE visit_exprs (list: EXPRS)
+/* Visit all EXPR nodes of the `list' and print their value */
+no_exprs (..)
+	:- // finished, nothing to do.
+	.
+l:exprs (..)
+	:- printf ("--> %6.2f\n", evalExpr (l::Expr));
+	   visit_exprs (l::Next);
+	.
+
+// ----------------------------------------------------------------------------
+
+FUNCTION sum_exprs (list: EXPRS) double
+/* Visit all expresions in the list and return their sum, for example:
+ * If an empty list is passed: retrun 0.0.
+ */
+// TODO: fill in the implementatin of this routine.
+// Note: the following lines should be removed!
+EXPRS (..)
+	:- RETURN 0;
+	.
+
+// ----------------------------------------------------------------------------
+
+FUNCTION evalExpr (expr: EXPR) double
+/* Evaluate the tree `expr' as a "pocket calculator"
+ * "boolean" values are represented as usual by C:
+ *    0.0 == false, everything else: true
+ */
+c:int_const (..)
+	:- RETURN {c::Value};  // here the target code curly braces are needed in order
+			       // stop PUMA complaining about "incompatible types"
+			       // The C-compiler will insert the type cast
+	.
+c:float_const (..)
+	:- RETURN c::Value;
+	.
+ /* TODO: handle unary_expr() */
+e:binary_expr (..)
+	:- RETURN evalBinary (e::Op, evalExpr (e::Left), evalExpr (e::Right), e::Pos);
+	.
+ /* TODO: handle cond_expr()
+  * Note: think carefully about the semantics
+  */
+
+ /* TODO: handle call_expr()
+  *       - check number of parameters!
+  *       - check for correct function name!
+  *       - Emit error messages using
+  *       	   WritePosition (stderr, <POSITION>);
+  *		   fprintf (stderr, " <MESSAGE>\n");
+  *         To retrieve the char* value from a tIdent, use
+  *         char *GetCStr (<tIdent-Value>);
+  */
+//-----------------------------------------------------------------------------

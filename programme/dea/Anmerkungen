@@ -1,0 +1,47 @@
+				Anmerkungen
+				===========
+
+- Die Anweisung
+	s = *word++;
+  ist eine Abkürzung für die beiden Anweisungen:
+ 	s = *word; word = word + 1;
+
+
+
+- Die Präprozessordirektiven
+	# ifdef DEBUG
+  	# endif
+  werden benutzt, um mittels bedingter Überseztung zur Laufzeit des Programmes
+  Testausgabe zu erzeugen.
+  Dazu muss das Präprozessormakro `DEBUG' definiert werden. Dies
+  kann auf zwei Wegen geschehen:
+    1. durch eine Zeile `# define DEBUG' in der Datei
+    2. durch den Aufruf des C-Compilers mit der Option `-DDEBUG'
+  Das `Makefile' hat dafür den 2. Weg bereits einen Mechanismus vorgesehen: die
+  Make-Variable `CFLAGS'. Der Aufruf von
+	make CFLAGS=-DDEBUG
+  setzt den Wert der Make-Variable CFLAGS auf `-DDEBUG'. Via der
+  Make-Variablen `X_CFLAGS' gelangt die Option dann zum Aufruf des C-Compilers.
+  (Vorausgesetzt, die Datei `accept.c' muss überhaupt übersetzt werden.)
+  Ruft man nur
+	make
+  auf, hat `CFLAGS' als Wert den "leeren String", d.h. das Makro `DEBUG'
+  ist nicht definiert.
+- Der Returnwert eines Hauptprogrammes (s. dea.c) kann in der Shell abgefragt
+  werden:
+	dea xyz; echo "Wert: $?"
+  gibt folgendes aus:
+	Fehler
+	Wert: 1
+  und
+	dea n.n; echo "Wert: $?"
+  gibt folgendes aus:
+	ok
+	Wert: 0
+  und
+	dea; echo "Wert: $?"
+	Benutzung: dea Wort ......
+	Wert: 2
+
+
+

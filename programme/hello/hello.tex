@@ -1,0 +1,207 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Project:     Vorlesungen an der Berufsakademie Karlsruhe
+%% Descr:       Programmieren / Das Hello-World Programm
+%% Author:      Dr. Jürgen Vollmer, Juergen.Vollmer@informatik-vollmer.de
+%% $Id: hello.tex,v 1.3 2007/06/01 10:38:31 vollmer draft $
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[german%
+  %,article
+  ,landscape
+  ,slidesonly%  Try notes or notesonly instead.
+  %,notes%       Use instead of slidesonly to typeset the notes.
+  %,notesonly%   Use instead of slidesonly to typeset notes and slides.
+  %,semcolor%    Try me if using PSTricks.
+  %,semrot%      Try me if using Rokicki's dvips.
+  ,slidesec%
+  ,semhelv%      Try me if using a PostScript printer.
+  ,sem-a4
+]{seminar}
+
+\usepackage{bibgerm}
+\usepackage{folien}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\rcsInfo $Id: hello.tex,v 1.3 2007/06/01 10:38:31 vollmer draft $
+
+\begin{allversions}
+  \Section{Programmieren}
+\end{allversions}
+%%==================
+
+\begin{slide}
+\slideheading{.c-Dateien -- hello.c}
+
+\medskip
+\renewcommand{\baselinestretch}{0.8}
+\footnotesize
+
+\begin{alltt}
+# include <stdio.h>
+# include "hello2.h"
+
+int main (int argc, char *argv[])
+\{
+  printf ("Hello World\verb+\+n");
+  printf ("Die Kommandozeilenargumente:\verb+\+n");
+
+  for (i = 0; i < argc; i++) \{
+    hello (i, argv[i]);
+  \}
+
+  return 0;
+\}
+\end{alltt}
+
+\vfill
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\slideheading{.h-Dateien -- hello2.h}
+
+\medskip
+\renewcommand{\baselinestretch}{0.8}
+\footnotesize
+\begin{alltt}
+
+# ifndef hello2_H
+# define hello2_H
+# include <stdio.h>
+
+typedef int Integer;
+extern void hello (Integer nr, char *argument);
+extern  Integer i;
+
+# ifdef DEBUG
+# define DPRINTF(str)                          \verb+\+
+  fprintf (stderr, "Datei %s, Zeile %d: %s\verb+\+n", \verb+\+
+                   __FILE__, __LINE__, str);
+  /* __FILE__ und __LINE__ sind vordefinierte Macros, die
+   * den Namen der übersetzten Datei und die Zeilennumer
+   * an der das Macro benutzt wird enthalten.
+   */
+# else
+# define DPRINTF(str)  /* ignored */
+# endif
+# endif
+\end{alltt}
+
+\vfill
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\slideheading{.c-Dateien -- hello2.c}{}
+
+\medskip
+\renewcommand{\baselinestretch}{0.8}
+\footnotesize
+
+\begin{alltt}
+# include <stdio.h>
+# include "hello2.h"
+
+Integer i = 0;
+
+void hello (Integer nr, char *argument)
+\{
+  DPRINTF ("Aufruf von hello");
+  printf (" - %2d: %s\verb+\+n", nr, argument);
+\}
+\end{alltt}
+
+\vfill
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\slideheading{Kommandos}
+
+\medskip
+\renewcommand{\baselinestretch}{0.8}
+\footnotesize
+
+\begin{tabular}{l|l}
+\texttt{cc -c hello.c}
+& \emph{hello.c \Ra\ hello.o} \\
+\texttt{cc -c hello2.c}
+& \emph{hello2.c \Ra\ hello2.o} \\
+\texttt{cc -o hello hello.o hello2.o}
+& \emph{hello.o hello2.o libc.a ...  \Ra\ hello} \\
+\texttt{hello} &
+\emph{Hello World....}\\
+\end{tabular}
+
+\vspace{1cm}
+
+\hrule
+
+\begin{tabular}{ll}
+\texttt{cc -DDEBUG -c hello.c} &\\
+\texttt{cc -DDEBUG -c hello2.c}&\\
+\texttt{cc -DDEBUG -o hello hello.o hello2.o}&\\
+\end{tabular}
+
+\vspace{1cm}
+
+\vfill
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{slide}
+\slideheading{Makefile}{}
+
+\medskip
+\renewcommand{\baselinestretch}{0.8}
+\scriptsize
+
+\begin{alltt}
+SRC_H   =         hello2.h
+SRC_C   = hello.c hello2.c
+OBJ     = hello.o hello2.o
+MAIN    = hello
+
+CC       = gcc
+X_DEBUG  = -g -Wall -pedantic
+X_CFLAGS = -ansi $(X_DEBUG) $(CFLAGS)
+
+all: $(MAIN)
+
+$(MAIN): $(OBJ)
+\Ra $(CC) $(X_CFLAGS) -o $(MAIN) $(OBJ)
+
+.SUFFIXES: .c .o
+.c.o:
+\Ra $(CC) $(X_CFLAGS) -c $*.c
+
+clean:
+\Ra rm -f $(OBJ) $(MAIN) core
+
+hello.o:  hello.c hello2.h
+hello2.o: hello2.c hello2.h
+
+\end{alltt}
+
+Das Zeichen \Ra\ steht für ein Tabulator-Zeichen.
+
+\vfill
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Local Variables:
+% TeX-parse-self: t
+% TeX-master: "hello"
+% TeX-auto-save: f
+% End:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

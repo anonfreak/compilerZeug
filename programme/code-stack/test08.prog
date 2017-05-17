@@ -1,0 +1,10 @@
+-------------------------------------------------------
+-- Project: A simple compiler for an expression language
+-- Descr:   Test input
+-- Author:  Dr. Juergen Vollmer, <vollmer@cocolab.de>
+-- $Id: test08.prog,v 1.1 2007/06/02 19:33:20 vollmer draft $
+-------------------------------------------------------
+
+-- test of register allocation.
+5 + 7 * 2 + 0.721;
+

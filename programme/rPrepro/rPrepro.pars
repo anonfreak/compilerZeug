@@ -1,0 +1,428 @@
+/*
+   Copyright (c) 2001 Dr. Josef Grosch, CoCoLab - Datenverarbeitung
+
+   This file contains proprietary and confidential information and
+   remains the property of CoCoLab. Use, disclosure, or reproduction
+   is prohibited except as permitted by express written license agreement
+   with CoCoLab.
+
+   Phone: +49-7841-669144
+   Fax  : +49-7841-669145
+   Email: grosch@cocolab.com
+*/
+
+/* Project:	Support for tools built by CoCoLab
+ * Descr:	A simple preprocessor handling conditional text and text macros
+ *		Parser specification
+ * Author:	Dr. Juergen Vollmer <vollmer@cocolab.com>
+ * Id: rPrepro.pars,v 1.19 2008/01/18 14:28:42 vollmer Exp $
+ */
+
+SCANNER rPrepro_scan
+
+PARSER  rPrepro_pars
+
+EXPORT {
+ extern void rPrepro_push_write_flag (rbool value);
+ extern void rPrepro_pop_write_flag  (void);
+ extern void rPrepro_pop_cond_stack  (void);
+} /* EXPORT */
+
+GLOBAL {
+ # include <assert.h>
+ # include <stdlib.h>
+ # include "Errors.h"
+ # include "rString.h"
+ # include "Idents.h"
+ # include "StringM.h"
+
+ # define op_eq 1
+ # define op_ne 2
+ # define op_lt 3
+ # define op_le 4
+ # define op_gt 5
+ # define op_ge 6
+
+/* stack of conditions, used to implement nested #IF.. #ENDIF */
+# define STACK_SIZE 20
+typedef struct {
+  rbool value;     /* value of the condition     */
+  rbool write;     /* current enabled write flag */
+  rbool eliftrue;  /* true: one condition of an IF/ELIF processed so far
+		    *       has been evaluated true, and therefore the
+		    *       following one and the ELSE need not to be
+		    *       considered any more
+		    */
+
+} tcond_value;
+
+static tcond_value cond_stack[STACK_SIZE];
+static int         cond_stack_top = -1;
+
+static void push_cond_stack (rbool value)
+/* pushes 'value' onto a stack */
+{
+  if (cond_stack_top >= STACK_SIZE) {
+    fprintf (stderr, "Fatal Error: too many nested #IF..\n");
+    exit (EXIT_INTERNAL);
+  }
+  cond_stack_top++;
+  cond_stack[cond_stack_top].value    = value;
+  cond_stack[cond_stack_top].eliftrue = value;
+}
+
+void rPrepro_pop_cond_stack (void)
+/* pops an element form the stack */
+{
+  assert (cond_stack_top >= 0 && cond_stack_top < STACK_SIZE);
+  cond_stack_top--;
+}
+
+static void set_write_flag (rbool value)
+/* sets the current write flag to value, to be called only after at least one
+ * push
+ */
+{
+  assert (cond_stack_top >= 1 && cond_stack_top < STACK_SIZE);
+  if (value) {
+     cond_stack[cond_stack_top].eliftrue = value;
+  }
+
+  /* enable writing only if in the sorrounding IF /..ENDIF writing was
+   * enabled
+   */
+  if (cond_stack[cond_stack_top-1].write) {
+     /* in outer IF..ENDIF case output is enabled */
+    rPrepro_scan_write = cond_stack[cond_stack_top].write = value;
+  } else {
+     /* in outer IF..ENDIF case output is disabled */
+    rPrepro_scan_write = cond_stack[cond_stack_top].write = rfalse;
+  }
+}
+
+void rPrepro_push_write_flag (rbool value)
+/* if currently writing the output is enabled,
+ * then push the new value, and set the write flag to that value
+ * else push the new value, but the write flag is set to false.
+ */
+{
+  push_cond_stack (value);
+  set_write_flag  (value);
+
+  /*
+     printf ("\n**** ");
+     WritePosition (stdout,rPrepro_scan_Attribute.Position);
+     printf (" push_write_flag %d\n", rPrepro_scan_write);
+  */
+}
+
+ void rPrepro_pop_write_flag ()
+{
+  rPrepro_pop_cond_stack();
+  rPrepro_scan_write = cond_stack[cond_stack_top].write;
+
+  /*
+     printf ("\n**** ");
+     WritePosition (stdout,rPrepro_scan_Attribute.Position);
+     printf (" pop_write_flag %d\n", rPrepro_scan_write);
+  */
+}
+
+} /* GLOBAL */
+
+BEGIN {
+  if (cond_stack_top == -1) {
+     cond_stack_top = 0;
+     cond_stack[0].value    = rtrue;
+     cond_stack[0].write    = rtrue;
+     cond_stack[0].eliftrue = rfalse;
+  }
+} /* BEGIN */
+
+PREC
+	LEFT '||'
+	LEFT '&&'
+	LEFT '^'
+
+RULE
+
+root = stmt_lo	.
+
+stmt_lo = <  // list of all statements
+	= . // epsilon
+	= stmt_lo stmt NL	   .
+	= stmt_lo grammar_rule	   .
+	= stmt_lo '<' stmt_lo '>.' . // as part of a conditional grammar rule
+> . // stmt_lo
+
+directive_lo = < // list of directives
+	= . // epsilon
+	= directive_lo stmt NL
+	.
+> . // directive_lo
+
+stmt = <
+	= '#IF' e:expr
+	  {=> rPrepro_push_write_flag (e:Value);}
+          NL
+	  stmt_lo
+	  elif
+	  '#ENDIF'
+	  {=> rPrepro_pop_write_flag ();}
+	.
+	= '#IFDEF' i:identifier
+	  {=> rPrepro_push_write_flag (rPrepro_is_defined (i:Ident));}
+	  NL
+	  stmt_lo
+	  elif
+	  '#ENDIF'
+	  {=> rPrepro_pop_write_flag ();}
+	.
+	= '#IFNDEF' i:identifier
+	  {=> rPrepro_push_write_flag ((rbool)!rPrepro_is_defined (i:Ident));}
+	  NL
+	  stmt_lo
+	  elif
+	  '#ENDIF'
+	  {=> rPrepro_pop_write_flag ();}
+	.
+	= '#DEFINE' i:identifier
+	  {=> {if (rPrepro_scan_write) {
+	           rPrepro_define (i:Ident, "");
+	      }};
+	  }
+	.
+	= '#DEFINE' i:identifier '=' v:string_const
+	  {=> {if (rPrepro_scan_write) {
+		  rPrepro_define (i:Ident, StGetCStr (v:Value));
+	      }};
+	  }
+	.
+	= '#DEFINE' i:identifier '=' v:version_const
+	  {=> {if (rPrepro_scan_write) {
+		   rPrepro_define (i:Ident, StGetCStr (v:Value));
+	      }};
+	  }
+	.
+	= '#UNDEF' i:identifier
+	  {=>  {if (rPrepro_scan_write) {
+		   rPrepro_undef (i:Ident);
+		}};
+	  }
+	.
+	= '!DEFINE' i:identifier
+	  {=> {if (rPrepro_scan_write) {
+		   rPrepro_define (i:Ident, "");
+	           rPrepro_set_replaceable (i:Ident, rfalse);
+	       }
+	       rPrepro_enable_grammar_rules = rtrue;
+	      };
+	  }
+	.
+	= '!DEFINE' i:identifier '=' v:string_const
+	  {=> {if (rPrepro_scan_write) {
+		   rPrepro_define (i:Ident, StGetCStr (v:Value));
+	           rPrepro_set_replaceable (i:Ident, rfalse);
+	       }
+	       rPrepro_enable_grammar_rules = rtrue;
+	      };
+	  }
+	.
+	= '!DEFINE' i:identifier '=' v:version_const
+	  {=> {if (rPrepro_scan_write) {
+		   rPrepro_define (i:Ident, StGetCStr (v:Value));
+	           rPrepro_set_replaceable (i:Ident, rfalse);
+	       }
+	       rPrepro_enable_grammar_rules = rtrue;
+	      };
+	  }
+	.
+	= '!UNDEF' i:identifier
+	  {=>  {if (rPrepro_scan_write) {
+		   rPrepro_undef (i:Ident);
+		}};
+	  }
+	.
+> . // stmt
+
+elif = <
+	= /* epsilon */
+	.
+	= elif '#ELSE'
+	  {=> {if (cond_stack[cond_stack_top].eliftrue) {
+	        /* one of the previous IF/ELIF evaluated already to true */
+	        set_write_flag (rfalse);
+	      } else {
+	        set_write_flag ((rbool)!cond_stack[cond_stack_top].value);
+              }};
+	  }
+	  NL
+	  stmt_lo
+	.
+	= elif '#ELIFDEF' i:identifier
+	  {=> {if (cond_stack[cond_stack_top].eliftrue) {
+	        /* one of the previous IF/ELIF evaluated already to true */
+	        set_write_flag (rfalse);
+	      } else {
+	        set_write_flag (rPrepro_is_defined (i:Ident));
+              }};
+	  }
+	  NL
+	  stmt_lo
+	.
+	= elif '#ELIFNDEF' i:identifier
+	  {=> {if (cond_stack[cond_stack_top].eliftrue) {
+	        /* one of the previous IF/ELIF evaluated already to true */
+	        set_write_flag (rfalse);
+	      } else {
+	        set_write_flag ((rbool)!rPrepro_is_defined (i:Ident));
+              }};
+	  }
+	  NL
+	  stmt_lo
+	.
+	= elif '#ELIF' e:expr
+	  {=> {if (cond_stack[cond_stack_top].eliftrue) {
+	        /* one of the previous IF/ELIF evaluated already to true */
+	        set_write_flag (rfalse);
+	      } else {
+	        set_write_flag (e:Value);
+              }};
+	  }
+	  NL
+	  stmt_lo
+	.
+> . // elif
+
+grammar_rule = < /* conditional grammar */
+	= '!' el:exprs '!' directive_lo
+	  /* non nested conditional grammar rule */
+	  {=> rPrepro_pop_write_flag ();}
+	  '.'
+	.
+	= '!' el:exprs '!' '<' stmt_lo
+          /* nested conditional grammar rule      */
+	  {=> rPrepro_pop_write_flag ();}
+	  '>.'
+	.
+	= '!' el:exprs '!' '#INCLUDE'
+          /* Note: - The "." following the conditional include directive is
+           *         consumed by the scanner.
+           *       - The call of rPrepro_pop_write_flag() is done by the
+           *         scanner.
+           */
+	.
+> . // grammar_rule
+
+exprs = <
+	= el:expr_l
+	  {=> rPrepro_push_write_flag (el:Value || rPrepro_all_grammar_rules); }
+	.
+> . /* exprs */
+
+expr_l = <
+	= expr.
+	= l:expr_l ';' e:expr
+	  {Value := rprepro_cur_value = l:Value && e:Value;}
+	.
+	= l:expr_l ',' e:expr
+	  {Value := rprepro_cur_value = l:Value || e:Value;}
+	.
+	= l:expr_l e:expr
+	  {Value := rprepro_cur_value = l:Value || e:Value;}
+	.
+> . // expr_l
+
+expr = <
+	= DEFINED '(' i:identifier ')'
+	  {Value := rprepro_cur_value = rPrepro_is_defined (i:Ident);}
+	.
+	= i:identifier
+	  {Value := rprepro_cur_value = rPrepro_is_defined (i:Ident);}
+	.
+	= i:identifier op v:version_const
+	  {Value := {const char *iv = rPrepro_get_value (i:Ident);
+		     if (iv == NULL) {
+			Value = rfalse;
+	 	     } else {
+			int res = strcmp (iv,
+				          StGetCStr(v:Value));
+		        switch (op:Op) {
+			   case op_eq\: Value = res == 0; break;
+			   case op_ne\: Value = res != 0; break;
+			   case op_lt\: Value = res <  0; break;
+			   case op_le\: Value = res <= 0; break;
+			   case op_gt\: Value = res >  0; break;
+			   case op_ge\: Value = res >= 0; break;
+			   default\: abort();
+		        }
+		     }
+		     rprepro_cur_value = Value;
+		    };
+	  }
+	.
+	= i:identifier op v:string_const
+	  {Value := {const char *iv = rPrepro_get_value (i:Ident);
+		     if (iv == NULL) {
+			Value = rfalse;
+	 	     } else {
+			int res = strcmp (iv,
+				          StGetCStr(v:Value));
+		        switch (op:Op) {
+			   case op_eq\: Value = res == 0; break;
+			   case op_ne\: Value = res != 0; break;
+			   case op_lt\: Value = res <  0; break;
+			   case op_le\: Value = res <= 0; break;
+			   case op_gt\: Value = res >  0; break;
+			   case op_ge\: Value = res >= 0; break;
+			   default\: abort();
+		        }
+		     }
+		     rprepro_cur_value = Value;
+		    };
+	  }
+	.
+	= l:expr '&&' r:expr
+	  {Value := rprepro_cur_value = l:Value && r:Value;}
+	.
+	= l:expr '||' r:expr
+	  {Value := rprepro_cur_value = l:Value || r:Value;}
+	.
+	= '^' e:expr
+	  {Value := rprepro_cur_value = !e:Value;}
+	.
+	= '(' expr ')'.
+> . // expr
+
+op = <
+ 	= '==' {Op := op_eq;}.
+ 	= '='  {Op := op_eq;}.
+ 	= '!=' {Op := op_ne;}.
+ 	= '<'  {Op := op_lt;}.
+ 	= '<=' {Op := op_le;}.
+ 	= '>'  {Op := op_gt;}.
+ 	= '>=' {Op := op_ge;}.
+> . // op
+
+/******************************************************************************
+ * Terminals
+ *****************************************************************************/
+
+version_const: [Value: tStringRef] {Value := PutString ("0", 1); } .
+string_const:  [Value: tStringRef] {Value := PutString ("",  0); } .
+identifier:    [Ident: tIdent    ] {Ident := NoIdent;            } .
+
+/******************************************************************************
+ * Attributes
+ *****************************************************************************/
+
+MODULE attributes
+PROPERTY SYN
+DECLARE
+expr
+expr_l
+	= [Value: rbool]
+	.
+op	= [Op: int]
+	.
+END attributes

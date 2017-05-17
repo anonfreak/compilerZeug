@@ -1,0 +1,29 @@
+###############################################################################
+# Project:  COCKTAIL training
+# Descr:    Code generation for an expression language and a stack machine
+# Kind:     README
+# Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+# $Id: README,v 1.5 2011/05/31 07:28:55 vollmer Exp $
+###############################################################################
+
+This directory describes the AST transformation and code generation
+for arithmetic expressions. Target architecture is a simple stack machine.
+
+The files:
+	expr.scan	The scanner specification
+	expr.pars	The parser specification
+	expr.ast	The AST specification
+	stack.puma	The code generator (stub)
+	simplify.puma	The AST transformator (stub)
+	main.c		The C-main program
+	code		The executable to be produced
+	test*.prog	Test cases
+	Makefile
+	README
+
+	stack-solution.puma
+	simplify-solution.puma
+
+Exercises:
+	- complete the code generator     (stack.puma)
+	- complete the AST transformation (simplify.puma)

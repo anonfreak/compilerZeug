@@ -1,0 +1,2 @@
+hello.o: hello.c hello2.h
+hello2.o: hello2.c hello2.h

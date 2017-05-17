@@ -1,0 +1,249 @@
+/* Project:  COCKTAIL training
+ * Descr:    Code generation for an expression language
+ * Kind:     Definition of the abstract syntax
+ * Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+ * $Id: expr.ast,v 1.1 2007/06/03 15:15:34 vollmer draft vollmer $
+ */
+MODULE abstract_syntax
+		  /* AST-files may be separated into modules, contained
+		   * in various files
+		   */
+
+TREE   expr_tree  /* Name of the tree. Code is generated into files:
+		   * `expr_tree.h', `expr_tree.c', and `yyexpr_tree.h'
+		   * In the further description we use the "generic" name
+		   * `TREE'.
+		   */
+IMPORT {
+  /* The target-code of this section is copied into the generated .h file
+   * before the declaration of the `typedef .... tTREE'
+   */
+} // IMPORT
+
+EXPORT {
+  /* The target-code of this section is copied into the generated .h file
+   * after the declaration of the `typedef .... tTREE', but before
+   * the declaration of the tree nodes struct's.
+   */
+
+  # include "Position.h"
+  # include "Idents.h"
+
+  /* operator type of unary and binary expressions */
+  typedef enum {
+   no_op,        /*     no operator        */
+   assign_op,    /*     assignment, lhs = Left operand, rhs = Right operand */
+   plus_op,      /* +   unary and binary   */
+   minus_op,     /* -   unary and binary   */
+   mult_op,      /* *                      */
+   div_op,       /* /                      */
+   pow_op,       /* **                     */
+   and_op,       /* &                      */
+   or_op,        /* |                      */
+   not_op,       /* !                      */
+   lt_op,        /* <  (less than)         */
+   le_op,        /* <= (less equal)        */
+   gt_op,        /* >  (greater than)      */
+   ge_op,        /* >= (greater equal)     */
+   eq_op,        /* == (equal)             */
+   ne_op,        /* != (not equal)         */
+   LAST_OP       /* "end-of-operator-list" */
+  } tOperator;
+
+  extern const char *OperatorText [];
+	/* textual representation of an operator */
+
+  /* output of an operator `op' to `file' */
+  # define fprintf_tOperator(file, op)  fprintf (file, "%s", OperatorText[op]);
+} // EXPORT
+
+GLOBAL {
+  /* The target-code of this section is copied into the generated .c file */
+
+ const char *OperatorText [] = {
+	"",
+	"=",
+	"+",
+	"-",
+	"*",
+	"/",
+	"**",
+	"&",
+	"|",
+	"!",
+	"<",
+	"<=",
+	">",
+	">=",
+	"==",
+	"!=",
+	NULL
+};
+
+ /* `writeTYPE(val)' is used by the generated AST routines to print a textual
+  * representation of a value of the user defined type TYPE.
+  * The output is written to file `yyf' (a global FILE* variable set somewhere)
+  */
+ # define writetOperator(val) fprintf_tOperator (yyf, val);
+
+ /* `beginTYPE' is used by the generated AST routines to initailize a
+  * value of the user defined type TYPE, if no explicit value is given
+  * when constructing a node having a field of this type.
+  * (e.g. the attribute `ReqRegs' below).
+  */
+ # define tOperator(val)  val = no_op;
+
+ /* For the usual C-types (int, char, * etc.) the file `yyTREE.h' contains
+  * some default definitions, for `writeTYPE', `beginTYPE' and
+  * other routines (see the manuals).
+  * By simply defining e.g. `writeint' here, the default is not used.
+  */
+
+} // GLOBAL
+
+RULE  /* Here we define the node types */
+
+/* Generated typedef's into the TREE.h file
+ *  tTREE        for the entire tree
+ *  tNODE        for all node types, not being subtype of another node type.
+ *               (tNODE is "equal" to tTREE, it may be used to self-document
+ *                plain C-programs using the AST data structures)
+ *  void (* TREE_tProcTree) (tTREE t)
+ *		  a function type taking a node as argument
+ *
+ * For each node type NODE a distinct
+ *    # define kNODE <some integer>
+ * is created in the TREE.h file
+ *
+ * Data structures:
+ * Given the following AST spec (where M is another node type and t a C-type)
+ *    N =  a1: M
+ *        [a2: t] <
+ *      n1 =  a11: M      //  a11 is called a child of node n1 of tree type M
+ *           [a12: t]     //  a12 is called an attribute of x1 of type T
+ *         .
+ *      n2 = ....
+ *         .
+ *    > .
+ *  Nodes of type N, n1, and n2 have all a child a1 and an attribute a2.
+ *  Nodes of type n1 has the additional child a11 and the attribute a12.
+ *
+ *  If x is a variable and points to a node of type N having attributes
+ *  i.e. there is a C variable declaration
+ *        tN x;
+ *  then we can write in C:
+ *  	-  if (x->Kind == kn1)         // Kind contains an integer value
+ *      	 		       // e.g. kn1 (see the #define above)
+ *      -  x->n1.a1                    // a pointer to an M-node
+ *      -  x->n1.a1->Kind              // ... and it's Kind value
+ *      -  x->n1.a2                    // avlue of type T
+ *
+ *  "Dynmic type-check":
+ *    if (TREE_IsType (x, kNODE) ...
+ *      this checks that x refers to a node pf the NODE
+ *
+ * For each node type `N' some routines are generated. The most important are:
+ *        tTREE mN (....)
+ *		node constructor with initialization of the INPUT attributes
+ *		as given by the actual parameters and default initialization
+ *		of the non-INPUT attributes (`beginTYPE(val)').
+ *		Tha arguments are in the order as given in the node
+ *		specification. If N is a sub type of M, the INPUT attributes of
+ *		M are set before the ones of N.
+ *	        e.g. 	texpr_tree mN  (texpr_tree a1,  t a2);
+ *			tcalc_tree mn1 (texpr_tree a1,  t a2,
+ *                                      texpr_tree a11, t a12,
+ *        tTREE nN (void)
+ *		node constructor with default initialization (`beginTYPE(val)')
+ *		of the attributes.
+ *		e.g.   tcalc_tree nN  (void);
+ *		       tcalc_tree nn1 (void);
+ *
+ * For the entire tree (these procedures are generated only if triggered by
+ * some command line switches given to 'ast'):
+ *	  void  DrawTREE (tTREE t)
+ *			graphical browser
+ *	  rbool CheckTREE (tTREE t)
+ *			returns true, if all children of all nodes of
+ *			t have the "right" AST-type.
+ *			e.g. returns rfalse if  `Arg' of `unary_expr' refers
+ *			     to an `EXPRS' node instead of an `EXPR'.
+ *        void  WriteTREE (FILE *f, tTREE t)
+ *			write ASCII representation of `t' to `f'
+ *        tTREE ReadTREE (FILE *f)
+ *			read ASCII representation from `f' and build the tree
+ *        void  PutTREE (FILE *f, tTREE t)
+ *			write a binary representation of `t' to `f'
+ *        tTREE GetTREE (FILE *f)
+ *			read a binary representation from `f' and build the
+ +			tree
+ *        void  ReleaseTREE (tTREE t)
+ *			release the allocated memory of `t'
+ *        void  ReleaseTREEModule (void)
+ *			release all allocated memory allocated for trees
+ *			of type tTREE
+ *	  tTREE ReverseTREE (tTREE t)
+ *			if t is node og type NODE, and NODE has a child
+ *			with the REV (REVERSE) property, t represents a list
+ *			and the list is reversed over this
+ *			"next-list-element-pointer"
+ *	  void  ForallTREE (tTREE t, TREE_tProcTree f)
+ *			similar to ReverseTREE: calls for all list elements
+ *			the function `f'.
+ *        rbool TREE_IsType (tTREE t, kNODE)
+ *	                returns rtrue if t is node of type NODE.
+ *			e.g. expr_tree_IsType (x, kEXPR) returns true,
+ *			     if x is an EXPR, ..._expr, .._const, or ident
+ *			     node; otherwise false (for eg. an `exprs' node)
+ *        void  TraverseTREETD (tTREE t, TREE_tProcTree f)
+ *        void  TraverseTREEBU (tTREE t, TREE_tProcTree f)
+ *			top-down / bottom-up traversal of the t. For each node
+ *                      n of t `f(n)' is called once. (Only tree valued
+ *			attributes not enclosed in `[' and `]' are considered.
+ *	  tTREE CopyTREE (tTREE t)
+ *			copies `t'.
+ *        const char * const TREE_NodeName [];
+ *			an string-array indexed with the kNODE-integers
+ *			storing the textual representation of the name of NODE
+ *			i.e. the word `NODE'.
+ *        tTREE TREERoot a global variable is declared.
+ */
+
+/* list of expressions */
+EXPRS = <
+  no_exprs	= /* end of list */
+		.
+  exprs		= Next: EXPRS   REV /* a PROPERTY of a node child
+                                     * REV: "this is the list-next-pointer"
+				     * `ReverseTREE' reverses the list
+				     * "over" this field
+				     */
+		  Expr: EXPR
+		.
+> .
+
+/* expressions */
+EXPR = [Pos: tPosition] <
+   binary_expr	= [Op  :tOperator ]   /* binary expressions */
+		  Left : EXPR
+		  Right: EXPR
+  		.
+   unary_expr	= [Op  :tOperator ]   /* binary expressions */
+		  Expr : EXPR
+  		.
+   cond_expr	= Cond : EXPR         /* cond ? then-expr : else-expr */
+		  Then : EXPR
+		  Else : EXPR
+  		.
+   identifier   = [Ident: tIdent]
+		.
+   const_expr = <		      /* all kind of constants */
+    int_const	= [Value: int]
+		.
+    float_const	= [Value: tStringRef] // in order to avoid rounding errors,
+				      // the textual representation of the
+				      // source is used and not a 'double'
+		.
+   > . // const_expr
+> .
+END abstract_syntax

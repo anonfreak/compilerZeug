@@ -1,0 +1,41 @@
+###############################################################################
+# Project:  COCKTAIL training
+# Descr:    LR parser and expression evaluator using PUMA
+# Kind:     README
+# Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+# $Id: README,v 1.10 2010/04/26 15:14:14 vollmer Exp $
+###############################################################################
+
+This directory describes the implementation of an LR parser for
+arithmetic expressions. The Abstract Syntax Tree is constructed and traversed.
+The AST is constructed using the Cocktail toos ast.
+The AST is evaluated by an attribute evaluator genered by AG.
+
+The files:
+	expr.pars	The parser specification (stub)
+			The scanner specification is taken from ../calc
+	expr.ast        The AST specification
+	expr.ag         An Attribute Grammar evaluating the tree
+	main.c          C-main program
+	test*           Some test sources
+	expr-eval	the executable to be produced
+	Makefile
+	README
+
+	expr-solution.puma
+
+Exercises:
+  - Extend the expression evaluator contained in expr.ag
+    The code places to be modified are marked with TODO
+  - calculate: the AG to compute the double value of an expression.
+    (SYN-attribute)
+    add rules for binary_expr, cond_expr and call_expr
+  - enumerate: the AG to enumerate all EXPRE nodes uniquly
+    (INH-attribute)
+    add rules for binary_expr, cond_expr and call_expr
+  - depth: the AG to compute for each expression-node its "depth" in the tree
+    (SYN and INH-attributes)
+    add rules for binary_expr, cond_expr and call_expr
+  Check your results by viewing the AST after calling  the AG evaluator
+
+

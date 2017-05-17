@@ -1,0 +1,986 @@
+/*
+   Copyright (c) 2001 Dr. Josef Grosch, CoCoLab - Datenverarbeitung
+
+   This file contains proprietary and confidential information and
+   remains the property of CoCoLab. Use, disclosure, or reproduction
+   is prohibited except as permitted by express written license agreement
+   with CoCoLab.
+
+   Phone: +49-7841-669144
+   Fax  : +49-7841-669145
+   Email: grosch@cocolab.com
+*/
+
+/* Project:	Support for tools built by CoCoLab
+ * Descr:	A simple preprocessor handling conditional text and text macros
+ *		Scanner specification
+ * Author:	Dr. Juergen Vollmer <vollmer@cocolab.com>
+ * $Id: rPrepro.scan,v 1.37 2008/11/27 14:12:34 vollmer Exp $
+ */
+
+SCANNER rPrepro_scan
+
+EXPORT {
+# include <stdio.h>
+# include "Position.h"
+
+/* program exits with following codes: */
+# define EXIT_OK	0
+# define EXIT_ERROR	1
+# define EXIT_USER      2
+# define EXIT_INTERNAL  3
+
+INSERT tScanAttribute
+
+/* Should output be written? */
+extern rbool rPrepro_scan_write;
+
+/* Value computed during evaluating directive / conditional grammar rule
+ * expressions.
+ * This is needed only in order to get the production of spaces for
+ * !..! right.
+ * Note: rPrepro_scan_write is set by the parser "too late" for this
+ *       purpose, see the scanner rule accepting the terminating "!".
+ */
+extern rbool rprepro_cur_value;
+
+/* Should whitespace emitted if the text is skipped */
+extern rbool rPrepro_scan_emit_skipped_white_space;
+
+/* Should a trailing \ (backslash) in skipped lines be emitted? */
+extern rbool rPrepro_scan_emit_trailing_bs;
+
+extern rbool rPrepro_scan_emit_line_numbers;
+/* should line numbers be emitted? */
+
+/* Should #@ line directives be produced? */
+extern rbool rPrepro_scan_emit_line_directive;
+
+/* Should # line directives be produced? */
+extern rbool rPrepro_scan_emit_line_directive_CPP;
+
+/* Should conditional grammar rules:
+ *         !name ...! ....     .
+ * processed
+ */
+extern rbool rPrepro_enable_grammar_rules;
+extern rbool rPrepro_all_grammar_rules;/* all grammar rules evaluate to true */
+
+/* output file */
+extern FILE *rPrepro_out_file;
+
+/* handling of define names */
+extern void        rPrepro_define          (tIdent name, const char* value);
+extern void        rPrepro_undef           (tIdent name);
+extern rbool       rPrepro_is_defined      (tIdent name);
+extern const char *rPrepro_get_value       (tIdent name);
+extern void        rPrepro_set_modifiable  (tIdent name, rbool value);
+extern void        rPrepro_set_replaceable (tIdent name, rbool value);
+
+extern void rPrepro_scan_push_attr (void);
+	/* to be called externally only, if reading from stdin */
+} /* EXPORT */
+
+GLOBAL {
+# include <assert.h>
+# include <errno.h>
+# include <string.h>
+# include <stdlib.h>
+# include "Errors.h"
+# include "Idents.h"
+# include "rMemory.h"
+# include "rFsearch.h"
+# include "DynArray.h"
+# include "rPrepro_pars.h"
+
+/****  the external global variables  ****************************************/
+rbool rprepro_cur_value;
+rbool rPrepro_scan_write;
+rbool rPrepro_scan_emit_skipped_white_space = rtrue;
+rbool rPrepro_scan_emit_line_numbers        = rfalse;
+rbool rPrepro_scan_emit_line_directive      = rtrue;
+rbool rPrepro_scan_emit_line_directive_CPP  = rfalse;
+rbool rPrepro_scan_emit_trailing_bs         = rfalse;
+rbool rPrepro_enable_grammar_rules;
+rbool rPrepro_all_grammar_rules;
+FILE *rPrepro_out_file;
+
+/****  a dynamic growing string  *********************************************/
+static char         *string      = NULL;
+static unsigned long string_len  = 0;
+static unsigned long string_size = 0;
+# define CHECK_STRING_SIZE(required) \
+	if (required + string_len >= string_size) { 		\
+	   ExtendArray (&string, &string_size, sizeof (char));	\
+	}
+
+/****  some global vars  *****************************************************/
+
+/* Usually a conditional grammar rule is ended by the next dot ("."), which
+ * is not contained in target code or a string.
+ * Exception: a nested conditional grammar rule:
+ *                !..! X = < .. > .
+ *            is termianted by a ">.".
+ * The following two variables are used to implement this:
+ *  inside_grammar_rule == true iff we're inside a conditional grammar rule.
+ *  accept_next_dot     == true iff the next dot (".") terminates the
+ *                              conditional grammar rule.
+ *  grammar_rule_nesting > 0    nesting count of condtional grammar rules
+ */
+static rbool inside_grammar_rule;
+static rbool accept_next_dot;
+static int   grammar_rule_nesting;
+static rbool is_conditional_include;
+
+static int   if_nesting;  /* > 0, if we are inside a #IF ... # ENDIF */
+
+/**** handling target code  **************************************************/
+static int target_code_nesting;  /* count nesting depth of target code braces*/
+
+/* some start positions, for better error reporting */
+static tPosition directive_start_pos,
+		 string_start_pos,
+		 target_start_pos,
+		 cmt_start_pos,
+	         grammar_start_pos;
+
+
+/****  handling of define names  *********************************************/
+/* The definition table holds all defined names and their values.
+ * The definition table is implemented as a dynamically growing array,
+ * indexed by the tIdent-value of the defined name.
+ * Let <NAME> be the tIdent-value of the string <name>.
+ * The following holds:
+ *  - NoIdent <= <NAME> <= deftab.size <= MaxIdent()
+ *  - <name>s with a tIdent Value > deftab.size are treated as undefined names.
+ *  - deftab.map[<NAME>] holds the information about <name>
+ */
+typedef struct {
+  const char *value;  /* == NULL  ==> <name> is undefined,
+		       *              i.e. there is no
+		       *                #DEFINE <name> / -D <name> / -P <name>
+		       *              or the <name> is explicitly undefined
+		       *                # UNDEF <name> / -U <name>
+                       * == ""    ==> <name> defined but no value,
+		       *              i.e. there is a
+                       *                #DEFINE <name> / -D <name> / -P <name>
+                       * == ""    ==> <name> defined with that value,
+		       *              i.e. there
+		       *              is a
+                       *                #DEFINE <name> = <value> /
+		       *                -D <name>=<value> / -P <name>=<value>
+		       */
+  rbool modifiable;   /* true  ==> The value of this name may be changed
+                       *           by a #DEFINE / #UNDEF directive contained
+		       *           in the source.
+		       * false ==> The value may not be changed.
+		       * Background: values given on the commandline
+		       *             by -D<name>=<value> / -P<name>=<value>
+		       *             or -U<name> override all values
+		       *             given by #DEFINE / # UNDEF directives
+		       *             contained in the processed source.
+		       *             Therefore their modifiable flag ist set
+		       *             to false.
+		       */
+  rbool replaceable;  /* true  ==> All <name>s occurring in the source are
+		       *           replaced by <value>.
+                       * false ==> Don't replace.
+		       * Background: only names defined by -D<name> or
+		       *             #DEFINE should be replaced, while
+		       *             those defined using -P<name> should
+		       *             should not be replaced.
+		       */
+} tDefTabItem;
+
+typedef struct {
+  tDefTabItem    *map;
+  unsigned long   size;
+} tDefTab;
+
+static tDefTab deftab;
+
+/* set default values for an deftab item */
+# define INIT_DEFTAB_ITEM(i) deftab.map[i].value       = NULL; \
+			     deftab.map[i].modifiable  = rtrue;\
+			     deftab.map[i].replaceable = rtrue;
+
+/****  debugging  ************************************************************/
+# undef DEBUG_RPREPRO_SCAN_GET_TOKEN
+# ifdef DEBUG_RPREPRO_SCAN_GET_TOKEN
+int rPrepro_scan_GetToken (void)
+{
+  extern char *rPrepro_pars_TokenName[];
+  int prevStartState = yyStartState;
+  int tok = rPrepro_scan_GetToken_wrapper();
+
+  printf ("\ntoken: '%s'; prev-state: %2d; new-state: %2d; accept_next_dot=%s\n",
+	    rPrepro_pars_TokenName[tok], prevStartState, yyStartState,
+	    accept_next_dot? "yes" : "no");
+  return tok;
+}
+# define rPrepro_scan_GetToken rPrepro_scan_GetToken_wrapper
+# endif
+
+# undef  DEBUG_RPREPRO_SCAN
+# ifdef  DEBUG_RPREPRO_SCAN
+# define DPRINTF(arg) {printf ("\t ");					      \
+		       WritePosition (stdout,rPrepro_scan_Attribute.Position);\
+		       printf (" ");                                          \
+		       printf arg;}
+# else
+# define DPRINTF(arg)
+# endif
+
+/**** handling define names  *************************************************/
+
+void rPrepro_define (tIdent name, const char *value)
+/* Adds <name> and its <value> to the definition tab. */
+{
+  DPRINTF (("define `%s' = `%s'\n", GetCStr (name), value? value:"<<NULL>>"));
+
+  if (name == NoIdent) return;
+
+  /* extend the deftab array */
+  while (name >= deftab.size) {
+      unsigned long i = deftab.size;
+      ExtendArray ((char**)&deftab.map, &deftab.size, sizeof (tDefTabItem));
+      for (; i < deftab.size; i++) {
+	  INIT_DEFTAB_ITEM(i);
+      }
+  }
+
+  if (deftab.map[name].modifiable) {
+     deftab.map[name].value = value;
+  } else {
+    DPRINTF (("define `%s': not modifable\n", GetCStr (name)));
+  }
+}
+
+void rPrepro_undef (tIdent name)
+{
+  rPrepro_define (name, NULL);
+}
+
+void rPrepro_set_replaceable (tIdent name, rbool value)
+{
+  assert (name <= deftab.size);
+  deftab.map[name].replaceable = value;
+}
+
+void rPrepro_set_modifiable (tIdent name, rbool value)
+{
+  assert (name <= deftab.size);
+  deftab.map[name].modifiable = rfalse;
+}
+
+rbool rPrepro_is_defined (tIdent name)
+{
+  if (name < deftab.size) {
+    return deftab.map[name].value != NULL;
+  } else {
+    return rfalse;
+  }
+}
+
+const char *rPrepro_get_value (tIdent name)
+{
+  if (name < deftab.size) {
+    return deftab.map[name].value;
+  } else {
+    return NULL;
+  }
+}
+
+static rbool is_replaceable (tIdent name)
+{
+  if (name < deftab.size) {
+    return deftab.map[name].replaceable;
+  } else {
+    return rfalse;
+  }
+}
+
+/****  handling nested includes  *********************************************/
+
+/* stack of filenames, used for nested includes */
+# define ATTRIBUTE_STACK_SIZE 20
+typedef struct {
+  rPrepro_scan_tScanAttribute attr;
+  rbool                       is_conditional_include;
+} tFileInfo;
+static tFileInfo attr_stack[ATTRIBUTE_STACK_SIZE];
+static int       attr_stack_top = -1;
+
+void rPrepro_scan_push_attr (void)
+{
+  DPRINTF (("rPrepro_scan_push_attr '%s', %u\n", GetCStr (rPrepro_scan_Attribute.Position.FileName), rPrepro_scan_Attribute.Position.Line));
+  attr_stack_top++;
+  if (attr_stack_top < ATTRIBUTE_STACK_SIZE) {
+    attr_stack[attr_stack_top].attr                   = rPrepro_scan_Attribute;
+    attr_stack[attr_stack_top].is_conditional_include = is_conditional_include;
+  } else {
+    fprintf (stderr, "Fatal Error: too many nested includes\n");
+    exit (EXIT_INTERNAL);
+  }
+}
+
+static void pop_attr (void)
+{
+  DPRINTF (("pop_attr '%s', %u\n", GetCStr (rPrepro_scan_Attribute.Position.FileName), rPrepro_scan_Attribute.Position.Line));
+  if (attr_stack_top >= 0) {
+    rPrepro_scan_Attribute = attr_stack[attr_stack_top].attr;
+    is_conditional_include = attr_stack[attr_stack_top].is_conditional_include;
+    DPRINTF (("--> '%s', %u\n", GetCStr (rPrepro_scan_Attribute.Position.FileName), rPrepro_scan_Attribute.Position.Line));
+    attr_stack_top--;
+  } else {
+    fprintf (stderr, "Fatal Error: too many calls to pop_attr\n");
+    exit (EXIT_INTERNAL);
+  }
+}
+
+static void do_include (void)
+{
+  char *start, *fn, *end;
+  directive_start_pos = rPrepro_scan_Attribute.Position;
+  DPRINTF (("#INCLUDE\n"));
+  CHECK_STRING_SIZE (rPrepro_scan_TokenLength + 1);
+  rPrepro_scan_GetWord (string);
+  start = strchr (string, '"') + 1; /* start of filename */
+  end   = strchr (start,  '"');     /* end of filename   */
+  *end = '\0';                      /* remove trailing " */
+  if (rPrepro_scan_write) {
+      DPRINTF (("include `%s'\n", start));
+      fn = rFindFile (start);
+      if (fn == NULL) {
+          MessageI ("file not found", xxError,
+	 	    rPrepro_scan_Attribute.Position, xxString, start);
+      } else {
+          rPrepro_scan_BeginFile (fn);
+      }
+  } else {
+    /* file should not be included */
+    if (is_conditional_include) {
+	/* Since the conditionally included file is not included,
+	 * we have to call rPrepro_pop_write_flag() here.
+	 * see the #INCLUDE rule in rPrepro.pars
+	 * If the file is included, rPrepro_pop_write_flag() is called,
+	 * when the included file is closed.
+	 * see rPrepro_scan_CloseSource_wrapper()
+	 */
+       rPrepro_pop_write_flag();
+    }
+  }
+}
+
+/****  wrapper arount begin / close file  ************************************/
+
+int rPrepro_scan_BeginSourceFile_wrapper (char * FileName)
+{
+  int res;
+  DPRINTF (("BeginSource `%s'\n", FileName));
+  rPrepro_scan_push_attr ();
+
+  if (FileName == NULL) {
+    rPrepro_scan_Attribute.Position.FileName = NoIdent;
+  } else {
+    rPrepro_scan_Attribute.Position.FileName = MakeIdent1 (FileName);
+    res = rPrepro_scan_BeginSourceFile (FileName);
+  }
+  if (rPrepro_scan_emit_line_directive) {
+     fprintf (rPrepro_out_file, "%s#%s line 1 \"%s\"\n",
+	   (rPrepro_scan_Attribute.Position.Column > 1)? "\n" : "",
+	   rPrepro_scan_emit_line_directive_CPP? "" : "@",
+	   GetCStr (rPrepro_scan_Attribute.Position.FileName));
+  }
+  if (rPrepro_scan_emit_line_numbers) {
+    fprintf (rPrepro_out_file, "%6d: ", yyLineCount);
+  }
+  return res;
+}
+
+void rPrepro_scan_CloseSource_wrapper (int File)
+{
+   switch (yyStartState) {
+   case STRING_D:
+   case STRING_S:
+   case DIR_STRING:
+   	  Message ("unclosed string constant", xxError, string_start_pos);
+	  yyStart (STD); /* just to be sure :-) */
+	  break;
+/* ** since target code may contain #include, don't complain here **
+   case TARGET:
+   	  Message ("unclosed target code",     xxError, target_start_pos);
+	  yyStart (STD); / * just to be sure :-) * /
+	  break;
+*/
+   case CMT:
+   	  Message ("unclosed comment",         xxError, cmt_start_pos);
+	  yyStart (STD); /* just to be sure :-) */
+	  break;
+   }
+
+  DPRINTF (("CloseSource\n"));
+  pop_attr ();
+  if (rPrepro_scan_write &&
+      rPrepro_scan_Attribute.Position.FileName != NoIdent &&
+      attr_stack_top >= 0) {
+      if (rPrepro_scan_emit_line_directive) {
+        fprintf (rPrepro_out_file, "\n#%s line %u \"%s\"",
+		 rPrepro_scan_emit_line_directive_CPP? "" : "@",
+                 rPrepro_scan_Attribute.Position.Line,
+	         GetCStr (rPrepro_scan_Attribute.Position.FileName));
+      }
+  }
+  if (is_conditional_include) {
+     rPrepro_pop_write_flag();
+  }
+  rPrepro_scan_CloseSource (File);
+}
+
+/* from now on, use our wrapper */
+# define rPrepro_scan_BeginSourceFile rPrepro_scan_BeginSourceFile_wrapper
+# define rPrepro_scan_CloseSource     rPrepro_scan_CloseSource_wrapper
+
+/****  these macros are used to emit the code  *******************************/
+# define COPY_STR(text) 				\
+	 if (rPrepro_scan_write) {			\
+	  fputs ((text), rPrepro_out_file);		\
+	 }
+	 /* else printf ("<<<%s>>>>\n", text); */
+
+# define COPY_CHAR(c)					\
+	 if (rPrepro_scan_write) {			\
+	  fputc ((c), rPrepro_out_file);		\
+	 }
+	 /* else printf ("<<<%c>>>>\n", c);   */
+
+# define COPY_TOKEN()							\
+	 if (rPrepro_scan_write && rPrepro_scan_TokenLength > 0) {	\
+	    (void) fwrite(rPrepro_scan_TokenPtr,			\
+		          sizeof(char), 				\
+		          rPrepro_scan_TokenLength,			\
+		          rPrepro_out_file);				\
+ 	 }
+	/* else {char str[1024]; GetWord (str); printf ("<<<%s>>>>\n",str);} */
+
+# define COPY_WHITE_SPACE(c)					\
+	if (rPrepro_scan_write ||				\
+	    rPrepro_scan_emit_skipped_white_space) {		\
+	     fputc ((c), rPrepro_out_file);			\
+	} if (c == '\n' && rPrepro_scan_emit_line_numbers) 	\
+	  fprintf (rPrepro_out_file, "%6d: ", yyLineCount+1);
+
+# define COPY_TRAILING_BS()						\
+	if (  (rPrepro_scan_write ||					\
+	       rPrepro_scan_emit_skipped_white_space)			\
+	    && (rPrepro_scan_emit_trailing_bs || if_nesting == 0)) {	\
+	     fputc ('\\', rPrepro_out_file);				\
+	}
+
+INSERT ErrorAttribute
+} /* GLOBAL */
+
+BEGIN {
+ unsigned long i;
+
+ string_size = 256;  /* initial guess */
+ MakeArray (&string, &string_size, sizeof (char));
+
+ deftab.size = 1024; /* initial guess */
+ MakeArray ((char**)&deftab.map, &deftab.size, sizeof (tDefTabItem));
+ for (i = 0; i < deftab.size; i++) {
+     INIT_DEFTAB_ITEM(i);
+ }
+
+ rprepro_cur_value                     = rfalse;
+ rPrepro_scan_write                    = rtrue;
+ rPrepro_enable_grammar_rules          = rfalse;
+ rPrepro_all_grammar_rules             = rfalse;
+ rPrepro_scan_emit_trailing_bs         = rfalse;
+
+ accept_next_dot        = rfalse;
+ inside_grammar_rule    = rfalse;
+ target_code_nesting    = 0;
+ grammar_rule_nesting   = 0;
+ is_conditional_include = rfalse;
+ if_nesting             = 0;
+} /* BEGIN */
+
+CLOSE {
+  ReleaseArray ((char**)&deftab.map, &deftab.size, sizeof (tDefTabItem));
+  deftab.size = 0;
+  deftab.map  = 0;
+} /* CLOSE */
+
+DEFAULT {
+   MessageChar ("illegal char", xxError,
+		rPrepro_scan_Attribute.Position, rPrepro_scan_TokenPtr);
+} /* DEFAULT */
+
+DEFINE
+  digit         = {0-9}    .
+  letter        = {a-zA-Z} .
+  identifier    = letter
+	          ((letter | digit | "." | "-" | "_")*
+		   (letter | digit)+)?
+		.
+  string_d      = - {"\\\n} .
+  string_s      = - {'\\\n} .
+  blank         = {\ \t}    .
+  blanks        = blank*    .
+  cmt           = blanks
+	          (("//" ANY *) | ("/*" ANY* "*/"))?
+	          blanks \r?\n?
+		.
+                  /* one line comment following a "." */
+
+START STRING_D   /* strings enclosed in double quote                     */
+      STRING_S   /* strings enclosed in single quotes                    */
+      DIR_STRING /* strings enclosed in double quote, used in directives */
+      DIRECTIVE  /* preprocessor directives                              */
+      GRAMMAR    /* conditional grammar rule                             */
+      TARGET     /* target code enclosed in {..}                         */
+      CMT        /* C-style comments                                     */
+
+RULES
+
+/**** handling of #-directives ***********************************************/
+#STD,TARGET# < blanks "#" blanks "INCLUDE" blanks \" string_d + \"
+	: { is_conditional_include = rfalse;
+	    do_include();
+	  }
+
+#STD#  blanks "#" blanks "INCLUDE" blanks \" string_d + \" blanks "." cmt
+
+	: { if (rPrepro_scan_TokenPtr[rPrepro_scan_TokenLength-1] == '\n') {
+	      yyEol(0);
+            }
+	    if (!inside_grammar_rule) {
+	      Message ("the '.' after an #INCLUDE is allowed only for "
+		       "conditional includes", xxError,
+	 	       rPrepro_scan_Attribute.Position);
+	      is_conditional_include = rfalse;
+  	      do_include();
+	    } else {
+	      is_conditional_include = rtrue;
+	      accept_next_dot        = rfalse;
+	      inside_grammar_rule    = rfalse;
+  	      do_include();
+	      return '#INCLUDE';
+            }
+	  }
+
+#STD,TARGET# < blanks "#" blanks "DEFINE" :
+	{
+	  directive_start_pos = rPrepro_scan_Attribute.Position;
+	  DPRINTF (("#DEFINE\n"));
+	  yyPush (DIRECTIVE);
+	  return '#DEFINE';
+	}
+#STD# < blanks "!" blanks "DEFINE" :
+	{
+	  directive_start_pos = rPrepro_scan_Attribute.Position;
+	  DPRINTF (("!DEFINE\n"));
+	  yyPush (DIRECTIVE);
+	  return '!DEFINE';
+	}
+
+#STD,TARGET# < blanks "#" blanks "UNDEF" :
+	{
+	  DPRINTF (("#UNDEF\n"));
+	  directive_start_pos = rPrepro_scan_Attribute.Position;
+	  yyPush (DIRECTIVE);
+	  return '#UNDEF';
+	}
+
+#STD,TARGET# < blanks "#" blanks "IF" :
+	{
+	  DPRINTF (("#IF\n"));
+	  directive_start_pos = rPrepro_scan_Attribute.Position;
+	  yyPush (DIRECTIVE);
+	  if_nesting++;
+	  return '#IF';
+	}
+
+#STD,TARGET# < blanks "#" blanks "IFDEF" :
+	{
+	  DPRINTF (("#IFDEF\n"));
+	  directive_start_pos = rPrepro_scan_Attribute.Position;
+	  yyPush (DIRECTIVE);
+	  if_nesting++;
+	  return '#IFDEF';
+	}
+
+#STD,TARGET# < blanks "#" blanks "IFNDEF" :
+	{
+	  DPRINTF (("#IFNDEF\n"));
+	  directive_start_pos = rPrepro_scan_Attribute.Position;
+	  yyPush (DIRECTIVE);
+	  if_nesting++;
+	  return '#IFNDEF';
+	}
+
+#STD,TARGET# < blanks "#" blanks "ELSE" :
+	{
+	  DPRINTF (("#ELSE\n"));
+	  directive_start_pos = rPrepro_scan_Attribute.Position;
+	  yyPush (DIRECTIVE);
+	  return '#ELSE';
+	}
+
+#STD,TARGET# < blanks "#" blanks "ENDIF" :
+	{
+	  DPRINTF (("#ENDIF\n"));
+	  directive_start_pos = rPrepro_scan_Attribute.Position;
+	  yyPush (DIRECTIVE);
+	  if_nesting--;
+	  return '#ENDIF';
+	}
+
+#STD,TARGET# < blanks "#" blanks "ELIF" :
+	{
+	  DPRINTF (("#ELIF\n"));
+	  directive_start_pos = rPrepro_scan_Attribute.Position;
+	  yyPush (DIRECTIVE);
+	  return '#ELIF';
+	}
+
+#STD,TARGET# < blanks "#" blanks "ELIFDEF" :
+	{
+	  DPRINTF (("#ELIFDEF\n"));
+	  directive_start_pos = rPrepro_scan_Attribute.Position;
+	  yyPush (DIRECTIVE);
+	  return '#ELIFDEF';
+	}
+
+#STD,TARGET# < blanks "#" blanks "ELIFNDEF" :
+	{
+	  DPRINTF (("#ELIFNDEF\n"));
+	  directive_start_pos = rPrepro_scan_Attribute.Position;
+	  yyPush (DIRECTIVE);
+	  return '#ELIFNDEF';
+	}
+
+#STD,TARGET# < blanks "#" blanks "ERROR" (blank ANY+)? >:
+	{
+	  DPRINTF (("#ERROR\n"));
+	  directive_start_pos = rPrepro_scan_Attribute.Position;
+	  if (rPrepro_scan_write) {
+	      CHECK_STRING_SIZE (rPrepro_scan_TokenLength + 1);
+	      rPrepro_scan_GetWord (string);
+	      MessageI ("", xxError, rPrepro_scan_Attribute.Position,
+		         xxString, string);
+	      exit (EXIT_USER);
+	  }
+	}
+
+#STD,TARGET# < blanks "#" blanks "MESSAGE" (blank ANY+)? >:
+	{
+	  DPRINTF (("#ERROR\n"));
+	  directive_start_pos = rPrepro_scan_Attribute.Position;
+	  if (rPrepro_scan_write) {
+	      CHECK_STRING_SIZE (rPrepro_scan_TokenLength + 1);
+	      rPrepro_scan_GetWord (string);
+	      MessageI ("", xxInformation, rPrepro_scan_Attribute.Position,
+		         xxString, string);
+	  }
+	}
+
+#STD,TARGET# < blanks "#" blanks "//" ANY* :
+	{
+	  DPRINTF (("#//\n"));
+	  /* skip DIRECTIVE comments up to eol */
+	}
+
+/**** (un)conditionally copy the input  **************************************/
+#STD,TARGET# identifier :
+	/** identifiers to be replaced if defined by -D<name> *****/
+	{{tIdent      name  = MakeIdent (rPrepro_scan_TokenPtr,
+				         rPrepro_scan_TokenLength);
+	  const char* value = rPrepro_get_value (name);
+	  if (!is_replaceable (name)) value = NULL;
+	  COPY_STR (value? value : GetCStr (name));
+	}}
+
+#STD# -{\n\t.<>"'\\{\}}  : {COPY_CHAR (*rPrepro_scan_TokenPtr);          }
+#STD# \t                 : {COPY_CHAR (*rPrepro_scan_TokenPtr); yyTab;   }
+
+#STRING_D,STRING_S# \r? \n
+			 : {COPY_WHITE_SPACE ('\n');
+			    Message ("string literal not closed on this line", xxError,
+			 	     rPrepro_scan_Attribute.Position);
+			    yyEol(0);
+			   }
+#STD,TARGET,CMT,STRING_D,STRING_S# \\? \r? \n
+			 : {if (*rPrepro_scan_TokenPtr == '\\') {
+				COPY_TRAILING_BS();
+	     		    }
+			    COPY_WHITE_SPACE ('\n');
+			    yyEol(0);
+			   }
+
+/**** C-style comments  ******************************************************/
+#STD,TARGET# "/*"            : /* */
+	                       {COPY_TOKEN ();
+			        cmt_start_pos = rPrepro_scan_Attribute.Position;
+			        yyPush (CMT);
+		    	       }
+#CMT# "*/"                   : {COPY_TOKEN (); yyPop (); }
+#CMT# -{*\n/\\}* | "*" | "/" : {COPY_TOKEN ();           }
+
+/* C++ style onle-line comment */
+#STD,TARGET# "//" ANY*	   : {COPY_TOKEN(); }
+
+/**** handling conditional grammar rules  ************************************/
+#STD# < blanks "!" -{!\n}* "!" :
+	{ /* start of a conditional grammar rule */
+          /* accept only the char's up to the first ! */
+	  yyLess (strchr(rPrepro_scan_TokenPtr, '!') -
+			 rPrepro_scan_TokenPtr + 1);
+	  grammar_start_pos = rPrepro_scan_Attribute.Position;
+
+	  if (rPrepro_enable_grammar_rules) {
+	    rprepro_cur_value   = rfalse; /* ==> see rPrepro.pars */
+	    accept_next_dot     = rtrue;
+	    inside_grammar_rule = rtrue;
+
+	    yyPush (GRAMMAR);
+	    return '!';      /* inform the parser about a conditional rule */
+	  } else {
+	    COPY_TOKEN();    /* emit all up and including the first ! */
+	  }
+        }
+
+#STD# "." cmt
+      :	{ /* end of a conditional grammar rule */
+	  if (rPrepro_scan_TokenPtr[rPrepro_scan_TokenLength-1] == '\n') {
+	    rPrepro_scan_TokenLength--;
+	      COPY_TOKEN ();
+	      COPY_WHITE_SPACE('\n');
+	      yyEol(0);
+	    rPrepro_scan_TokenLength++;
+	  } else {
+	    COPY_TOKEN ();
+	  }
+	  if (accept_next_dot) {
+	     if (grammar_rule_nesting == 0) {
+		/* If we're not inside a nested condtional grammar rule
+	         * this rule is ended now
+	         */
+	        inside_grammar_rule = rfalse;
+	     }
+	     accept_next_dot = rfalse;
+	     return '.';
+	  }
+	}
+
+/**** nested grammar rules if contained a conditional parser rule  ***********/
+#STD# "<" :
+	{ COPY_CHAR ('<');
+	  if (inside_grammar_rule) {
+            /* Start of a nested grammar rule */
+	    grammar_rule_nesting++;
+
+	    accept_next_dot = rfalse;
+		/* The next "." does not terminate a conditional grammar rule
+	         * (a nested one is terminated by ">.")
+		 */
+	    return '<';
+	  }
+	}
+
+#STD# ">" : { COPY_CHAR ('>'); }
+
+#STD# ">" blanks "." cmt
+      : { /* end of a nested conditional grammar rule */
+	  if (rPrepro_scan_TokenPtr[rPrepro_scan_TokenLength-1] == '\n') {
+	    rPrepro_scan_TokenLength--;
+	      COPY_TOKEN ();
+	      COPY_WHITE_SPACE('\n');
+	      yyEol(0);
+	    rPrepro_scan_TokenLength++;
+	  } else {
+	    COPY_TOKEN ();
+	  }
+
+	  if (grammar_rule_nesting > 0) {
+	    grammar_rule_nesting--;
+	    if (grammar_rule_nesting == 0) {
+	       /* now we have closed all nested condtional grammar rules */
+	       inside_grammar_rule = rfalse;
+	    }
+	    return '>.';
+	  }
+	}
+
+/**** Escaped characters in STD and target code are written unescaped.
+ *****************************************************************************/
+#STD,TARGET#     \\ "{"    :        {COPY_CHAR ('{');			}
+#STD,TARGET#     \\ "}"    :        {COPY_CHAR ('}');			}
+#STD,TARGET#     \\ {/#!}  :        {COPY_CHAR (rPrepro_scan_TokenPtr[1]);  }
+#STD,TARGET#     \\ \'     :        {COPY_CHAR('\'');     		}
+#STD,TARGET#     \\ \"     :        {COPY_CHAR('"');      		}
+#STD,TARGET#     \\ "/*"   : /* */  {COPY_CHAR ('/'); COPY_CHAR ('*'); 	}
+#STD,TARGET#     \\ \\     :        {COPY_CHAR('\\');     		}
+#STD,TARGET,CMT# \\        :        {COPY_CHAR('\\');    		}
+
+/**** Double-quote strings enclosed in STD and target code.
+ **** Those strings are conditionally copied to the output
+ *****************************************************************************/
+#STD,TARGET# \"        :  {COPY_TOKEN();
+     			   string_start_pos=rPrepro_scan_Attribute.Position;
+			   yyPush (STRING_D);
+			  }
+#STRING_D# \"                 :  {COPY_TOKEN(); yyPop  (); }
+#STRING_D# string_d*          :- {COPY_TOKEN();            }
+#STRING_D# \\ \" | \\ \\ | \\ :- {COPY_TOKEN();            }
+
+/**** Single-quote strings enclosed in STD and target code.
+ **** Those strings are conditionally copied to the output
+ *****************************************************************************/
+#STD,TARGET# \'       :   {COPY_TOKEN();
+     			   string_start_pos=rPrepro_scan_Attribute.Position;
+			   yyPush (STRING_S);
+			  }
+#STRING_S# \'                 :  {COPY_TOKEN(); yyPop  (); }
+#STRING_S# string_s*          :- {COPY_TOKEN();            }
+#STRING_S# \\ \' | \\ \\ | \\ :- {COPY_TOKEN();            }
+
+/**** target code {...} contained in conditional grammar rules  **************/
+#STD,TARGET# "{"       :  {COPY_CHAR ('{');
+     		           target_start_pos = rPrepro_scan_Attribute.Position;
+		           if (target_code_nesting == 0) {
+		              yyPush (TARGET);
+		           }
+		           target_code_nesting++;
+		          }
+#TARGET#     "}"       :  {COPY_CHAR ('}');
+		           target_code_nesting--;
+		           if (target_code_nesting == 0) {
+			       yyPop();
+		           }
+		          }
+#TARGET# -{"'/\\#\{\}\n\t}+ : {COPY_TOKEN ();}
+#TARGET# \t	            : {COPY_WHITE_SPACE('\t'); yyTab;   }
+#TARGET# "#"	            : {COPY_CHAR('#');                  }
+#TARGET# "/"                : {COPY_CHAR('/');                  }
+
+/**** arguments of the directive / condition grammar rule  *******************/
+#DIRECTIVE,GRAMMAR# DEFINED    : {return DEFINED;}
+#DIRECTIVE,GRAMMAR# identifier :
+	{
+	  rPrepro_scan_Attribute.identifier.Ident =
+		 MakeIdent (rPrepro_scan_TokenPtr, rPrepro_scan_TokenLength);
+	  DPRINTF (("# -- <%s>\n",
+		   GetCStr (rPrepro_scan_Attribute.identifier.Ident)));
+	  return identifier;
+        }
+
+#DIRECTIVE,GRAMMAR# ("+" | "-")? digit+ ("." digit+)? :
+	{
+	  rPrepro_scan_Attribute.version_const.Value =
+		PutString (rPrepro_scan_TokenPtr, rPrepro_scan_TokenLength);
+	  DPRINTF (("# -- (%s)\n",
+	           StGetCStr (rPrepro_scan_Attribute.version_const.Value)));
+	  return version_const;
+        }
+
+#DIRECTIVE,GRAMMAR# "="     :  {return '=';    }
+#DIRECTIVE,GRAMMAR# "=="    :  {return '==';   }
+#DIRECTIVE,GRAMMAR# "!="    :  {return '!=';   }
+#DIRECTIVE,GRAMMAR# "<"     :  {return '<';    }
+#DIRECTIVE,GRAMMAR# "<="    :  {return '<=';   }
+#DIRECTIVE,GRAMMAR# ">"     :  {return '>';    }
+#DIRECTIVE,GRAMMAR# ">="    :  {return '>=';   }
+#DIRECTIVE,GRAMMAR# "("     :  {return '(';    }
+#DIRECTIVE,GRAMMAR# ")"     :  {return ')';    }
+#DIRECTIVE,GRAMMAR# "&&"    :  {return '&&';   }
+#DIRECTIVE,GRAMMAR# "||"    :  {return '||';   }
+#DIRECTIVE,GRAMMAR# "^"     :  {return '^';    }
+#DIRECTIVE,GRAMMAR# ";"     :  {return ';';    }
+
+#DIRECTIVE,GRAMMAR# "\t"    :- {yyTab;         }
+#DIRECTIVE,GRAMMAR# " " | "\r" | "\f" :- { /* skip */ }
+
+#DIRECTIVE# \\? \r? \n :
+	{if (rPrepro_scan_emit_skipped_white_space) {
+	     /* Note: this newline should only emitted if requested */
+	     if (*rPrepro_scan_TokenPtr == '\\') {
+	       rPrepro_scan_emit_trailing_bs = rtrue;
+	       COPY_TRAILING_BS ();
+	     } else {
+	       rPrepro_scan_emit_trailing_bs = rfalse;
+	     }
+	     COPY_WHITE_SPACE ('\n');
+	 }
+	 yyEol(0);
+	 yyPop();
+	 return NL;
+        }
+
+/**** end of !...! condition  ************************************************/
+#GRAMMAR# "!"	   :
+	{ /* in order to keep layout and column counting emit spaces for the
+	   * condition; emit a blank instead of chars
+           */
+	 if (rprepro_cur_value         ||
+	     rPrepro_all_grammar_rules ||
+	     rPrepro_scan_emit_skipped_white_space) {
+	     int i;
+	     for (i  = grammar_start_pos.Column;
+		  i <= rPrepro_scan_Attribute.Position.Column;
+		  i++) {
+                 fputc (' ', rPrepro_out_file);
+	     }
+	 }
+         yyPop ();
+	 return '!';
+        }
+#GRAMMAR# ","	   : {return ',';          }
+
+/**** double-quote strings as arguments of a directive / grammar condition
+ **** Those strings are not copied to the output
+ *****************************************************************************/
+#DIRECTIVE,GRAMMAR# \":
+	{
+	  string_start_pos = rPrepro_scan_Attribute.Position;
+	  yyPush (DIR_STRING);
+	  string_len         = 0;
+	  string[string_len] = '\0';
+	}
+
+#DIR_STRING# string_d+ :-
+	{
+          CHECK_STRING_SIZE(rPrepro_scan_TokenLength);
+	  strncpy (string + string_len, rPrepro_scan_TokenPtr,
+		   rPrepro_scan_TokenLength);
+	  string_len += rPrepro_scan_TokenLength;
+	}
+
+#DIR_STRING# \\ \" | \\ :-
+	{ CHECK_STRING_SIZE(1);
+	  string[string_len++] = '"';
+	}
+
+#DIR_STRING# \n :-
+	{
+	  COPY_WHITE_SPACE('\n');
+	  CHECK_STRING_SIZE(1);
+	  string[string_len++] = ' '; /* \n is _not_ stored in the string
+				       * in order to keep line numbering
+				       * correct when expanding the macro
+				       */
+	  yyEol(0);
+	}
+
+#DIR_STRING# \":
+	{
+	  yyPop ();
+	  rPrepro_scan_Attribute.string_const.Value =
+			PutString (string, string_len);
+	  DPRINTF (("# -- \"%s\"\n",
+	           StGetCStr (rPrepro_scan_Attribute.string_const.Value)));
+	  return string_const;
+	}
+
+/*****************************************************************************/

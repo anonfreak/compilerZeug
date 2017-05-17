@@ -1,0 +1,29 @@
+###############################################################################
+# Project:  COCKTAIL training
+# Descr:    Build an AST for an expression language, compute end-positions
+# Kind:     README
+# Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+# $Id: README,v 1.1 2007/06/03 17:38:30 vollmer draft $
+###############################################################################
+
+
+This directory describes the construction of an Abstract Sytax Tree
+for arithmetic expressions.
+For each expression its begin and end source position (BPos, EPos)
+is computed. Therefore the scanner and the parser are slightly modified
+(compared to the one in the "ast" sub subdirectory).
+To see the diffrence, have a look to the AST as shown in the graph browser.
+With BPos/EPos computed the source corresonding to a AST-node
+is entirely highlighted (in the source window of the AST browser).
+With only one position computed, only one source character is highlighted.
+
+
+The files:
+	expr.pars	The parser specification
+	expr.ast	The AST specification
+	expr.scan	The scanner specification
+	main.c          C-main program
+	calc		The executable to be produced
+	test*           Some test sources
+	Makefile
+	README

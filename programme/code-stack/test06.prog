@@ -1,0 +1,12 @@
+-------------------------------------------------------
+-- Project: A simple compiler for an expression language
+-- Descr:   Test input
+-- Author:  Dr. Juergen Vollmer, <vollmer@cocolab.de>
+-- $Id: test06.prog,v 1.1 2007/06/02 19:33:20 vollmer draft $
+-------------------------------------------------------
+
+-- more complex expression with all operators:
+
+a = (b = 1) + 2;
+
+a > b & c < d | e = f ? 1 + 2 * 4 : -1 - -2 / -4;

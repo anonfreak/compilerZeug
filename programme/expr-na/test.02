@@ -1,0 +1,13 @@
+FUNC fac (i: INT): INT
+BEGIN
+  IF   i < 1 | i = 1
+  THEN RETURN 1
+  ELSE RETURN fac (i-1) * i
+  END
+END;
+
+VAR n: INT;
+BEGIN
+  n := READ;
+  PRINT (fac(n))
+END

@@ -1,0 +1,11 @@
+rPrepro.o: rPrepro.c  \
+   rPrepro_scan.h \
+   rPrepro_pars.h
+rPrepro_scan.o: rPrepro_scan.c rPrepro_scan.h \
+   rPrepro_scanSource.h \
+   rPrepro_pars.h
+rPrepro_pars.o: rPrepro_pars.c rPrepro_pars.h \
+   rPrepro_scan.h \
+  
+rPrepro_scanSource.o: rPrepro_scanSource.c rPrepro_scanSource.h \
+  

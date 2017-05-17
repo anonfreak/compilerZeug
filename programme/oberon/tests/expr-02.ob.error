@@ -1,0 +1,2 @@
+(* expect 1 syntax error *)
+0 <= (x MOD y) < y

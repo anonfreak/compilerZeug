@@ -1,0 +1,57 @@
+(*
+Ordered List with sentinel (at begin)
+
+Category:
+    Basic Data Structures
+Title:
+    Ordered List with sentinel (at begin)
+Author:
+    Patrik Reali ( reali@inf.ethz.ch )
+*)
+
+MODULE List;
+
+TYPE
+	List = POINTER TO ListDesc;
+	ListDesc = RECORD
+		key: ARRAY 64 OF CHAR;
+		next: List;
+	END;
+
+VAR root: List;
+
+PROCEDURE Find (key: ARRAY OF CHAR): List;
+	VAR p: List;
+BEGIN
+	p := root.next;
+	WHILE (p # NIL) & (p.key < key) DO p := p.next END;
+	IF (p = NIL) OR (p.key > key) THEN RETURN NIL
+	ELSE RETURN p
+	END
+END Find;
+
+PROCEDURE Insert (key: ARRAY OF CHAR; unique: BOOLEAN);
+	VAR p, q: List;
+BEGIN
+	p := root;
+	WHILE (p.next # NIL) & (p.next.key < key) DO p := p.next END;
+	IF unique & (p.next # NIL) & (p.next.key = key) THEN HALT (99) END;
+	NEW (q); COPY (key, q.key); q.next := p.next; p.next := q
+END Insert;
+
+PROCEDURE Delete (key: ARRAY OF CHAR);
+	VAR p: List;
+BEGIN
+	p := root;
+	WHILE (p.next # NIL) & (p.next.key < key) DO p := p.next END;
+	IF (p.next # NIL) & (p.next.key = key) THEN
+		p.next := p.next.next
+	END
+END Delete;
+
+PROCEDURE InitList;
+BEGIN NEW (root); root.next := NIL
+END InitList;
+
+END List.
+

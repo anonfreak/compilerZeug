@@ -1,0 +1,39 @@
+MODULE floatrec;
+TYPE blub = RECORD
+ a*,b
+ ,
+ bcd : int;
+ ;;
+ de : real;
+ d, bla : blubber;
+ ;;
+END;
+TYPE bluba = RECORD
+ bcd*,asgd* : int;
+ deae : real;
+ ddd, bla : blubberbluin
+END;
+BEGIN
+ a := 1.;
+ a := 1.23;
+ a := 1.23E45;
+ a := 1.23E+45;
+ a := 1.23E-45;
+ a := 1.23D45;
+ a := 1.23D+45;
+ a := 1.23D-45;
+ a := 1.E23;
+ a := 1.E+23;
+ a := 1.E-23;
+ a := 1.D23;
+ a := 1.D+23;
+ a := 1.D-23;
+ a := 123.;
+ a := 123.45;
+ a := 123.45E67;
+ a := 123.45E+67;
+ a := 123.45E-67;
+ a := 123.45D67;
+ a := 123.45D+67;
+ a := 123.45D-67;
+END floatrec.

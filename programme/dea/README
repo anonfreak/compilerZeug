@@ -1,0 +1,24 @@
+###############################################################################
+# Project:  COCKTAIL training
+# Descr:    DFA (deterministic finite automaton)
+# Kind:     README
+# Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+# $Id: README,v 1.5 2009/11/14 14:20:31 vollmer Exp $
+###############################################################################
+
+This directory contains the implementation of a
+DFA (deterministic finite automaton).
+
+Files:
+	accept.[ch]         The main DEA-loop
+	state.[ch]          The DEA transition table (stub)
+	main.c              C-main program (stub)
+	dea	            the executable to be produced
+	Makefile
+	README
+	Anmerkungen	    some remarks about the implemtation
+
+	state-solution.c
+
+Exercice:
+  - complete the implementation of the state.c file

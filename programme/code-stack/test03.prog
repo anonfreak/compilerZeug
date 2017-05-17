@@ -1,0 +1,20 @@
+-------------------------------------------------------
+-- Project: A simple compiler for an expression language
+-- Descr:   Test input
+-- Author:  Dr. Juergen Vollmer, <vollmer@cocolab.de>
+-- $Id: test03.prog,v 1.1 2007/06/02 19:33:20 vollmer draft $
+-------------------------------------------------------
+
+-- Modify the grammar to understand effect of PREC:
+-- If PREC is removed, similar trees are constructed for
+--    /* 1 */ und /* 3 */
+-- If PREC is present, different trees are constucted, those
+--    trees reflect the mathematical meaning.
+
+/* 1 */  1 * 2  + 3;
+
+/* 2 */ (1 * 2) + 3;
+
+/* 3 */  1 * (2 + 3);
+
+

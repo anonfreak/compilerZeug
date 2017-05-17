@@ -1,0 +1,137 @@
+/* Project:  COCKTAIL training
+ * Descr:    Code generation for an expression language
+ * Kind:     Parser specification with AST construction
+ * Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+ * $Id: expr.pars,v 1.2 2011/05/31 09:27:32 vollmer Exp $
+ */
+
+SCANNER expr_scan
+
+PARSER  expr_pars
+
+GLOBAL {
+ # include <stdio.h>
+ # include "Idents.h"
+ # include "expr_tree.h"
+}
+
+PREC RIGHT '='   /* assign "statement" */
+     LEFT  '?'
+     LEFT  '|'
+     LEFT  '&'
+     LEFT  '!'
+     NONE  '<' '<=' '>' '>=' '==' '!='
+     LEFT  '+' '-'
+     LEFT  '*' '/'
+     RIGHT '**'
+     LEFT UNARY
+
+RULE
+root 	= l:expr_l
+	  {=> {expr_treeRoot = Reverseexpr_tree (l:Exprs);};
+	      /* Since the stmt_l-grammar rule constructs the statements
+	       * list in reverse order, we have to revert the list.
+	       * After that the node are in source order.
+	       */
+	  }
+	.
+
+expr_l  = <
+	= // epsilon
+	  {Exprs := mno_exprs();}
+	.
+	= l:expr_l e:expr ';'
+	  /* Note:   The list is constructed in the wrong order
+           * Reason: The grammar is left-recursive.
+           */
+	  {Exprs := mexprs (l:Exprs, e:Expr);}
+	.
+> . /* expr_l */
+
+expr = <
+	= i:identifier
+	  {Expr := midentifier (i:Position, i:Ident);}
+	.
+	= c:int_const
+	  {Expr := mint_const (c:Position, c:Value);}
+	.
+	= c:float_const
+	  {Expr := mfloat_const (c:Position, c:Value);}
+	.
+	= lhs:identifier '=' rhs:expr
+	  {Expr := mbinary_expr ('=':Position,  assign_op,
+				 midentifier (lhs:Position, lhs:Ident),
+				 rhs:Expr);
+	  }
+	.
+	= '(' expr ')'
+	.
+	= l:expr '+' r:expr
+	  {Expr := mbinary_expr ('+':Position,  plus_op,   l:Expr, r:Expr);}
+	.
+	= l:expr '-' r:expr
+	  {Expr := mbinary_expr ('-':Position,  minus_op,  l:Expr, r:Expr);}
+	.
+	= l:expr '*'r:expr
+	  {Expr := mbinary_expr ('*':Position,  mult_op,   l:Expr, r:Expr);}
+	.
+	= l:expr '/' r:expr
+	  {Expr := mbinary_expr ('/':Position,  div_op,    l:Expr, r:Expr);}
+	.
+	= l:expr '**' r:expr
+	  {Expr := mbinary_expr ('**':Position, pow_op,    l:Expr, r:Expr);}
+	.
+
+	= c:expr '?' t:expr ':' e:expr
+	  {Expr := mcond_expr ('?':Position,  c:Expr,  t:Expr, e:Expr);}
+	.
+
+	= '+' expr   PREC UNARY
+	  {Expr := munary_expr ('+':Position,  plus_op,  expr:Expr);}
+	.
+	= '-' expr   PREC UNARY
+	  {Expr := munary_expr ('-':Position,  minus_op,  expr:Expr);}
+	.
+
+	= l:expr '>' r:expr
+	  {Expr := mbinary_expr ('>':Position,   gt_op,   l:Expr, r:Expr);}
+	.
+	= l:expr '>=' r:expr
+	  {Expr := mbinary_expr ('>=':Position,  ge_op,   l:Expr, r:Expr);}
+	.
+	= l:expr '<' r:expr
+	  {Expr := mbinary_expr ('<':Position,   lt_op,   l:Expr, r:Expr);}
+	.
+	= l:expr '<=' r:expr
+	  {Expr := mbinary_expr ('<=':Position,  le_op,   l:Expr, r:Expr);}
+	.
+	= l:expr '==' r:expr
+	  {Expr := mbinary_expr ('==':Position,  eq_op,   l:Expr, r:Expr);}
+	.
+	= l:expr '!=' r:expr
+	  {Expr := mbinary_expr ('!=':Position,  ne_op,   l:Expr, r:Expr);}
+	.
+
+	= l:expr '&' r:expr
+	  {Expr := mbinary_expr ('&':Position,   and_op,  l:Expr, r:Expr);}
+	.
+	= l:expr '|' r:expr
+	  {Expr := mbinary_expr ('|':Position,   or_op,   l:Expr, r:Expr);}
+	.
+	= '!' expr
+	  {Expr := munary_expr ('!':Position,   not_op,   expr:Expr);}
+	.
+> . /* expr */
+
+/* Tokens */
+identifier:   [Ident: tIdent    ] {Ident := NoIdent;          } .
+int_const:    [Value: long      ] {Value := 0;        	      } .
+float_const:  [Value: tStringRef] {Value := PutString ("",0); } .
+
+/* non-terminal attributes */
+MODULE attributes
+PROPERTY SYN
+DECLARE
+ expr_l	= [Exprs: tEXPRS] .
+ expr	= [Expr:  tEXPR]  .
+END attributes

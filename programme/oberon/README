@@ -1,0 +1,32 @@
+###############################################################################
+# Project:  COCKTAIL training
+# Descr:    Oberon: scanner, parser , tree construction
+# Kind:     README
+# Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+# $Id: README,v 1.2 2010/04/20 13:01:05 vollmer Exp $
+###############################################################################
+
+This directory describes the implementation of an LR parser for
+Oberon (http://www.oberon.ethz.ch) quite a simple language in the line of Pascal and Modula-2.
+
+The files:
+	tests	        Directory containing some Oberon sources
+	doc             Directory containing the language report and EBNF
+	README
+
+Exercises:
+  - Implement an Oberon parser, i.e. write the files
+    - oberon.scan       Scanner
+    - oberon.pars	Parser
+    - main.c            main() function
+    - Makefile		add rules for generating, compli8ng and cleaning the sources
+      			add rules to run the test suite tests/*
+			add test files of your own.
+
+  - Define an AST representing the Oberon, i.e. write
+    - oberon.ast
+
+  - Implement construction opf the AST, i.e. extend
+    - oberon.pars
+    - Makefile
+

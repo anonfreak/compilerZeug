@@ -1,0 +1,39 @@
+-------------------------------------------------------
+-- Project: A simple compiler for an expression language
+-- Descr:   Test input
+-- Author:  Dr. Juergen Vollmer, <vollmer@cocolab.de>
+-- $Id: test05.prog,v 1.1 2007/06/02 19:33:20 vollmer draft $
+-------------------------------------------------------
+
+-- test of some transformations
+
+   a == b;
+
+ !(a == b);
+
+   a != b;
+
+   a <  b;
+
+! (a <  b);
+
+   a <= b;
+
+   a >  b;
+
+   a >= b;
+
+   a & b;
+
+   a | b;
+
+   a & b | c;
+
+-1;
+
+-a;
+
++1;
+
++a;
+

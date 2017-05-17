@@ -1,0 +1,159 @@
+/* Project:  COCKTAIL training
+ * Descr:    A simple pocket computer (scanner, parser, AST construction)
+ * Kind:     Parser specification (solution)
+ * Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+ * $Id: expr.pars.in,v 1.9 2009/05/13 08:37:46 vollmer Exp $
+ */
+
+SCANNER expr_scan
+
+PARSER  expr_pars
+
+GLOBAL {
+ # include <stdio.h>
+ # include "Tree.h"
+
+  static tTree set_stmt_end (tTree head)
+  /* Set the Next field of 'head' (a STMT-node) to no_stmt() */
+  {
+     /* PLEASE FILL IN */
+     return head;
+  }
+
+  static tTree set_stmt_next (tTree head, tTree tail)
+  /* Set the Next field of 'head' (a STMT-node) to 'tail' (a STMTS-node) */
+  {
+     /* PLEASE FILL IN */
+     return head;
+  }
+}
+
+PREC LEFT  '?'
+     LEFT  '|'
+     LEFT  '&'
+     LEFT  '!'
+     NONE  '<' '<=' '>' '>=' '==' '!='
+     LEFT  '+' '-'
+     LEFT  '*' '/'
+     RIGHT '**'
+     LEFT UNARY
+
+RULE
+root	= l:stmt_l
+	  {=> {TreeRoot = ReverseTree (l:tree);};}
+	.
+stmt_l  = <
+	// A PASCAL like language with statement separators
+	= s:stmt
+	  {tree := set_stmt_end (s:tree);}
+	.
+	= l:stmt_l ';' s:stmt
+	  {tree := set_stmt_next (s:tree, l:tree);}
+	.
+> . // stmt_l
+stmt = <
+	// add rules for assignment, IF, ELSE-IF, and WHILE statement
+	= PRINT '(' l:expr_l ')'
+	  // print the values of the list to stdout
+	  {tree := NoTree; } //  FILL IN!
+	.
+> . // stmt
+
+
+expr = <
+	= c:int_const
+	  {tree := mint_const (c:Position, c:Value);}
+	.
+	= c:float_const
+	  {tree := mfloat_const (c:Position, c:Value);}
+	.
+/*
+	= i:identifier
+	  {tree := mname (i:Position, i:Ident);}
+	.
+*/
+	= '(' expr ')'
+	.
+	= l:expr o:'+' r:expr
+	  {tree := mbinary_expr (o:Position, op_plus, l:tree, r:tree);}
+	.
+	= l:expr o:'-' r:expr
+	  {tree := mbinary_expr (o:Position, op_minus, l:tree, r:tree);}
+	.
+	= l:expr o:'*'r:expr
+	  {tree := mbinary_expr (o:Position, op_mult, l:tree, r:tree);}
+	.
+	= l:expr o:'/' r:expr
+	  {tree := mbinary_expr (o:Position, op_div, l:tree, r:tree);}
+	.
+	= l:expr o:'**' r:expr
+	  {tree := mbinary_expr (o:Position, op_pow,  l:tree, r:tree);}
+	.
+	= c:expr o:'?' t:expr ':' e:expr
+	  {tree := mcond_expr (o:Position, c:tree, t:tree, e:tree);}
+	.
+	= o:'+' expr   PREC UNARY
+	  {tree := munary_expr (o:Position, op_plus, expr:tree);}
+	.
+	= o:'-' expr   PREC UNARY
+	  {tree := munary_expr (o:Position, op_minus, expr:tree);}
+	.
+	= l:expr o:'>' r:expr
+	  {tree := mbinary_expr (o:Position, op_gt, l:tree, r:tree);}
+	.
+	= l:expr o:'>=' r:expr
+	  {tree := mbinary_expr (o:Position, op_ge, l:tree, r:tree);}
+	.
+	= l:expr o:'<' r:expr
+	  {tree := mbinary_expr (o:Position, op_lt, l:tree, r:tree);}
+	.
+	= l:expr o:'<=' r:expr
+	  {tree := mbinary_expr (o:Position, op_le, l:tree, r:tree);}
+	.
+	= l:expr o:'==' r:expr
+	  {tree := mbinary_expr (o:Position, op_eq, l:tree, r:tree);}
+	.
+	= l:expr o:'!=' r:expr
+	  {tree := mbinary_expr (o:Position, op_ne, l:tree, r:tree);}
+	.
+	= l:expr o:'&' r:expr
+	  {tree := mbinary_expr (o:Position, op_and, l:tree, r:tree);}
+	.
+	= l:expr o:'|' r:expr
+	  {tree := mbinary_expr (o:Position, op_or, l:tree, r:tree);}
+	.
+	= o:'!' expr
+	  {tree := munary_expr (o:Position, op_not, expr:tree);}
+	.
+> . /* expr */
+
+expr_l	= <
+	= /* epsilon */
+	  {tree := mno_exprs();}
+	.
+ exprs  = <
+	= e:expr
+	  {tree := mexprs (mno_exprs(), e:tree);}
+	.
+	= l:exprs ',' e:expr
+	  {tree := mexprs (l:tree, e:tree);}
+	.
+ > . /* exprs */
+> . /* expr_l */
+
+/* Tokens */
+int_const:    [Value: long]   {Value := 0;  	} .
+float_const:  [Value: double] {Value := 0.0;	} .
+
+// add specifictaion for identifiers
+
+/* non-terminal attributes */
+MODULE attributes
+PROPERTY SYN
+DECLARE
+ stmt
+ stmt_l
+ elseif_l
+ expr
+ expr_l = [tree: tTree].
+END attributes

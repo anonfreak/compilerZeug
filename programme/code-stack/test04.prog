@@ -1,0 +1,33 @@
+-------------------------------------------------------
+-- Project: A simple compiler for an expression language
+-- Descr:   Test input
+-- Author:  Dr. Juergen Vollmer, <vollmer@cocolab.de>
+-- $Id: test04.prog,v 1.1 2007/06/02 19:33:20 vollmer draft $
+-------------------------------------------------------
+
+-- modifying the grammar to see:
+
+-- `?' must have a lower precedence than e.g. `==',
+-- othwerise the rees for (1) and (2) would not be equal
+
+ a == b  ? c : d;       /* (1) */
+(a == b) ? c : d;	/* (2) */
+
+-- Difference of precedence rules:
+--     (a) PREC NONE ':'  NONE '?'
+--         '?' higher precedence than ':'
+--     (b) PREC NONE '?'  NONE ':'
+--         ':' higher precedence than '?'
+
+ a ? 1 :  b  ? 2 : 3;    /* (3) */
+ a ? 1 : (b  ? 2 : 3);   /* (4) */
+(a ? 1 :  b) ? 2 : 3;    /* (5) */
+
+-- in case (a) trees for (3) and (4) are equal, this corresponds the the
+--    solution of the if-then-else problem
+-- in case (b) trees for (3) and (5) are equal, which is wrong.
+
+ a ?  b ? 2 : 3  : 1;   /* (6) */
+ a ? (b ? 2 : 3) : 1;   /* (7) */
+
+

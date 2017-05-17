@@ -1,0 +1,196 @@
+/* Project:  COCKTAIL training
+ * Descr:    Code generation for an expression language
+ * Kind:     Codegenerator for a simple stack machine (solution)
+ * Author:   Dr. Juergen Vollmer <juergen.vollmer@informatik-vollmer.de>
+ * $Id: stack-solution.puma,v 1.4 2011/05/31 08:53:44 vollmer Exp vollmer $
+ */
+
+/* For source program represented by the AST (generated during parsing)
+ * some code for a simple stack machine should be generated.
+ * The generated code is written to stdout.
+ *
+ * The architecture of the machine is:
+ * -----------------
+ * The stack is of arbitrary depth.
+ * Let <top>  denote the top element of the stack.
+ * The following instructions are defined:
+ *       pop            : remove <top> from the stack
+ *       push arg       : push literal arg onto the stack
+ *       print          : print <top>
+ *                        note: the stack is not modified
+ *       add            : x := <top>; pop; y := <top>; pop; push y + x
+ *       sub            : x := <top>; pop; y := <top>; pop; push y - x
+ *       mult           : x := <top>; pop; y := <top>; pop; pop; push y * x
+ *       div            : x := <top>; pop; y := <top>; pop; push y / x
+ *	 load  variable : push Memory[variable]
+ *       store variable : Memory[variable] := <top>
+ *                        note: the stack is not modified
+ *       goto  label    : continue with instruction named label
+ *	 jez   label    : x = <top>; pop; if x == 0.0 then continue with
+ *                        instruction named label, else continue
+ *                        with the next instruction.
+ *       jlz   label    : like jez. if x <  0.0
+ *       jlez  label    : like jez. if x <= 0.0
+ *
+ * Each instruction may be named by a label.
+ *
+ * Due to this restricted instruction set, we have to transform the
+ * AST representing a source expression into another one, feasible for
+ * code generation. After that transformation, the AST contains only such
+ * operations which could be directly translated into code.
+ * See simplify.puma
+ */
+
+TRAFO  stack            /* That's the name of the transformation.
+	                 * generated files: stack.[ch] and yystack.h
+			 */
+TREE   expr_tree	/* We operate on that tree.
+			 * Several tree definitions may be given, e.g.
+			 * cobol+sql+cics, if we have a COBOL parser with
+			 * embeeded languages SQL and CICS
+			 */
+
+EXPORT {
+  /* target code placed into  TRAFO.h */
+  # include <stdio.h>
+} // EXPORT
+
+IMPORT "simplify.puma"   // here we implement the simplification of expressions
+
+GLOBAL {
+  /* target code placed into  TRAFO.c */
+} // GLOBAL
+
+GLOBAL f: {FILE*},       // write code to this file, set in stack_gen
+       NextLabel: int;   // counter for labels
+
+//-----------------------------------------------------------------------------
+
+// PUBLIC produces an "extern" declaration, all non-PUBLIC are "static"
+
+PUBLIC PROCEDURE stack_gen (l: EXPRS)
+// Generate for each expression of the <exprs>-expression list code for
+// the stack machine.
+// Algorithm:
+//  1. transform the expression into a simpler one and store it in the list
+//  2. generate code for that simplified expressions.
+
+...	:- // set up some global variables
+	   f         := stdout;
+           NextLabel := 0;
+
+	   // and start the job
+	   exprs2stack (l);
+	.
+
+//-----------------------------------------------------------------------------
+
+PROCEDURE exprs2stack (EXPRS)
+l:exprs (Expr := e)
+	:- fprintf     (f, "# %s (%u:%hu)\n",
+			    GetCStr (e::Pos.FileName),
+                            e::Pos.Line, e::Pos.Column);
+
+	   // 1. simplify expression
+	   l::Expr := simplify (l::Expr);
+
+	   // 2. generate the code for the transformed expression
+	   expr2stack  (l::Expr);
+	   fprintf     (f, " print\n");   // output the result
+	   fprintf     (f, " pop\n");     // clean up the stack
+
+	   // continue with the next expression in the list
+	   exprs2stack (l::Next);
+	.
+no_exprs (..)
+	:- // nothing to do.
+	.
+
+//-----------------------------------------------------------------------------
+
+PROCEDURE expr2stack (EXPR)
+n:identifier (..)
+        :- // "read" an identifier, i.e. not as LHS of an assignment
+           fprintf (f, " load %s\n", GetCStr(n::Ident));
+        .
+e:binary_expr (Op := (assign_op), Left  := n:identifier (..))
+        :- // Assignment
+	   expr2stack (e::Right);
+           fprintf    (f, " store %s\n", GetCStr (n::Ident));
+        .
+i:int_const (..)
+	:- fprintf (f, " push %d\n", i::Value);
+	.
+i:float_const (..)
+	:- fprintf (f, " push %s\n", StGetCStr (i::Value));
+	.
+e:binary_expr (Op := (plus_op))
+	:- expr2stack (e::Left);
+	   expr2stack (e::Right);
+	   fprintf    (f, " add\n");
+	.
+e:binary_expr (Op := (minus_op))
+	:- expr2stack (e::Left);
+	   expr2stack (e::Right);
+	   fprintf    (f, " sub\n");
+	.
+e:binary_expr (Op := (mult_op))
+	:- expr2stack (e::Left);
+	   expr2stack (e::Right);
+	   fprintf    (f, " mult\n");
+	.
+e:binary_expr (Op := (div_op))
+	:- expr2stack (e::Left);
+	   expr2stack (e::Right);
+	   fprintf    (f, " div\n");
+	.
+e:unary_expr (Op := (not_op));
+e:unary_expr (Op := (lt_op)); /* see `transform' */
+e:unary_expr (Op := (le_op))  /* see `transform' */
+// code generated for negation, < 0 and <= 0
+// !e  -->    code(e)
+//            -- emit one of:
+//               jez   L1   (not_op)
+//	         jlz   L1   (lt_op)
+//	         jlez  L1   (le_op)
+//            push  0    // if true then false
+//            goto  L2
+//        L1: push  1    // if false then true
+//        L2
+	:- TrueLabel:  int := NextLabel++;
+	   EndLabel:   int := NextLabel++;
+	   instr: {char*};
+	   IF    e::Op == not_op THEN  instr := "jez";
+	   ELSIF e::Op == lt_op  THEN  instr := "jlz";
+	   ELSE  		       instr := "jlez";
+	   END
+	   expr2stack (e::Expr);
+	   fprintf (f, " %s L%d\n", instr, TrueLabel);
+	   fprintf (f, " push 0.0\n");
+	   fprintf (f, " goto L%d\n", EndLabel);
+	   fprintf (f, "L%d:\n",      TrueLabel);
+	   fprintf (f, " push 1.0\n");
+	   fprintf (f, "L%d:\n",      EndLabel);
+	.
+e:cond_expr (..)
+// code generated for c ? t : e
+//            code(c)
+//            jez   F   // if false --> execute e
+//            code (t)  // else --> execute t
+//            goto  E
+//        F: code (e)
+//        E:
+        :- FalseLabel: int := NextLabel++;
+           EndLabel:   int := NextLabel++;
+           expr2stack (e::Cond);
+           fprintf    (f, " jez L%d\n",  FalseLabel);
+           expr2stack (e::Then);
+           fprintf    (f, " goto L%d\n", EndLabel);
+           fprintf    (f, "L%d:\n",      FalseLabel);
+           expr2stack (e::Else);
+           fprintf    (f, "L%d:\n",      EndLabel);
+        .
+e	:- fprintf (stderr, "can not compile this code\n");
+	   Drawexpr_tree (e);
+	.
+//-----------------------------------------------------------------------------

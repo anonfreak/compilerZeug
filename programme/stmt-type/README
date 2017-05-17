@@ -1,0 +1,30 @@
+###############################################################################
+# Project:  COCKTAIL training
+# Descr:    LR parser for an expression language
+# Kind:     README
+# Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+# $Id: README,v 1.5 2009/04/24 09:59:11 vollmer Exp $
+###############################################################################
+
+This directory describes the implementation of an LR parser for
+arithmetic expressions and statements.
+The Abstract Syntax Tree is constructed and traversed.
+The AST is constructed using the Cocktail toos AST.
+Type-information and corecion is computed using AG
+
+The files:
+	expr.pars	The parser specification (stub)
+			The scanner specification is taken from ../calc
+	expr.ast        The AST specification
+	expr.puma       A PUMA routine evaluating the tree
+	main.c          C-main program
+	test*           Some test sources
+	calc		the executable to be produced
+	Makefile
+	README
+
+	expr-solution.pars
+	expr-solution.ast
+	expr-solution.puma
+
+Exercises:

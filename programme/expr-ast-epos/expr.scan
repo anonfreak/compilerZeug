@@ -1,0 +1,162 @@
+/* Project:  COCKTAIL training
+ * Descr:    Build an AST for an expression language, compute end-positions
+ * Kind:     Scanner specification
+ * Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+ * $Id: expr.scan,v 1.1 2007/06/03 17:38:30 vollmer draft $
+ */
+
+SCANNER expr_scan
+
+EXPORT {
+# include "Idents.h"
+# include "Position.h"
+
+INSERT tScanAttribute
+}
+
+GLOBAL {
+# include <stdlib.h>
+# include "Errors.h"
+
+INSERT ErrorAttribute
+
+/* Task: compute for each token the end-of-token position and store it
+ *       in the Attribute.
+ * Implementation:
+ *       - The EPos attribute is stored as second field in the Attribute
+ *         C-union, and is accessed as "Attribut.identifier.EPos"
+ *         (see the "Tokens"-declaration at the end of the expr.pars
+ *          file).
+ *       - The EPos value is computed "centralized" in a wrapper of the
+ *         GetToken routine. That wrapper is called "expr_scan_getToken" and
+ *         the generated routine is renamed to "expr_scan_GetToken_generated"
+ *         using a simple #define trick.
+ */
+
+int expr_scan_GetToken_generated(void);  /* the renamed generated routine
+					  * will be called by the wrapper
+                                          */
+int expr_scan_GetToken (void)            /* the wrapper, will be called by
+                                          * the parser
+                                          */
+{
+  int tok = expr_scan_GetToken_generated();
+
+  /* compute EPos of each token */
+  expr_scan_Attribute.identifier.EPos.Line   = yyLineCount;
+  expr_scan_Attribute.identifier.EPos.Column =
+          (unsigned char *) expr_scan_TokenPtr - yyLineStart +
+	  expr_scan_TokenLength - 1;
+
+  return tok;
+}
+/* ... rename the generated routine to: */
+# define expr_scan_GetToken expr_scan_GetToken_generated
+} // GLOBAL
+
+LOCAL {
+/* user-defined local variables of the generated GetToken routine */
+# define MAX_STRING_LEN 2048
+char string[MAX_STRING_LEN];
+int nesting = 0;
+}
+
+DEFAULT {
+  /* What happens if no scanner rule matches the input */
+  MessageI ("Illegal character",
+	    xxError, expr_scan_Attribute.Position,
+	    xxCharacter, expr_scan_TokenPtr);
+}
+
+EOF {
+  /* What should be done if the end-of-input-file has been reached? */
+
+  /* E.g.: check hat strings and comments are closed. */
+  switch (yyStartState) {
+  case STD:
+    /* ok */
+    break;
+  case COMMENT:
+    Message ("unclosed C-comment",
+	     xxError, expr_scan_Attribute.Position);
+    break;
+  case COMMENT2:
+    Message ("unclosed Modula-comment",
+	     xxError, expr_scan_Attribute.Position);
+    break;
+  default:
+    Message ("OOPS: that should not happen!!",
+	     xxFatal, expr_scan_Attribute.Position);
+    break;
+  }
+
+  /* implicit: return the EofToken */
+}
+
+DEFINE /* some abbreviations */
+  letter = {a-zA-Z_}   .
+  digit  = {0-9}       .
+
+/* define start states, note STD is defined by default */
+START COMMENT, COMMENT2
+
+RULES
+
+INSERT RULES #STD#
+
+/* Identifier */
+#STD# letter (letter | digit)* :
+	{
+	 expr_scan_Attribute.identifier.Ident =
+		MakeIdent (expr_scan_TokenPtr, expr_scan_TokenLength);
+	 return identifier;
+	}
+
+/* Integers */
+#STD# {0-9}+ :
+	{expr_scan_GetWord (string);
+	 expr_scan_Attribute.int_const.Value = atol (string);
+	 return int_const;
+	}
+
+/* Float numbers */
+#STD# digit + "." digit * (("E"|"e") ("+"|"-") ? digit +) ? :
+	{expr_scan_GetWord (string);
+	 expr_scan_Attribute.float_const.Value = atof (string);
+	 return float_const;
+	}
+
+#STD# < "--" ANY * > :
+        { /* comment up to end of line, nothing to do */
+        }
+
+/* C-style comment */
+#STD# "/*" :
+	{ /**/
+	  yyStart (COMMENT);
+	}
+
+#COMMENT# - {*\n\t} + | "*" :
+        {}
+
+#COMMENT# "*/" :
+        {yyStart (STD);
+	}
+
+/* Modula2-style nested comment */
+#STD,COMMENT2# "(*" :
+	{ yyStart (COMMENT2);
+	  nesting ++;
+	}
+
+#COMMENT2# - {*(\n\t} + | "*" | "(" :
+        {}
+
+#COMMENT2# "*)" :
+        { nesting --;
+	  if (nesting == 0) {
+	    yyStart (STD);
+	  }
+	}
+
+/**********************************************************************/

@@ -1,0 +1,44 @@
+/* Project:  COCKTAIL training
+ * Descr:    Build an Abstract Syntax Tree for an expression language
+ * Kind:     Evaluate an AST (PUMA)
+ * Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+ * $Id: expr.puma.in,v 1.12 2010/04/26 15:41:03 vollmer Exp $
+ */
+
+// Exercises:
+//  - None, just have allook to a TRIP
+
+TRAFO  expr
+
+TREE   Tree
+
+IMPORT {
+ # include "Position.h"
+ # include "Idents.h"
+}
+
+// ----------------------------------------------------------------------------
+
+PUBLIC TRIP check_function_calls (tree: Tree)
+// A simple semantic analyis: check the correct names and number of arguments of
+// function calls.
+c:call_expr (..)
+	:- IF c::Name == id_sin || c::Name == id_cos || c::Name == id_tan
+	   THEN // function name ok
+		IF   c::Arguments ?= exprs (Expr := e, Next := no_exprs(..))
+	        THEN // number of parameters ok
+	        ELSE WritePosition (stderr, c::Pos);
+		     fprintf (stderr,
+			      " Wrong number of arguments for function `%s'\n",
+			      GetCStr (c::Name));
+	 	END
+           ELSE // illegal name
+	        WritePosition (stderr, c::Pos);
+		fprintf (stderr, " Unknown function `%s'\n", GetCStr (c::Name));
+	   END
+
+	   // now check the arguments of the call
+	   check_function_calls (c::Arguments);
+	.
+
+// ----------------------------------------------------------------------------

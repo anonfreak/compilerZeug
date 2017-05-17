@@ -1,0 +1,35 @@
+###############################################################################
+# Project:  COCKTAIL training
+# Descr:    LR parser and expression evaluator using PUMA
+# Kind:     README
+# Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+# $Id: README,v 1.9 2010/04/26 15:39:32 vollmer Exp $
+###############################################################################
+
+This directory describes the implementation of an LR parser for
+arithmetic expressions. The Abstract Syntax Tree is constructed and traversed.
+The AST is constructed using the Cocktail tool ast.
+The AST is evaluated by PUMA routines.
+
+The files:
+	expr.pars	The parser specification (stub)
+			The scanner specification is taken from ../calc
+	expr.ast        The AST specification
+	expr.puma       A PUMA routine evaluating the tree
+	main.c          C-main program
+	test*           Some test sources
+	expr-eval	the executable to be produced
+	Makefile
+	README
+
+	expr-solution.puma
+
+Exercises:
+  - Extend the expression evaluator contained in expr.puma
+    The code places to be modified are marked with TODO
+    - implement missing parts of sum_exprs()
+    - implement missing parts of evalExpr()
+    - implement needed helper functions.
+      <math.h> provides the needed mathematical routines
+
+

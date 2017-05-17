@@ -1,0 +1,14 @@
+-------------------------------------------------------
+-- Project: A simple compiler for an expression language
+-- Descr:   Test input
+-- Author:  Dr. Juergen Vollmer, <vollmer@cocolab.de>
+-- $Id: test07.prog,v 1.1 2007/06/02 19:33:20 vollmer draft $
+-------------------------------------------------------
+
+-- Register allocation
+
+1 + 2 + 3 + 4 + 5 + 6;
+
+1 + (2 + (3 + (4 + (5 + 6))));
+
+(a ? 1 + 2 + 3 + 4 : 1 * 2 + 3 * 4) + 5;
