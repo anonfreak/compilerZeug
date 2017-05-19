@@ -507,7 +507,7 @@ static void yyTab1	ARGS ((int yya));
 # define yyTab		yyTab1 (0)
 # define yyTab2(a,b)	yyTab1 (a)
 
-/* line 46 "expr.rex" */
+/* line 50 "expr.rex" */
 
 /* code to be put into Scanner.c */
 # include <stdlib.h>
@@ -517,7 +517,7 @@ static void yyTab1	ARGS ((int yya));
  * parser decides during error repair to insert a token.
  */
 
-/* line 56 "expr.rex" */
+/* line 60 "expr.rex" */
 void expr_scan_ErrorAttribute
 # ifdef HAVE_ARGS
  (int Token, expr_scan_tScanAttribute * pAttribute)
@@ -527,18 +527,24 @@ void expr_scan_ErrorAttribute
 {
  pAttribute->Position = expr_scan_Attribute.Position;
  switch (Token) {
- case /* int_const */ 1: 
+ case /* string_const */ 1: 
+pAttribute->string_const.Value = NoIdent;
+ break;
+ case /* identifier */ 2: 
+pAttribute->identifier.Ident = NoIdent;
+  break;
+ case /* int_const */ 3: 
 pAttribute->int_const.Value = 0;
    break;
- case /* float_const */ 2: 
+ case /* float_const */ 4: 
 pAttribute->float_const.Value = 0.0;
  break;
  }
 }
-/* line 74 "expr.rex" */
+/* line 84 "expr.rex" */
 
 
-/* line 542 "expr_scan.c" */
+/* line 548 "expr_scan.c" */
 
 # ifndef yySetPosition
 # define yySetPosition expr_scan_Attribute.Position.Line = yyLineCount; \
@@ -701,7 +707,7 @@ int expr_scan_GetToken ARGS ((void))
    register	yyStateRange *	yyStatePtr;
    register	yytusChar *	yyChBufferIndexReg;
    register	yyCombType * *	yyBasePtrReg = yyBasePtr;
-/* line 77 "expr.rex" */
+/* line 87 "expr.rex" */
 
 /* user-defined local variables of the generated GetToken routine */
 # define MAX_STRING_LEN 2048
@@ -709,7 +715,7 @@ char string[MAX_STRING_LEN];
 int nesting = 0;
 int length = 0;
 
-/* line 713 "expr_scan.c" */
+/* line 719 "expr_scan.c" */
 
 yyBegin:
    yyState		= yyStartState;		/* initialize */
@@ -741,62 +747,62 @@ yyContinue:		/* continue after sentinel or skipping blanks */
 switch (* -- yyStatePtr) {
 case 12:;
 yySetPosition
-/* line 129 "expr.rex" */
+/* line 139 "expr.rex" */
 {expr_scan_GetWord (string);
 	 expr_scan_Attribute.int_const.Value = atol (string);
-	 return 1;
+	 return 3;
 	
-/* line 750 "expr_scan.c" */
+/* line 756 "expr_scan.c" */
 } goto yyBegin;
 case 16:;
 case 21:;
 yySetPosition
-/* line 136 "expr.rex" */
+/* line 146 "expr.rex" */
 {expr_scan_GetWord (string);
 	 expr_scan_Attribute.float_const.Value = atof (string);
-	 return 2;
+	 return 4;
 	
-/* line 760 "expr_scan.c" */
+/* line 766 "expr_scan.c" */
 } goto yyBegin;
 case 15:;
 yyChBufferIndex -= 1;
 expr_scan_TokenLength -= 1;
 yySetPosition
-/* line 142 "expr.rex" */
+/* line 152 "expr.rex" */
 { /* comment up to end of line, nothing to do */
         
-/* line 769 "expr_scan.c" */
+/* line 775 "expr_scan.c" */
 } goto yyBegin;
 case 52:;
 yySetPosition
-/* line 147 "expr.rex" */
+/* line 157 "expr.rex" */
 { /**/
 	  yyStart (COMMENT);
 	
-/* line 777 "expr_scan.c" */
+/* line 783 "expr_scan.c" */
 } goto yyBegin;
 case 11:;
 case 18:;
 case 30:;
 yySetPosition
-/* line 152 "expr.rex" */
+/* line 162 "expr.rex" */
 {
-/* line 785 "expr_scan.c" */
+/* line 791 "expr_scan.c" */
 } goto yyBegin;
 case 51:;
 yySetPosition
-/* line 155 "expr.rex" */
+/* line 165 "expr.rex" */
 {yyStart (STD);
 	
-/* line 792 "expr_scan.c" */
+/* line 798 "expr_scan.c" */
 } goto yyBegin;
 case 49:;
 yySetPosition
-/* line 160 "expr.rex" */
+/* line 170 "expr.rex" */
 { yyStart (COMMENT2);
 	  nesting ++;
 	
-/* line 800 "expr_scan.c" */
+/* line 806 "expr_scan.c" */
 } goto yyBegin;
 case 10:;
 case 17:;
@@ -804,91 +810,91 @@ case 31:;
 case 47:;
 case 50:;
 yySetPosition
-/* line 165 "expr.rex" */
+/* line 175 "expr.rex" */
 {
-/* line 810 "expr_scan.c" */
+/* line 816 "expr_scan.c" */
 } goto yyBegin;
 case 48:;
 yySetPosition
-/* line 168 "expr.rex" */
+/* line 178 "expr.rex" */
 { nesting --;
 	  if (nesting == 0) {
 	    yyStart (STD);
 	  }
 	
-/* line 820 "expr_scan.c" */
+/* line 826 "expr_scan.c" */
 } goto yyBegin;
 case 46:;
 yySetPosition
-/* line 176 "expr.rex" */
-{ return 3; 
-/* line 826 "expr_scan.c" */
+/* line 186 "expr.rex" */
+{ return 5; 
+/* line 832 "expr_scan.c" */
 } goto yyBegin;
 case 45:;
 yySetPosition
-/* line 177 "expr.rex" */
-{ return 4; 
-/* line 832 "expr_scan.c" */
+/* line 187 "expr.rex" */
+{ return 6; 
+/* line 838 "expr_scan.c" */
 } goto yyBegin;
 case 14:;
 case 44:;
 yySetPosition
-/* line 178 "expr.rex" */
-{ return 5; 
-/* line 839 "expr_scan.c" */
+/* line 188 "expr.rex" */
+{ return 7; 
+/* line 845 "expr_scan.c" */
 } goto yyBegin;
 case 43:;
 yySetPosition
-/* line 179 "expr.rex" */
-{ return 6; 
-/* line 845 "expr_scan.c" */
+/* line 189 "expr.rex" */
+{ return 8; 
+/* line 851 "expr_scan.c" */
 } goto yyBegin;
 case 42:;
 yySetPosition
-/* line 180 "expr.rex" */
-{ return 7; 
-/* line 851 "expr_scan.c" */
+/* line 190 "expr.rex" */
+{ return 9; 
+/* line 857 "expr_scan.c" */
 } goto yyBegin;
 case 41:;
 yySetPosition
-/* line 181 "expr.rex" */
-{ return 8; 
-/* line 857 "expr_scan.c" */
+/* line 191 "expr.rex" */
+{ return 10; 
+/* line 863 "expr_scan.c" */
 } goto yyBegin;
 case 40:;
 yySetPosition
-/* line 182 "expr.rex" */
-{ return 9; 
-/* line 863 "expr_scan.c" */
+/* line 192 "expr.rex" */
+{ return 11; 
+/* line 869 "expr_scan.c" */
 } goto yyBegin;
 case 39:;
 yySetPosition
-/* line 183 "expr.rex" */
-{ return 10; 
-/* line 869 "expr_scan.c" */
+/* line 193 "expr.rex" */
+{ return 12; 
+/* line 875 "expr_scan.c" */
 } goto yyBegin;
 case 13:;
 yySetPosition
-/* line 188 "expr.rex" */
+/* line 198 "expr.rex" */
 {
-	  return identifier;
+	  return 2;
 	
-/* line 877 "expr_scan.c" */
+/* line 883 "expr_scan.c" */
 } goto yyBegin;
 case 38:;
 yySetPosition
-/* line 194 "expr.rex" */
+/* line 204 "expr.rex" */
 {
 	  yyStart(STRING);
 	  length = 0;
 	
-/* line 886 "expr_scan.c" */
+/* line 892 "expr_scan.c" */
 } goto yyBegin;
 case 9:;
 case 28:;
 case 32:;
 yySetPosition
-/* line 200 "expr.rex" */
+/* line 210 "expr.rex" */
 {
 	  if (length + expr_scan_TokenLength+1 >= MAX_STRING_LEN) {
 	    Message ("String too long", xxError, expr_scan_Attribute.Position);
@@ -898,11 +904,11 @@ yySetPosition
 	    length += expr_scan_GetWord (&string[length]); 
 	  }
 	
-/* line 902 "expr_scan.c" */
+/* line 908 "expr_scan.c" */
 } goto yyBegin;
 case 37:;
 yySetPosition
-/* line 211 "expr.rex" */
+/* line 221 "expr.rex" */
 {
 	  /* Back to start*/
 	  yyStart(STD);
@@ -912,13 +918,13 @@ yySetPosition
 	  expr_scan_Attribute.string_const.Value = malloc (length + 1);
 	  /*copy real input to const */
 	  strcpy (expr_scan_Attribute.string_const.Value, string); 
-	  return string_const;
+	  return 1;
 	
-/* line 918 "expr_scan.c" */
+/* line 924 "expr_scan.c" */
 } goto yyBegin;
 case 36:;
 yySetPosition
-/* line 224 "expr.rex" */
+/* line 234 "expr.rex" */
 {
 	  if (length + expr_scan_TokenLength+1 >= MAX_STRING_LEN) {
 	    Message ("String too long", xxError, expr_scan_Attribute.Position);
@@ -928,11 +934,11 @@ yySetPosition
 	    string[length++] = '"';
 	  }
 	
-/* line 932 "expr_scan.c" */
+/* line 938 "expr_scan.c" */
 } goto yyBegin;
 case 35:;
 yySetPosition
-/* line 234 "expr.rex" */
+/* line 244 "expr.rex" */
 {
 	  if (length + expr_scan_TokenLength+1 >= MAX_STRING_LEN) {
 	    Message ("String too long", xxError, expr_scan_Attribute.Position);
@@ -942,11 +948,11 @@ yySetPosition
 	    string[length++] = '\n';
 	  }
 	
-/* line 946 "expr_scan.c" */
+/* line 952 "expr_scan.c" */
 } goto yyBegin;
 case 34:;
 yySetPosition
-/* line 244 "expr.rex" */
+/* line 254 "expr.rex" */
 {
 	  if (length + expr_scan_TokenLength+1 >= MAX_STRING_LEN) {
 	    Message ("String too long", xxError, expr_scan_Attribute.Position);
@@ -956,11 +962,11 @@ yySetPosition
 	    string[length++] = '\\';
 	  }
 	
-/* line 960 "expr_scan.c" */
+/* line 966 "expr_scan.c" */
 } goto yyBegin;
 case 33:;
 yySetPosition
-/* line 254 "expr.rex" */
+/* line 264 "expr.rex" */
 { /* error handling of typical errors:
 	   *  a string not closed at the end of a line
            */
@@ -968,9 +974,9 @@ yySetPosition
 	  yyEol (0);
           Message ("String nicht beendet", xxError, expr_scan_Attribute.Position);
 	  expr_scan_Attribute.string_const.Value = "";
-          return string_const;
+          return 1;
         
-/* line 974 "expr_scan.c" */
+/* line 980 "expr_scan.c" */
 } goto yyBegin;
 case 29:;
 {/* BlankAction */
@@ -979,17 +985,17 @@ expr_scan_TokenPtr = (yytChar *) -- yyChBufferIndexReg;
 yyState = yyStartState;
 yyStatePtr = & yyStateStack [1];
 goto yyContinue;
-/* line 983 "expr_scan.c" */
+/* line 989 "expr_scan.c" */
 } goto yyBegin;
 case 27:;
 {/* TabAction */
 yyTab;
-/* line 988 "expr_scan.c" */
+/* line 994 "expr_scan.c" */
 } goto yyBegin;
 case 26:;
 {/* EolAction */
 yyEol (0);
-/* line 993 "expr_scan.c" */
+/* line 999 "expr_scan.c" */
 } goto yyBegin;
 case 1:;
 case 2:;
@@ -1012,14 +1018,14 @@ case 25:
       expr_scan_TokenLength   = 1;
 	 yyChBufferIndex = ++ yyChBufferIndexReg;
 	 {
-/* line 85 "expr.rex" */
+/* line 95 "expr.rex" */
 
   /* What happens if no scanner rule matches the input */
   MessageI ("Illegal character",
 	    xxError, expr_scan_Attribute.Position,
 	    xxCharacter, expr_scan_TokenPtr);
 
-/* line 1023 "expr_scan.c" */
+/* line 1029 "expr_scan.c" */
 	 }
 	 goto yyBegin;
 
@@ -1111,7 +1117,7 @@ case 24:
 	    expr_scan_CloseFile ();
 # if yyInitFileStackSize != 0
 	    if (yyFileStackPtr == yyFileStack) {
-/* line 92 "expr.rex" */
+/* line 102 "expr.rex" */
 
   /* What should be done if the end-of-input-file has been reached? */
 
@@ -1136,7 +1142,7 @@ case 24:
 
   /* implicit: return the EofToken */
 
-/* line 1140 "expr_scan.c" */
+/* line 1146 "expr_scan.c" */
 	    }
 	    if (yyFileStackPtr == yyFileStack) {
 	       expr_scan_ResetScanner ();
@@ -1144,7 +1150,7 @@ case 24:
 	    }
 	    goto yyBegin;
 # else
-/* line 92 "expr.rex" */
+/* line 102 "expr.rex" */
 
   /* What should be done if the end-of-input-file has been reached? */
 
@@ -1169,7 +1175,7 @@ case 24:
 
   /* implicit: return the EofToken */
 
-/* line 1173 "expr_scan.c" */
+/* line 1179 "expr_scan.c" */
 	    expr_scan_ResetScanner ();
 	    return expr_scan_EofToken;
 # endif

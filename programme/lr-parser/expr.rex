@@ -26,12 +26,16 @@ EXPORT {
 
 # define zzCommonScanAttrs tPosition Position; CommonScanAttrs
 
+typedef struct { zzCommonScanAttrs tIdent Value; } zz_expr_scan_string_const;
+typedef struct { zzCommonScanAttrs tIdent Ident; } zz_expr_scan_identifier;
 typedef struct { zzCommonScanAttrs long Value; } zz_expr_scan_int_const;
 typedef struct { zzCommonScanAttrs double Value; } zz_expr_scan_float_const;
 
 typedef union {
 tPosition Position;
 struct { zzCommonScanAttrs } Common;
+zz_expr_scan_string_const string_const;
+zz_expr_scan_identifier identifier;
 zz_expr_scan_int_const int_const;
 zz_expr_scan_float_const float_const;
 } expr_scan_tScanAttribute;
@@ -52,7 +56,7 @@ GLOBAL {
  * parser decides during error repair to insert a token.
  */
 
-#@ line 56
+#@ line 60
 void expr_scan_ErrorAttribute
 # ifdef HAVE_ARGS
  (int Token, expr_scan_tScanAttribute * pAttribute)
@@ -62,10 +66,16 @@ void expr_scan_ErrorAttribute
 {
  pAttribute->Position = expr_scan_Attribute.Position;
  switch (Token) {
- case /* int_const */ 1: 
+ case /* string_const */ 1: 
+pAttribute->string_const.Value = NoIdent;
+ break;
+ case /* identifier */ 2: 
+pAttribute->identifier.Ident = NoIdent;
+  break;
+ case /* int_const */ 3: 
 pAttribute->int_const.Value = 0;
    break;
- case /* float_const */ 2: 
+ case /* float_const */ 4: 
 pAttribute->float_const.Value = 0.0;
  break;
  }
@@ -128,14 +138,14 @@ RULES
 #STD# {0-9}+ :
 	{expr_scan_GetWord (string);
 	 expr_scan_Attribute.int_const.Value = atol (string);
-	 return 1;
+	 return 3;
 	}
 
 /* Float numbers */
 #STD# digit + "." digit * (("E"|"e") ("+"|"-") ? digit +) ? :
 	{expr_scan_GetWord (string);
 	 expr_scan_Attribute.float_const.Value = atof (string);
-	 return 2;
+	 return 4;
 	}
 
 #STD# < "--" ANY * > :
@@ -172,21 +182,21 @@ RULES
 	}
 
 
-#@ line 176
- #STD#\,	: { return 3; }
- #STD#\+	: { return 4; }
- #STD#\-	: { return 5; }
- #STD#\*	: { return 6; }
- #STD#\/	: { return 7; }
- #STD#\^	: { return 8; }
- #STD#\(	: { return 9; }
- #STD#\)	: { return 10; }
+#@ line 186
+ #STD#\,	: { return 5; }
+ #STD#\+	: { return 6; }
+ #STD#\-	: { return 7; }
+ #STD#\*	: { return 8; }
+ #STD#\/	: { return 9; }
+ #STD#\^	: { return 10; }
+ #STD#\(	: { return 11; }
+ #STD#\)	: { return 12; }
 #@ line 132
 
 /* Bezeichner */
 #STD# letter (letter | digit) * :
 	{
-	  return identifier;
+	  return 2;
 	}
 
 /* Goes into String state after the start of a string is detected */
@@ -217,7 +227,7 @@ RULES
 	  expr_scan_Attribute.string_const.Value = malloc (length + 1);
 	  /*copy real input to const */
 	  strcpy (expr_scan_Attribute.string_const.Value, string); 
-	  return string_const;
+	  return 1;
 	}
 
 #STRING# \\ \" :
@@ -258,7 +268,7 @@ RULES
 	  yyEol (0);
           Message ("String nicht beendet", xxError, expr_scan_Attribute.Position);
 	  expr_scan_Attribute.string_const.Value = "";
-          return string_const;
+          return 1;
         }
 
 /**********************************************************************/

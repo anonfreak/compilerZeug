@@ -28,12 +28,16 @@
 
 # define zzCommonScanAttrs tPosition Position; CommonScanAttrs
 
+typedef struct { zzCommonScanAttrs tIdent Value; } zz_expr_scan_string_const;
+typedef struct { zzCommonScanAttrs tIdent Ident; } zz_expr_scan_identifier;
 typedef struct { zzCommonScanAttrs long Value; } zz_expr_scan_int_const;
 typedef struct { zzCommonScanAttrs double Value; } zz_expr_scan_float_const;
 
 typedef union {
 tPosition Position;
 struct { zzCommonScanAttrs } Common;
+zz_expr_scan_string_const string_const;
+zz_expr_scan_identifier identifier;
 zz_expr_scan_int_const int_const;
 zz_expr_scan_float_const float_const;
 } expr_scan_tScanAttribute;
@@ -41,10 +45,10 @@ zz_expr_scan_float_const float_const;
 # undef zzCommonScanAttrs
 
 extern void expr_scan_ErrorAttribute ARGS((int Token, expr_scan_tScanAttribute * pAttribute));
-/* line 43 "expr.rex" */
+/* line 47 "expr.rex" */
 
 
-/* line 48 "expr_scan.h" */
+/* line 52 "expr_scan.h" */
 
 # define expr_scan_EofToken	0
 # define expr_scan_xxMaxCharacter	255

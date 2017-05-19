@@ -5,12 +5,16 @@ c
 
 # define zzCommonScanAttrs tPosition Position; CommonScanAttrs
 
+typedef struct { zzCommonScanAttrs tIdent Value; } zz_expr_scan_string_const;
+typedef struct { zzCommonScanAttrs tIdent Ident; } zz_expr_scan_identifier;
 typedef struct { zzCommonScanAttrs long Value; } zz_expr_scan_int_const;
 typedef struct { zzCommonScanAttrs double Value; } zz_expr_scan_float_const;
 
 typedef union {
 tPosition Position;
 struct { zzCommonScanAttrs } Common;
+zz_expr_scan_string_const string_const;
+zz_expr_scan_identifier identifier;
 zz_expr_scan_int_const int_const;
 zz_expr_scan_float_const float_const;
 } expr_scan_tScanAttribute;
@@ -28,22 +32,30 @@ void expr_scan_ErrorAttribute
 {
  pAttribute->Position = expr_scan_Attribute.Position;
  switch (Token) {
- case /* int_const */ 1: 
+ case /* string_const */ 1: 
+pAttribute->string_const.Value = NoIdent;
+ break;
+ case /* identifier */ 2: 
+pAttribute->identifier.Ident = NoIdent;
+  break;
+ case /* int_const */ 3: 
 pAttribute->int_const.Value = 0;
    break;
- case /* float_const */ 2: 
+ case /* float_const */ 4: 
 pAttribute->float_const.Value = 0.0;
  break;
  }
 }
 %%
-1 S int_const int_const
-2 S float_const float_const
-3 N yy23 ','
-4 N yy24 '+'
-5 N yy25 '-'
-6 N yy26 '*'
-7 N yy27 '/'
-8 N yy28 '^'
-9 N yy29 '('
-10 N yy30 ')'
+1 S string_const string_const
+2 S identifier identifier
+3 S int_const int_const
+4 S float_const float_const
+5 N yy25 ','
+6 N yy26 '+'
+7 N yy27 '-'
+8 N yy28 '*'
+9 N yy29 '/'
+10 N yy30 '^'
+11 N yy31 '('
+12 N yy32 ')'

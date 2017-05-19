@@ -73,3 +73,5 @@ factor = <
 /* Tokens */
 int_const:    [Value: long]   {Value := 0;  } .
 float_const:  [Value: double] {Value := 0.0;} .
+string_const: [Value: tIdent] {Value := NoIdent;} .
+identifier:   [Ident: tIdent] {Ident := NoIdent; } .
