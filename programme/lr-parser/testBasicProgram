@@ -1,0 +1,10 @@
+X testBasicProgram BEGIN
+  int a = 0;
+  float b;
+  string c;
+  string d = "Hallo";
+  a = 1;
+  b = 1.5 + 2;
+  c = d + " Welt";
+  a = b + 2.5;
+END

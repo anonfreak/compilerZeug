@@ -1,0 +1,240 @@
+State    7 (  11): derivation trees
+-----------------------------------
+
+	shift reduce conflict implicitly repaired
+
+.root _EOF_ 
+.program 
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution_l execution 
+|  execution_l.execution 
+| .assignment ';' 
+| .identifier '=' expr_string 
+.
+
+reduce   68  execution_l: . {identifier} ?
+
+example   r  X identifier BEGIN .identifier = identifier ; END 
+
+.root _EOF_ 
+.program 
+ 'X' identifier 'BEGIN'.declaration_l execution_l 'END' 
+.declaration ';' 
+ typ.assignment 
+.identifier '=' expr_string 
+
+shift    96  assignment: .identifier '=' expr_string ?
+
+example   s  X identifier BEGIN string .identifier = identifier ; END 
+
+.root _EOF_ 
+.program 
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution_l execution 
+|  execution_l.execution 
+| .stmt 
+| .'if' '(' cond ')' 'then' block 
+.
+
+reduce   68  execution_l: . {'if'} ?
+
+example   r  X identifier BEGIN .if ( identifier != identifier ) then BEGIN END END 
+
+ ...
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution 
+.stmt 
+.'if' '(' cond ')' 'then' block 
+
+shift    77  stmt: .'if' '(' cond ')' 'then' block ?
+
+example   s  X identifier BEGIN .if ( identifier != identifier ) then BEGIN END END 
+
+ ...
+.stmt 
+.'if' '(' cond ')' 'then' block 'else' block 
+
+shift    78  stmt: .'if' '(' cond ')' 'then' block 'else' block ?
+
+example   s  X identifier BEGIN .if ( identifier != identifier ) then BEGIN END else BEGIN END END 
+
+ ...
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution_l execution 
+|  execution_l.execution 
+| .stmt 
+| .'while' '(' cond ')' block 
+.
+
+reduce   68  execution_l: . {'while'} ?
+
+example   r  X identifier BEGIN .while ( identifier != identifier ) BEGIN END END 
+
+ ...
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution 
+.stmt 
+.'while' '(' cond ')' block 
+
+shift    79  stmt: .'while' '(' cond ')' block ?
+
+example   s  X identifier BEGIN .while ( identifier != identifier ) BEGIN END END 
+
+ ...
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution_l execution 
+|  execution_l.execution 
+| .stmt 
+| .'for' '(' declaration ';' cond ';' assignment ')' block 
+.
+
+reduce   68  execution_l: . {'for'} ?
+
+example   r  X identifier BEGIN .for ( string identifier ; identifier != identifier ; identifier = identifier ) BEGIN END END 
+
+ ...
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution 
+.stmt 
+.'for' '(' declaration ';' cond ';' assignment ')' block 
+
+shift    80  stmt: .'for' '(' declaration ';' cond ';' assignment ')' block ?
+
+example   s  X identifier BEGIN .for ( string identifier ; identifier != identifier ; identifier = identifier ) BEGIN END END 
+
+State    7 (  11): summary
+--------------------------
+
+ignore reduce   68  execution_l: . {identifier}
+retain shift    96  assignment: .identifier '=' expr_string 
+
+ignore reduce   68  execution_l: . {'if'}
+retain shift    77  stmt: .'if' '(' cond ')' 'then' block 
+retain shift    78  stmt: .'if' '(' cond ')' 'then' block 'else' block 
+
+ignore reduce   68  execution_l: . {'while'}
+retain shift    79  stmt: .'while' '(' cond ')' block 
+
+ignore reduce   68  execution_l: . {'for'}
+retain shift    80  stmt: .'for' '(' declaration ';' cond ';' assignment ')' block 
+
+State   49 (  73): derivation trees
+-----------------------------------
+
+	shift reduce conflict implicitly repaired
+
+.root _EOF_ 
+.program 
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution_l execution 
+|  execution_l.execution 
+| .assignment ';' 
+| .identifier '=' expr_string 
+.
+
+reduce   68  execution_l: . {identifier} ?
+
+example   r  X identifier BEGIN .identifier = identifier ; END 
+
+.root _EOF_ 
+.program 
+ 'X' identifier 'BEGIN'.declaration_l execution_l 'END' 
+.declaration ';' 
+ typ.assignment 
+.identifier '=' expr_string 
+
+shift    96  assignment: .identifier '=' expr_string ?
+
+example   s  X identifier BEGIN string .identifier = identifier ; END 
+
+.root _EOF_ 
+.program 
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution_l execution 
+|  execution_l.execution 
+| .stmt 
+| .'if' '(' cond ')' 'then' block 
+.
+
+reduce   68  execution_l: . {'if'} ?
+
+example   r  X identifier BEGIN .if ( identifier != identifier ) then BEGIN END END 
+
+ ...
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution 
+.stmt 
+.'if' '(' cond ')' 'then' block 
+
+shift    77  stmt: .'if' '(' cond ')' 'then' block ?
+
+example   s  X identifier BEGIN .if ( identifier != identifier ) then BEGIN END END 
+
+ ...
+.stmt 
+.'if' '(' cond ')' 'then' block 'else' block 
+
+shift    78  stmt: .'if' '(' cond ')' 'then' block 'else' block ?
+
+example   s  X identifier BEGIN .if ( identifier != identifier ) then BEGIN END else BEGIN END END 
+
+ ...
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution_l execution 
+|  execution_l.execution 
+| .stmt 
+| .'while' '(' cond ')' block 
+.
+
+reduce   68  execution_l: . {'while'} ?
+
+example   r  X identifier BEGIN .while ( identifier != identifier ) BEGIN END END 
+
+ ...
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution 
+.stmt 
+.'while' '(' cond ')' block 
+
+shift    79  stmt: .'while' '(' cond ')' block ?
+
+example   s  X identifier BEGIN .while ( identifier != identifier ) BEGIN END END 
+
+ ...
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution_l execution 
+|  execution_l.execution 
+| .stmt 
+| .'for' '(' declaration ';' cond ';' assignment ')' block 
+.
+
+reduce   68  execution_l: . {'for'} ?
+
+example   r  X identifier BEGIN .for ( string identifier ; identifier != identifier ; identifier = identifier ) BEGIN END END 
+
+ ...
+ 'X' identifier 'BEGIN' declaration_l.execution_l 'END' 
+.execution 
+.stmt 
+.'for' '(' declaration ';' cond ';' assignment ')' block 
+
+shift    80  stmt: .'for' '(' declaration ';' cond ';' assignment ')' block ?
+
+example   s  X identifier BEGIN .for ( string identifier ; identifier != identifier ; identifier = identifier ) BEGIN END END 
+
+State   49 (  73): summary
+--------------------------
+
+ignore reduce   68  execution_l: . {identifier}
+retain shift    96  assignment: .identifier '=' expr_string 
+
+ignore reduce   68  execution_l: . {'if'}
+retain shift    77  stmt: .'if' '(' cond ')' 'then' block 
+retain shift    78  stmt: .'if' '(' cond ')' 'then' block 'else' block 
+
+ignore reduce   68  execution_l: . {'while'}
+retain shift    79  stmt: .'while' '(' cond ')' block 
+
+ignore reduce   68  execution_l: . {'for'}
+retain shift    80  stmt: .'for' '(' declaration ';' cond ';' assignment ')' block 
+

@@ -44,14 +44,29 @@ string_const = 1
 identifier = 2
 int_const = 3
 float_const = 4
-',' = 5
-'+' = 6
-'-' = 7
-'*' = 8
-'/' = 9
-'^' = 10
-'(' = 11
-')' = 12
+'X' = 5
+'BEGIN' = 6
+'int' = 7
+'float' = 8
+'string' = 9
+'=' = 10
+'+' = 11
+'-' = 12
+'*' = 13
+'/' = 14
+'^' = 15
+'(' = 16
+')' = 17
+';' = 18
+'if' = 19
+'<' = 20
+'>' = 21
+'!=' = 22
+'then' = 23
+'END' = 24
+'else' = 25
+'while' = 26
+'for' = 27
 
 OPER
 
@@ -62,35 +77,80 @@ LEFT  UNARY
 
 RULE
 
-root : expr_l .
+root : program .
+
+#@ line 40 "expr.pars"
+program : 'X' identifier 'BEGIN' declaration_l execution_l 'END' .
 
 #@ line 45 "expr.pars"
-expr_l : expr_l ',' expr .
+typ : 'int' .
+typ : 'float' .
+typ : 'string' .
 
-expr_l : expr .
+#@ line 51 "expr.pars"
+declaration_l : declaration_l declaration ';' .
+declaration_l : declaration ';' .
+declaration_l : .
 
-expr_l : .
+#@ line 57 "expr.pars"
+declaration : typ identifier .
+declaration : typ assignment .
 
-#@ line 54 "expr.pars"
-expr : expr '+' expr .
+#@ line 62 "expr.pars"
+block : 'BEGIN' execution_l 'END' .
 
-expr : expr '-' expr .
+#@ line 66 "expr.pars"
+execution_l : execution_l execution .
+execution_l : execution .
+execution_l : .
 
-expr : expr '*' expr .
+#@ line 72 "expr.pars"
+execution : assignment ';' .
+execution : stmt .
 
-expr : expr '/' expr .
+#@ line 77 "expr.pars"
+stmt : 'if' '(' cond ')' 'then' block .
+stmt : 'if' '(' cond ')' 'then' block 'else' block .
+stmt : 'while' '(' cond ')' block .
+stmt : 'for' '(' declaration ';' cond ';' assignment ')' block .
 
-expr : expr '^' expr .
+#@ line 84 "expr.pars"
+cond : expr_string operator expr_string .
 
-expr : '(' expr ')' .
+#@ line 88 "expr.pars"
+operator : '<' .
+operator : '>' .
+operator : '=' .
+operator : '!=' .
 
-expr : '-' expr PREC UNARY .
+#@ line 96 "expr.pars"
+assignment : identifier '=' expr_string .
 
-expr : '+' expr PREC UNARY .
+#@ line 100 "expr.pars"
+expr_string : expr_numbers .
+expr_string : expr_string '+' expr_string .
+expr_string : string_const .
+expr_string : identifier .
 
-expr : int_const .
+#@ line 107 "expr.pars"
+expr_numbers : expr_numbers '+' expr_numbers .
 
-expr : float_const .
+expr_numbers : expr_numbers '-' expr_numbers .
 
-expr : string_const .
-expr : identifier .
+expr_numbers : expr_numbers '*' expr_numbers .
+
+expr_numbers : expr_numbers '/' expr_numbers .
+
+expr_numbers : expr_numbers '^' expr_numbers .
+
+expr_numbers : '(' expr_numbers ')' .
+
+expr_numbers : '-' expr_numbers PREC UNARY .
+
+expr_numbers : '+' expr_numbers PREC UNARY .
+
+expr_numbers : int_const .
+
+expr_numbers : float_const .
+
+expr_numbers : identifier .

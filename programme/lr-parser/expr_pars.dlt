@@ -1,98 +1,18 @@
-- Terminal '#'
-- Terminal ';'
-- Terminal 'int'
-- Terminal 'float'
-- Terminal 'String'
-- Terminal 'BEGIN'
-- Terminal '='
-- Terminal '<'
-- Terminal '>'
-- Terminal '=='
-- Terminal statement
-- Terminal 'if'
-- Terminal 'then'
-- Terminal 'else'
-- Terminal 'while'
-- Terminal 'for'
-- Terminal 'END'
+- Rule     stmt: 'for' '(' declaration cond ';' assignment ')' block 
 
-+ Terminal ','
-+ Terminal '^'
-+ Terminal UNARY
++ Rule     stmt: 'for' '(' declaration ';' cond ';' assignment ')' block 
 
-- Nonterm  x
-- Nonterm  name
-- Nonterm  var
-- Nonterm  typdef
-- Nonterm  exec
-- Nonterm  body
-- Nonterm  varallocation
-- Nonterm  ifstmt
-- Nonterm  whilestmt
-- Nonterm  forstmt
-- Nonterm  condition
++ Conflict State 7 (11) on lookahead {identifier 'if' 'while' 'for' }
++ Conflict State 49 (73) on lookahead {identifier 'if' 'while' 'for' }
 
-+ Nonterm  expr_l
-
-- Rule     root: x 
-- Rule     x: '#' name ';' var exec 
-- Rule     name: identifier 
-- Rule     var: typdef name ';' 
-- Rule     var: typdef name ';' var 
-- Rule     typdef: 'String' 
-- Rule     typdef: 'float' 
-- Rule     typdef: 'int' 
-- Rule     exec: 
-- Rule     exec: 'BEGIN' body 'END' ';' 
-- Rule     body: varallocation 
-- Rule     body: statement body 
-- Rule     body: varallocation body 
-- Rule     body: forstmt 
-- Rule     body: whilestmt 
-- Rule     body: ifstmt 
-- Rule     varallocation: name '=' expr ';' 
-- Rule     ifstmt: 'if' condition 'then' body 
-- Rule     ifstmt: 'if' condition 'then' body 'else' body 
-- Rule     whilestmt: 'while' condition body 
-- Rule     forstmt: 'for' '(' int_const ')' body 
-- Rule     condition: '(' expr ')' 
-- Rule     expr: expr '==' expr 
-- Rule     expr: expr '>' expr 
-- Rule     expr: expr '<' expr 
-
-+ Rule     root: expr_l 
-+ Rule     expr_l: expr_l ',' expr 
-+ Rule     expr_l: expr 
-+ Rule     expr_l: 
-+ Rule     expr: expr '^' expr 
-+ Rule     expr: '-' expr 
-+ Rule     expr: '+' expr 
-
-+ Conflict State 0 (12) on lookahead {'+' '-' '*' '/' '^' }
-+ Conflict State 0 (13) on lookahead {'+' '-' '*' '/' '^' }
-+ Conflict State 16 (23) on lookahead {'+' '-' '*' '/' '^' }
-+ Conflict State 17 (24) on lookahead {'+' '-' '*' '/' '^' }
-+ Conflict State 18 (25) on lookahead {'+' '-' '*' '/' '^' }
-+ Conflict State 19 (26) on lookahead {'+' '-' '*' '/' '^' }
-+ Conflict State 20 (27) on lookahead {'+' '-' '*' '/' '^' }
-
-- Conflict State 37 (56) on lookahead {'else' }
-- Conflict State 39 (60) on lookahead {'+' '-' '*' '/' '<' '>' '==' }
-- Conflict State 40 (61) on lookahead {'+' '-' '*' '/' '<' '>' '==' }
-- Conflict State 0 (62) on lookahead {'+' '-' '*' '/' '<' '>' '==' }
-- Conflict State 0 (63) on lookahead {'+' '-' '*' '/' '<' '>' '==' }
-- Conflict State 41 (64) on lookahead {'+' '-' '*' '/' '<' '>' '==' }
-- Conflict State 42 (65) on lookahead {'+' '-' '*' '/' '<' '>' '==' }
-- Conflict State 43 (66) on lookahead {'+' '-' '*' '/' '<' '>' '==' }
+- Conflict State 7 (11) on lookahead {identifier 'if' 'while' 'for' }
+- Conflict State 25 (40) on lookahead {'+' }
+- Conflict State 49 (73) on lookahead {identifier 'if' 'while' 'for' }
 
 Summary
 -------
 
-- Terminals      17
-+ Terminals       3
-- Nonterminals   11
-+ Nonterminals    1
-- Rules          25
-+ Rules           7
-- Conflicts       8
-+ Conflicts       7
+- Rules           1
++ Rules           1
+- Conflicts       3
++ Conflicts       2

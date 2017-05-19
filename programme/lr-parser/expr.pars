@@ -34,46 +34,104 @@ PREC LEFT  '+' '-'
      LEFT  UNARY
 
 RULE
-root = expr_l.
+root = program.
+
+program = <
+	= 'X' identifier 'BEGIN' declaration_l execution_l 'END' .
+>.
+
+
+typ = <
+	= 'int' .
+	= 'float' .
+	= 'string' .
+>.
+
+declaration_l = <
+	= declaration_l declaration ';'.
+	= declaration ';'.
+	= .
+>.
+
+declaration = <
+	= typ identifier.
+	= typ assignment.
+>.
+
+block = <
+	= 'BEGIN' execution_l 'END'.
+>.
+
+execution_l = <
+	= execution_l execution.
+	= execution.
+	= .
+>.
+
+execution = <
+	= assignment ';'.
+	= stmt.
+>.
 
 stmt = <
-	= identifier '=' expr
-	.
+	= 'if' '(' cond ')' 'then' block.
+	= 'if' '(' cond ')' 'then' block 'else' block.
+	= 'while' '(' cond ')' block.
+	= 'for' '(' declaration ';' cond ';' assignment ')' block.
+>.
+
+cond = <
+	= expr_string operator expr_string.
+>.
+
+operator = <
+	= '<'.
+	= '>'.
+	= '='.
+	= '!='.
+>.
+
+assignment = <
+// 	= identifier '=' expr_numbers.
+	= identifier '=' expr_string.
 > .
 
-expr_l = <
-	= expr_l ',' expr
-	.
-	= expr
-	.
-	= 
-	.
-> .
+expr_string = <
+	= expr_numbers.
+	= expr_string '+' expr_string.
+	= string_const.
+	= identifier.
+>.
 
-expr = <
-	= expr '+' expr
+expr_numbers = <
+	= expr_numbers '+' expr_numbers
 	.
-	= expr '-' expr
+	= expr_numbers '-' expr_numbers
 	.
-	= expr '*' expr
+	= expr_numbers '*' expr_numbers
 	.
-	= expr '/' expr
+	= expr_numbers '/' expr_numbers
 	.
-	= expr '^' expr
+	= expr_numbers '^' expr_numbers
 	.
-	= '(' expr ')'
+	= '(' expr_numbers ')'
 	.
-	= '-' expr PREC UNARY
+	= '-' expr_numbers PREC UNARY
 	.
-	= '+' expr PREC UNARY
+	= '+' expr_numbers PREC UNARY
 	.
 	= int_const
 	.
 	= float_const
 	.
-	= string_const.
 	= identifier.
 > .
+
+number = <
+	= int_const.
+	= float_const.
+	= identifier.
+>.
 
 /* Tokens */
 string_const: [Value: tIdent] {Value := NoIdent;} .

@@ -1,0 +1,19 @@
+X testFullProgramm BEGIN
+  int a = 0;
+  if (1 = 2) then
+  BEGIN
+    a=2;
+  END
+  else
+  BEGIN
+    a=3;
+  END
+  while (1 = 2)
+  BEGIN
+    a=2;
+  END
+  for (int i=1; i=2; i=4)
+  BEGIN
+  
+  END
+END
