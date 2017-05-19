@@ -5,7 +5,7 @@
 # define rfalse		0
 # define StdIn		0
 
-# include "l_scan.h"
+# include "expr_scan.h"
 
 # ifndef EXTERN_C_BEGIN
 # define EXTERN_C_BEGIN
@@ -13,7 +13,7 @@
 # endif
 
 EXTERN_C_BEGIN
-#    include "l_scanSource.h"
+#    include "expr_scanSource.h"
 #    include "rSystem.h"
 #    include "General.h"
 #    include "DynArray.h"
@@ -28,12 +28,12 @@ EXTERN_C_END
 # define yyStart(State)	{ yyPreviousStart = yyStartState; yyStartState = State;}
 # define yyPrevious	{ yyStateRange s = yyStartState; \
 			yyStartState = yyPreviousStart; yyPreviousStart = s; }
-# define yyEcho		{ (void) fwrite (l_scan_TokenPtr, sizeof (yytChar), \
-			l_scan_TokenLength, stdout); }
+# define yyEcho		{ (void) fwrite (expr_scan_TokenPtr, sizeof (yytChar), \
+			expr_scan_TokenLength, stdout); }
 # define yyEol(Column)	{ yyLineCount ++; \
-			yyLineStart = (yytusChar *) l_scan_TokenPtr + \
-			l_scan_TokenLength - 1 - (Column); }
-# if l_scan_xxMaxCharacter < 256
+			yyLineStart = (yytusChar *) expr_scan_TokenPtr + \
+			expr_scan_TokenLength - 1 - (Column); }
+# if expr_scan_xxMaxCharacter < 256
 #  define output(c)	(void) putchar ((int) c)
 # else
 #  define output(c)	(void) printf ("%lc", c)
@@ -41,22 +41,20 @@ EXTERN_C_END
 # define yyColumn(Ptr)	((int) ((Ptr) - (yytChar *) yyLineStart))
 # define yyOffset(Ptr)	(yyFileOffset + ((Ptr) - yyChBufferStart2))
 
-# define yytChar	l_scan_xxtChar
-# define yytusChar	l_scan_xxtusChar
+# define yytChar	expr_scan_xxtChar
+# define yytusChar	expr_scan_xxtusChar
 
 # define yyDNoState		0
 # define yyFirstCh	(yytusChar) '\0'
 # define yyEolCh	(yytusChar) '\12'
 # define yyEobCh	(yytusChar) '\177'
-# define yyDStateCount	21
-# define yyTableSize	558
-# define yyEobState	9
-# define yyDefaultState	10
+# define yyDStateCount	20
+# define yyTableSize	460
+# define yyEobState	7
+# define yyDefaultState	8
 # define yyToClassArraySize	0
 # define STD	1
-# define STRING	3
 # define xxGetWord
-# define xxinput
 
 static void yyExit ARGS ((void))
 { rExit (1); }
@@ -64,10 +62,10 @@ static void yyExit ARGS ((void))
 typedef unsigned short	yyStateRange;
 typedef struct { yyStateRange yyCheck, yyNext; } yyCombType;
 
-	yytChar *	l_scan_TokenPtr	;
-	int		l_scan_TokenLength	;
-	l_scan_tScanAttribute	l_scan_Attribute	;
-	void		(* l_scan_Exit)	ARGS ((void)) = yyExit;
+	yytChar *	expr_scan_TokenPtr	;
+	int		expr_scan_TokenLength	;
+	expr_scan_tScanAttribute	expr_scan_Attribute	;
+	void		(* expr_scan_Exit)	ARGS ((void)) = yyExit;
 
 static	void		yyInitialize	ARGS ((void));
 static	void		yyErrorMessage	ARGS ((int yyErrorCode));
@@ -77,25 +75,57 @@ static	void		yyLess		ARGS ((int));
 
 static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   1,   12}, 
-{   1,   11}, {   0,    0}, {   3,   13}, {   3,   16}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   1,   10}, 
+{   1,    9}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   1,   14}, {   0,    0}, {   1,   21}, 
-{   3,   15}, {   0,    0}, {   3,   20}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   1,   11}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   1,    6}, {   1,    6}, 
-{   1,    6}, {   1,    6}, {   1,    6}, {   1,    6}, {   1,    6}, 
-{   1,    6}, {   1,    6}, {   1,    6}, {   0,    0}, {   0,    0}, 
+{   1,   18}, {   1,   17}, {   1,   19}, {   1,   20}, {   0,    0}, 
+{   1,   12}, {   1,   14}, {   2,    4}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
+{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
+{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
+{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
+{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
+{   1,    3}, {   1,   16}, {   0,    0}, {   1,   15}, {   0,    0}, 
+{   1,    3}, {   0,    0}, {   1,    3}, {   1,    3}, {   1,    3}, 
+{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
+{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
+{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
+{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
+{   1,    3}, {   1,    3}, {   1,    3}, {   3,    3}, {   3,    3}, 
+{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
+{   3,    3}, {   3,    3}, {   3,    3}, {   6,    7}, {  12,   13}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
+{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
+{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
+{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
+{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
+{   3,    3}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   3,    3}, {   0,    0}, {   3,    3}, {   3,    3}, {   3,    3}, 
+{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
+{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
+{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
+{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
+{   3,    3}, {   3,    3}, {   3,    3}, {   4,    5}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
+{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
+{   4,   13}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
+{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
+{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
+{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
+{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
+{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
+{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   0,    0}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   0,    0}, {   5,    5}, {   0,    0}, {   0,    0}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   3,   17}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
@@ -106,14 +136,11 @@ static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   8,    9}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   0,    0}, {   5,    5}, 
+{   5,    5}, {   5,    5}, {   0,    0}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
@@ -139,79 +166,28 @@ static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
 {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   6,    6}, {   6,    6}, {   6,    6}, 
-{   6,    6}, {   6,    6}, {   6,    6}, {   6,    6}, {   6,    6}, 
-{   6,    6}, {   6,    6}, {   7,    7}, {   7,    7}, {   7,    7}, 
-{   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, 
-{   7,    7}, {   7,    7}, {  17,   19}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   7,    7}, 
-{   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, 
-{   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, 
-{   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, 
-{   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, 
-{   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   7,    7}, 
-{   0,    0}, {   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, 
-{   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, 
-{   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, 
-{   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, 
-{   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, {   7,    7}, 
-{   7,    7}, {   7,    7}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {  17,   18}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   5,    5}, 
 };
 static	yyCombType *	yyBasePtr	[yyDStateCount + 1] = { 0,
-& yyComb [   0], & yyComb [   0], & yyComb [   3], & yyComb [   0], 
-& yyComb [  61], & yyComb [ 269], & yyComb [ 279], & yyComb [  26], 
+& yyComb [   0], & yyComb [   2], & yyComb [  75], & yyComb [ 153], 
+& yyComb [ 205], & yyComb [   6], & yyComb [   0], & yyComb [   0], 
+& yyComb [   0], & yyComb [   0], & yyComb [   0], & yyComb [  72], 
 & yyComb [   0], & yyComb [   0], & yyComb [   0], & yyComb [   0], 
 & yyComb [   0], & yyComb [   0], & yyComb [   0], & yyComb [   0], 
-& yyComb [ 303], & yyComb [   0], & yyComb [   0], & yyComb [   0], 
-& yyComb [   0], 
 };
 static	yyStateRange	yyDefault	[yyDStateCount + 1] = { 0,
-    7,     1,     5,     3,     8,     8,     8,     0,     0,     0, 
-    8,     0,     5,     0,     5,    11,     8,     0,     0,     0, 
-    0, 
+    6,     1,     6,     6,     4,     0,     0,     0,     0,     0, 
+    0,     6,     0,     0,     0,     0,     0,     0,     0,     0, 
 };
 static	yyStateRange	yyEobTrans	[yyDStateCount + 1] = { 0,
-    0,     0,     5,     5,     5,     0,     0,     0,     0,     0, 
-    0,     0,     5,     0,     5,     0,     0,     0,     0,     0, 
-    0, 
+    0,     0,     0,     0,     5,     0,     0,     0,     0,     0, 
+    0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
 };
 
-# if l_scan_xxMaxCharacter < 256
-#  define yyGetLine	l_scan_GetLine
+# if expr_scan_xxMaxCharacter < 256
+#  define yyGetLine	expr_scan_GetLine
 # else
-#  define yyGetLine	l_scan_GetWLine
+#  define yyGetLine	expr_scan_GetWLine
 # endif
 
 # if yyToClassArraySize == 0
@@ -221,7 +197,7 @@ typedef	unsigned short	yytCharClass;
 
 static	yytCharClass	yyToClassArray	[yyToClassArraySize] = {
 };
-#  if l_scan_xxMaxCharacter < yyToClassArraySize
+#  if expr_scan_xxMaxCharacter < yyToClassArraySize
 #   define yyToClass(x) (yyToClassArray [x])
 #  else
 #   define yyToClass(x) \
@@ -316,16 +292,19 @@ static void yyTab1	ARGS ((int yya));
 # define yyTab		yyTab1 (0)
 # define yyTab2(a,b)	yyTab1 (a)
 
-/* line 47 "l.rex" */
-
-  # include <stdlib.h>
-  # include "rString.h"
-
-/* line 325 "l_scan.c" */
+void expr_scan_ErrorAttribute
+# ifdef HAVE_ARGS
+   (int Token, expr_scan_tScanAttribute * Attribute)
+# else
+   (Token, Attribute)
+   int Token;
+   expr_scan_tScanAttribute * Attribute;
+# endif
+   { }
 
 # ifndef yySetPosition
-# define yySetPosition l_scan_Attribute.Position.Line = yyLineCount; \
-l_scan_Attribute.Position.Column = (int) ((yytusChar *) l_scan_TokenPtr - yyLineStart);
+# define yySetPosition expr_scan_Attribute.Position.Line = yyLineCount; \
+expr_scan_Attribute.Position.Column = (int) ((yytusChar *) expr_scan_TokenPtr - yyLineStart);
 # endif
 
 # undef yyTab
@@ -347,18 +326,18 @@ static void yyTab1
 # else
    (yya) int yya;
 # endif
-   { yyLineStart -= (yyTabSpace - 1 - ((yytusChar *) l_scan_TokenPtr -
+   { yyLineStart -= (yyTabSpace - 1 - ((yytusChar *) expr_scan_TokenPtr -
 	yyLineStart + yya - 1)) & (yyTabSpace - 1); }
 
 # define yyTab		yyLineStart -= (yyTabSpace - 1 - \
-((yytusChar *) l_scan_TokenPtr - yyLineStart - 1)) & (yyTabSpace - 1)
+((yytusChar *) expr_scan_TokenPtr - yyLineStart - 1)) & (yyTabSpace - 1)
 # define yyTab1(a)	yyLineStart -= (yyTabSpace - 1 - \
-((yytusChar *) l_scan_TokenPtr - yyLineStart + (a) - 1)) & (yyTabSpace - 1)
+((yytusChar *) expr_scan_TokenPtr - yyLineStart + (a) - 1)) & (yyTabSpace - 1)
 # define yyTab2(a,b)	yyLineStart -= (yyTabSpace - 1 - \
-((yytusChar *) l_scan_TokenPtr - yyLineStart + (a) - 1)) & (yyTabSpace - 1)
+((yytusChar *) expr_scan_TokenPtr - yyLineStart + (a) - 1)) & (yyTabSpace - 1)
 
 # ifndef EBCDIC
-#  if l_scan_xxMaxCharacter < 256
+#  if expr_scan_xxMaxCharacter < 256
 #   include <ctype.h>
 #   define yyToUpper(x)	toupper (x)
 #   define yyToLower(x)	tolower (x)
@@ -478,25 +457,19 @@ static	unsigned long	yyFileStackSize	= 0;
 static	yytFileStack *	yyFileStackPtr	;
 # endif
 
-int l_scan_GetToken ARGS ((void))
+int expr_scan_GetToken ARGS ((void))
 {
    register	yyStateRange	yyState;
    register	yyStateRange *	yyStatePtr;
    register	yytusChar *	yyChBufferIndexReg;
    register	yyCombType * *	yyBasePtrReg = yyBasePtr;
-/* line 52 "l.rex" */
-
- /* user-defined local variables of the generated GetToken routine */
-# define MAX_STRING_LEN 2048
-char string [MAX_STRING_LEN+1]; int length;
-
-/* line 494 "l_scan.c" */
 
 yyBegin:
    yyState		= yyStartState;		/* initialize */
    yyStatePtr		= & yyStateStack [1];
    yyChBufferIndexReg	= yyChBufferIndex;
-   l_scan_TokenPtr		= (yytChar *) yyChBufferIndexReg;
+   expr_scan_TokenPtr		= (yytChar *) yyChBufferIndexReg;
+   if (yyChBufferIndexReg [-1] == yyEolCh) yyState ++;
 
    /* ASSERT yyChBuffer [yyChBufferIndex] == first character */
 
@@ -515,174 +488,125 @@ yyContinue:		/* continue after sentinel or skipping blanks */
    }
 
    for (;;) {				/* search for last final state */
-      l_scan_TokenLength =
-	    (int) (yyChBufferIndexReg - (yytusChar *) l_scan_TokenPtr);
+      expr_scan_TokenLength =
+	    (int) (yyChBufferIndexReg - (yytusChar *) expr_scan_TokenPtr);
       yyChBufferIndex = yyChBufferIndexReg;
 switch (* -- yyStatePtr) {
-case 7:;
+case 3:;
 yySetPosition
-/* line 96 "l.rex" */
-{
-	  l_scan_Attribute.identifier.Value = malloc (l_scan_TokenLength+1);
-	  l_scan_GetWord (l_scan_Attribute.identifier.Value);
-	  return tok_identifier;
+/* line 38 "expr.rex" */
+{expr_scan_Attribute.identifier.Value =
+			(char*) malloc (expr_scan_TokenLength + 1);
+	 expr_scan_GetWord (expr_scan_Attribute.identifier.Value);
+	 return tok_identifier;
 	
-/* line 531 "l_scan.c" */
-} goto yyBegin;
-case 6:;
-yySetPosition
-/* line 104 "l.rex" */
-{l_scan_Attribute.int_const.Value = malloc (l_scan_TokenLength+1);
-	 l_scan_GetWord (l_scan_Attribute.int_const.Value);
-	 return tok_int_const;
-	
-/* line 540 "l_scan.c" */
-} goto yyBegin;
-case 21:;
-yySetPosition
-/* line 110 "l.rex" */
-{yyStart(STRING);
-	 length = 0;
-	
-/* line 548 "l_scan.c" */
-} goto yyBegin;
-case 5:;
-case 13:;
-case 15:;
-yySetPosition
-/* line 115 "l.rex" */
-{
-	  if (length + l_scan_TokenLength+1 >= MAX_STRING_LEN) {
-	    Message ("String too long", xxError, l_scan_Attribute.Position);
-	    length = 0;
-	  } else {
-	    /*Write input to acutal adress of string char array */
-	    length += l_scan_GetWord (&string[length]); 
-	  }
-	
-/* line 564 "l_scan.c" */
+/* line 504 "expr_scan.c" */
 } goto yyBegin;
 case 20:;
 yySetPosition
-/* line 126 "l.rex" */
-{
-	  /* Back to start*/
-	  yyStart(STD);
-	  /*Add zero at the end of string*/
-	  string[length] = '\0'; 
-	   /*Allocate enough space in memory and pass startadress to const value*/ 
-	  l_scan_Attribute.string_const.Value = malloc (length + 1);
-	  /*copy real input to const */
-	  strcpy (l_scan_Attribute.string_const.Value, string); 
-	  return tok_string_const;
-	
-/* line 580 "l_scan.c" */
+/* line 44 "expr.rex" */
+{return '+';
+/* line 510 "expr_scan.c" */
 } goto yyBegin;
 case 19:;
 yySetPosition
-/* line 139 "l.rex" */
-{
-	  if (length + l_scan_TokenLength+1 >= MAX_STRING_LEN) {
-	    Message ("String too long", xxError, l_scan_Attribute.Position);
-	    length = 0;
-	  } else {
-	    /*Write input to acutal adress of string char array */
-	    string[length++] = '"';
-	  }
-	
-/* line 594 "l_scan.c" */
+/* line 45 "expr.rex" */
+{return '*';
+/* line 516 "expr_scan.c" */
 } goto yyBegin;
 case 18:;
 yySetPosition
-/* line 149 "l.rex" */
-{
-	  if (length + l_scan_TokenLength+1 >= MAX_STRING_LEN) {
-	    Message ("String too long", xxError, l_scan_Attribute.Position);
-	    length = 0;
-	  } else {
-	    /*Write input to acutal adress of string char array */
-	    string[length++] = '\n';
-	  }
-	
-/* line 608 "l_scan.c" */
+/* line 46 "expr.rex" */
+{return '(';
+/* line 522 "expr_scan.c" */
 } goto yyBegin;
 case 17:;
 yySetPosition
-/* line 159 "l.rex" */
-{
-	  if (length + l_scan_TokenLength+1 >= MAX_STRING_LEN) {
-	    Message ("String too long", xxError, l_scan_Attribute.Position);
-	    length = 0;
-	  } else {
-	    /*Write input to acutal adress of string char array */
-	    string[length++] = '\\';
-	  }
-	
-/* line 622 "l_scan.c" */
+/* line 47 "expr.rex" */
+{return ')';
+/* line 528 "expr_scan.c" */
 } goto yyBegin;
 case 16:;
 yySetPosition
-/* line 169 "l.rex" */
-{ /* error handling of typical errors:
-	   *  a string not closed at the end of a line
-           */
-          yyStart(STD);
-	  yyEol (0);
-          Message ("String nicht beendet", xxError, l_scan_Attribute.Position);
-	  l_scan_Attribute.string_const.Value = "";
-          return tok_string_const;
-        
-/* line 636 "l_scan.c" */
+/* line 48 "expr.rex" */
+{return '[';
+/* line 534 "expr_scan.c" */
+} goto yyBegin;
+case 15:;
+yySetPosition
+/* line 49 "expr.rex" */
+{return ']';
+/* line 540 "expr_scan.c" */
 } goto yyBegin;
 case 14:;
+yySetPosition
+/* line 50 "expr.rex" */
+{return '.';
+/* line 546 "expr_scan.c" */
+} goto yyBegin;
+case 13:;
+yySetPosition
+/* line 51 "expr.rex" */
+{return tok_arrow;
+/* line 552 "expr_scan.c" */
+} goto yyBegin;
+case 5:;
+yySetPosition
+/* line 54 "expr.rex" */
+{ /* comment up to end of line, nothing to do */
+        
+/* line 559 "expr_scan.c" */
+} goto yyBegin;
+case 11:;
 {/* BlankAction */
 while (* yyChBufferIndexReg ++ == ' ') ;
-l_scan_TokenPtr = (yytChar *) -- yyChBufferIndexReg;
+expr_scan_TokenPtr = (yytChar *) -- yyChBufferIndexReg;
 yyState = yyStartState;
 yyStatePtr = & yyStateStack [1];
 goto yyContinue;
-/* line 645 "l_scan.c" */
+/* line 568 "expr_scan.c" */
 } goto yyBegin;
-case 12:;
+case 10:;
 {/* TabAction */
 yyTab;
-/* line 650 "l_scan.c" */
+/* line 573 "expr_scan.c" */
 } goto yyBegin;
-case 11:;
+case 9:;
 {/* EolAction */
 yyEol (0);
-/* line 655 "l_scan.c" */
+/* line 578 "expr_scan.c" */
 } goto yyBegin;
 case 1:;
 case 2:;
-case 3:;
 case 4:;
-case 8:;
+case 6:;
+case 12:;
 	 /* non final states */
 	 yyChBufferIndexReg --;			/* return character */
 	 break;
 
-case 10:
+case 8:
 	 yySetPosition
-      l_scan_TokenLength   = 1;
+      expr_scan_TokenLength   = 1;
 	 yyChBufferIndex = ++ yyChBufferIndexReg;
 	 {
-/* line 58 "l.rex" */
+/* line 25 "expr.rex" */
 
-  /* What happens if no scanner rule matches the input */
-  MessageI ("Illegal character", xxError, l_scan_Attribute.Position, xxCharacter, (char*)*l_scan_TokenPtr);
+  WritePosition (stderr, expr_scan_Attribute.Position);
+  fprintf (stderr, " Illegal character [%c]\n", *expr_scan_TokenPtr);
 
-/* line 676 "l_scan.c" */
+/* line 599 "expr_scan.c" */
 	 }
 	 goto yyBegin;
 
       case yyDNoState:
 	 goto yyBegin;
 
-case 9:
+case 7:
 	 yyChBufferIndex = -- yyChBufferIndexReg; /* undo last state transit */
-	 if (-- l_scan_TokenLength == 0) {		/* get previous state */
+	 if (-- expr_scan_TokenLength == 0) {		/* get previous state */
 	    yyState = yyStartState;
+  	    if (yyChBufferIndexReg [-1] == yyEolCh) yyState ++;
 	 } else {
 	    yyState = * (yyStatePtr - 1);
 	 }
@@ -706,14 +630,14 @@ case 9:
 	       yyStatePtr += yyStateStack - yyOldStateStack;
 	       yyChBufferIndexReg = yyChBufferIndex;
 	    }
-	    yySource = l_scan_TokenPtr - 1;
+	    yySource = expr_scan_TokenPtr - 1;
 	    yyTarget = (yytChar *) & yyChBufferPtr
-		[(yyMaxAlign - 1 - l_scan_TokenLength) & (yyMaxAlign - 1)];
+		[(yyMaxAlign - 1 - expr_scan_TokenLength) & (yyMaxAlign - 1)];
 	    yyChBufferFree = Exp2 (Log2 (yyChBufferSize - 4 -
-		yyMaxAlign - l_scan_TokenLength));
+		yyMaxAlign - expr_scan_TokenLength));
 		/* copy initial part of token in front of the input buffer */
 	    if (yySource > yyTarget) {
-	       l_scan_TokenPtr = yyTarget + 1;
+	       expr_scan_TokenPtr = yyTarget + 1;
 	       do * yyTarget ++ = * yySource ++;
 	       while (yySource < (yytChar *) yyChBufferIndexReg);
 	       yyLineStart += (yytusChar *) yyTarget - yyChBufferStart -
@@ -733,10 +657,10 @@ case 9:
 	       yyDelta = yyChBufferPtr - yyOldChBufferPtr;
 	       yyChBufferStart	+= yyDelta;
 	       yyLineStart	+= yyDelta;
-	       l_scan_TokenPtr	+= yyDelta;
+	       expr_scan_TokenPtr	+= yyDelta;
 	       yyChBufferStart2	 = (yytChar *) yyChBufferStart;
 	       yyChBufferFree = Exp2 (Log2 (yyChBufferSize - 4 -
-			yyMaxAlign - l_scan_TokenLength));
+			yyMaxAlign - expr_scan_TokenLength));
 	       if (yyStateStackSize < yyChBufferSize) {
 		  yyStateRange * yyOldStateStack = yyStateStack;
 		  ExtendArray ((char * *) & yyStateStack, & yyStateStackSize,
@@ -757,61 +681,21 @@ case 9:
 	    goto yyContinue;
 	 }
 
-	 if (l_scan_TokenLength == 0) {		/* end of file reached */
-	    if (yyChBufferSize == 0) return l_scan_EofToken;
+	 if (expr_scan_TokenLength == 0) {		/* end of file reached */
+	    if (yyChBufferSize == 0) return expr_scan_EofToken;
 	    yySetPosition
-	    l_scan_CloseFile ();
+	    expr_scan_CloseFile ();
 # if yyInitFileStackSize != 0
 	    if (yyFileStackPtr == yyFileStack) {
-/* line 63 "l.rex" */
-
-  /* What should be done if the end-of-input-file has been reached? */
-
-  /* E.g.: check hat strings and comments are closed. */
-  switch (yyStartState) {
-  case STD:
-    /* ok */
-    break;
-  case STRING:
-    Message ("String not closed", xxError, l_scan_Attribute.Position);
-    break;
-  default:
-    Message ("OOPS: that should not happen!!", xxFatal, l_scan_Attribute.Position);
-    break;
-  }
-
-  /* implicit: return the EofToken */
-
-/* line 786 "l_scan.c" */
 	    }
 	    if (yyFileStackPtr == yyFileStack) {
-	       l_scan_ResetScanner ();
-	       return l_scan_EofToken;
+	       expr_scan_ResetScanner ();
+	       return expr_scan_EofToken;
 	    }
 	    goto yyBegin;
 # else
-/* line 63 "l.rex" */
-
-  /* What should be done if the end-of-input-file has been reached? */
-
-  /* E.g.: check hat strings and comments are closed. */
-  switch (yyStartState) {
-  case STD:
-    /* ok */
-    break;
-  case STRING:
-    Message ("String not closed", xxError, l_scan_Attribute.Position);
-    break;
-  default:
-    Message ("OOPS: that should not happen!!", xxFatal, l_scan_Attribute.Position);
-    break;
-  }
-
-  /* implicit: return the EofToken */
-
-/* line 813 "l_scan.c" */
-	    l_scan_ResetScanner ();
-	    return l_scan_EofToken;
+	    expr_scan_ResetScanner ();
+	    return expr_scan_EofToken;
 # endif
 	 }
 	 break;
@@ -870,19 +754,19 @@ static void yyInitialize ARGS ((void))
       yyChBufferStart [ 0] = yyEobCh;		/* end of buffer sentinel */
       yyChBufferStart [ 1] = '\0';
       yyChBufferIndex	   = yyChBufferStart;
-      l_scan_TokenPtr	   = (yytChar *) yyChBufferStart;
+      expr_scan_TokenPtr	   = (yytChar *) yyChBufferStart;
       yyEof		   = rfalse;
       yyBytesRead	   = 0;
       yyFileOffset	   = 0;
       yyLineCount	   = 1;
       yyLineStart	   = & yyChBufferStart [-1];
 # ifdef HAVE_FILE_NAME
-      if (l_scan_Attribute.Position.FileName == 0)
-	 l_scan_Attribute.Position.FileName = 1; /* NoIdent */
+      if (expr_scan_Attribute.Position.FileName == 0)
+	 expr_scan_Attribute.Position.FileName = 1; /* NoIdent */
 # endif
    }
 
-void l_scan_BeginFile
+void expr_scan_BeginFile
 # ifdef HAVE_ARGS
    (char * yyFileName)
 # else
@@ -892,9 +776,9 @@ void l_scan_BeginFile
       yyInitialize ();
       yySourceFile = yyFileName == NULL ? StdIn :
 # ifdef SOURCE_VER
-	 l_scan_BeginSourceFile (yyFileName);
+	 expr_scan_BeginSourceFile (yyFileName);
 # else
-	 l_scan_BeginSource (yyFileName);
+	 expr_scan_BeginSource (yyFileName);
 # endif
       if (yySourceFile < 0) yyErrorMessage (xxCannotOpenInputFile);
    }
@@ -903,7 +787,7 @@ void l_scan_BeginFile
 
 # if HAVE_WCHAR_T
 
-void l_scan_BeginFileW
+void expr_scan_BeginFileW
 # ifdef HAVE_ARGS
    (wchar_t * yyFileName)
 # else
@@ -912,13 +796,13 @@ void l_scan_BeginFileW
    {
       yyInitialize ();
       yySourceFile = yyFileName == NULL ? StdIn :
-	 l_scan_BeginSourceFileW (yyFileName);
+	 expr_scan_BeginSourceFileW (yyFileName);
       if (yySourceFile < 0) yyErrorMessage (xxCannotOpenInputFile);
    }
 
 # endif
 
-void l_scan_BeginMemory
+void expr_scan_BeginMemory
 # ifdef HAVE_ARGS
    (void * yyInputPtr)
 # else
@@ -926,10 +810,10 @@ void l_scan_BeginMemory
 # endif
    {
       yyInitialize ();
-      l_scan_BeginSourceMemory (yyInputPtr);
+      expr_scan_BeginSourceMemory (yyInputPtr);
    }
 
-void l_scan_BeginMemoryN
+void expr_scan_BeginMemoryN
 # ifdef HAVE_ARGS
    (void * yyInputPtr, int yyLength)
 # else
@@ -937,10 +821,10 @@ void l_scan_BeginMemoryN
 # endif
    {
       yyInitialize ();
-      l_scan_BeginSourceMemoryN (yyInputPtr, yyLength);
+      expr_scan_BeginSourceMemoryN (yyInputPtr, yyLength);
    }
 
-void l_scan_BeginGeneric
+void expr_scan_BeginGeneric
 # ifdef HAVE_ARGS
    (void * yyInputPtr)
 # else
@@ -948,17 +832,17 @@ void l_scan_BeginGeneric
 # endif
    {
       yyInitialize ();
-      l_scan_BeginSourceGeneric (yyInputPtr);
+      expr_scan_BeginSourceGeneric (yyInputPtr);
    }
 
 # endif
 
-void l_scan_CloseFile ARGS ((void))
+void expr_scan_CloseFile ARGS ((void))
    {
 # if yyInitFileStackSize != 0
       if (yyFileStackPtr == yyFileStack) yyErrorMessage (xxFileStackUnderflow);
 # endif
-      l_scan_CloseSource (yySourceFile);
+      expr_scan_CloseSource (yySourceFile);
       ReleaseArray ((char * *) & yyChBufferPtr, & yyChBufferSize,
 			(unsigned long) sizeof (yytChar));
 # if yyInitFileStackSize != 0
@@ -979,59 +863,59 @@ void l_scan_CloseFile ARGS ((void))
    }
 
 # ifdef xxGetWord
-int l_scan_GetWord
+int expr_scan_GetWord
 # ifdef HAVE_ARGS
    (yytChar * yyWord)
 # else
    (yyWord) yytChar * yyWord;
 # endif
    {
-      register yytChar * yySource		= l_scan_TokenPtr;
+      register yytChar * yySource		= expr_scan_TokenPtr;
       register yytChar * yyTarget		= yyWord;
       register yytChar * yyChBufferIndexReg	= (yytChar *) yyChBufferIndex;
 
       while (yySource < yyChBufferIndexReg)
 	 * yyTarget ++ = * yySource ++;
       * yyTarget = '\0';
-      return (int) (yyChBufferIndexReg - l_scan_TokenPtr);
+      return (int) (yyChBufferIndexReg - expr_scan_TokenPtr);
    }
 # endif
 
 # ifdef xxGetLower
-int l_scan_GetLower
+int expr_scan_GetLower
 # ifdef HAVE_ARGS
    (yytChar * yyWord)
 # else
    (yyWord) yytChar * yyWord;
 # endif
    {
-      register yytusChar * yySource	= (yytusChar *) l_scan_TokenPtr;
+      register yytusChar * yySource	= (yytusChar *) expr_scan_TokenPtr;
       register yytusChar * yyTarget	= (yytusChar *) yyWord;
       register yytusChar * yyChBufferIndexReg = yyChBufferIndex;
 
       while (yySource < yyChBufferIndexReg)
 	 * yyTarget ++ = yyToLower (* yySource ++);
       * yyTarget = '\0';
-      return (int) (yyChBufferIndexReg - (yytusChar *) l_scan_TokenPtr);
+      return (int) (yyChBufferIndexReg - (yytusChar *) expr_scan_TokenPtr);
    }
 # endif
 
 # ifdef xxGetUpper
-int l_scan_GetUpper
+int expr_scan_GetUpper
 # ifdef HAVE_ARGS
    (yytChar * yyWord)
 # else
    (yyWord) yytChar * yyWord;
 # endif
    {
-      register yytusChar * yySource	= (yytusChar *) l_scan_TokenPtr;
+      register yytusChar * yySource	= (yytusChar *) expr_scan_TokenPtr;
       register yytusChar * yyTarget	= (yytusChar *) yyWord;
       register yytusChar * yyChBufferIndexReg = yyChBufferIndex;
 
       while (yySource < yyChBufferIndexReg)
 	 * yyTarget ++ = yyToUpper (* yySource ++);
       * yyTarget = '\0';
-      return (int) (yyChBufferIndexReg - (yytusChar *) l_scan_TokenPtr);
+      return (int) (yyChBufferIndexReg - (yytusChar *) expr_scan_TokenPtr);
    }
 # endif
 
@@ -1070,17 +954,17 @@ static void yyLess
 # else
    (yyn) int yyn;
 # endif
-   { yyChBufferIndex -= l_scan_TokenLength - yyn; l_scan_TokenLength = yyn; }
+   { yyChBufferIndex -= expr_scan_TokenLength - yyn; expr_scan_TokenLength = yyn; }
 
-void l_scan_BeginScanner ARGS ((void))
+void expr_scan_BeginScanner ARGS ((void))
    {
    }
 
-void l_scan_CloseScanner ARGS ((void))
+void expr_scan_CloseScanner ARGS ((void))
    {
    }
 
-void l_scan_ResetScanner ARGS ((void))
+void expr_scan_ResetScanner ARGS ((void))
    {
       yyChBufferPtr	= yyInitChBuffer;
       yyChBufferSize	= 0;
@@ -1116,7 +1000,7 @@ static void yyErrorMessage
    (yyErrorCode) int yyErrorCode;
 # endif
    {
-      ErrorMessageI (yyErrorCode, xxFatal, l_scan_Attribute.Position,
-	 xxString, "l_scan");
-      l_scan_Exit ();
+      ErrorMessageI (yyErrorCode, xxFatal, expr_scan_Attribute.Position,
+	 xxString, "expr_scan");
+      expr_scan_Exit ();
    }

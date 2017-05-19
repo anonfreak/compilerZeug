@@ -21,6 +21,9 @@
  * The first struct-field must be of type tPosition!
  */
 typedef struct {tPosition Pos; char* Value;} tint_const;
+typedef struct {tPosition Pos; char* Value;} tstring_const;
+typedef struct {tPosition Pos; char* Value;} tidentifier;
+
 
 /* There is only one "actual" token, during scanning. Therfore
  * we use a UNION of all token-attributes as data type for that unique
@@ -32,14 +35,18 @@ typedef struct {tPosition Pos; char* Value;} tint_const;
 typedef union {
   tPosition     Position;
   tint_const    int_const;
+  tstring_const string_const;
+  tidentifier	identifier;
 } l_scan_tScanAttribute;
 
 /* Tokens are coded as int's, with values >=0
  * The value 0 is reserved for the EofToken, which is defined automatically
  */
-# define tok_int_const    1
+# define tok_int_const   	1
+# define tok_string_const 	2
+# define tok_identifier 	3
 
-/* line 42 "l_scan.h" */
+/* line 49 "l_scan.h" */
 
 # define l_scan_EofToken	0
 # define l_scan_xxMaxCharacter	255

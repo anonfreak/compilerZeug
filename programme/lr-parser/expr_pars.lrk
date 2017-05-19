@@ -1,0 +1,91 @@
+SCANNER expr_scan PARSER expr_pars
+IMPORT {
+}
+
+EXPORT {
+}
+
+GLOBAL {
+
+#@ line 27 "expr.pars"
+
+ # include <stdio.h>
+
+
+#@ line 16 "expr_pars.lrk"
+# ifdef CommonParsAttrs
+typedef struct { CommonParsAttrs } yytCommonParsAttrs;
+#  define yyCommon yytCommonParsAttrs Common;
+#  define yyCommonParsAttrs CommonParsAttrs
+# else
+#  define yyCommon
+#  define yyCommonParsAttrs
+# endif
+
+
+typedef union {
+expr_scan_tScanAttribute Scan;
+yyCommon
+} tParsAttribute;
+}
+
+LOCAL {
+}
+
+BEGIN {
+}
+
+CLOSE {
+}
+
+TOKEN
+
+int_const = 1
+float_const = 2
+',' = 3
+'+' = 4
+'-' = 5
+'*' = 6
+'/' = 7
+'^' = 8
+'(' = 9
+')' = 10
+
+OPER
+
+LEFT  '+' '-'
+LEFT  '*' '/'
+RIGHT '^'
+LEFT  UNARY
+
+RULE
+
+root : expr_l .
+
+#@ line 45 "expr.pars"
+expr_l : expr_l ',' expr .
+
+expr_l : expr .
+
+expr_l : .
+
+#@ line 54 "expr.pars"
+expr : expr '+' expr .
+
+expr : expr '-' expr .
+
+expr : expr '*' expr .
+
+expr : expr '/' expr .
+
+expr : expr '^' expr .
+
+expr : '(' expr ')' .
+
+expr : '-' expr PREC UNARY .
+
+expr : '+' expr PREC UNARY .
+
+expr : int_const .
+
+expr : float_const .

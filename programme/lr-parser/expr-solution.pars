@@ -9,14 +9,15 @@ SCANNER expr_scan
 
 PARSER  expr_pars
 
-GLOBAL {
- # include <stdio.h>
-}
-
 PREC LEFT  '+' '-'
      LEFT  '*' '/'
      RIGHT '**'
      LEFT UNARY
+
+GLOBAL {
+ # include <stdio.h>
+}
+
 
 RULE
 root 	= expr_l.

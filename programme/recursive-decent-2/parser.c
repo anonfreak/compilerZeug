@@ -63,17 +63,34 @@ bool match (tToken token)
 
 /*****************************************************************************
  * Given the following grammar:
- *   E ::= E "+" T   | T
+ *   E ::= E "+" T   | T 
  *   T ::= T "*" F   | F
  *   F ::= "(" E ")" | D
  *   D ::= D "." identifier | D "[" E "]" | D "->" identifier | identifier
  * Implement a recurisve decent parser.
  ******************************************************************************/
 
-bool f_E(void)
+static bool f_T(void);
+static bool f_F(void);
+static bool f_D(void);
+
+bool f_E (void)
 {
-  return false;
+  return f_T() || (f_E() && match('+') && f_T());
 }
 
+bool f_T (void)
+{
+  return f_F() || (f_T && match('*') && f_F());
+}
 
+bool f_F (void)
+{
+  return (match('(') && f_E() && match(')')) || f_D();
+}
+
+bool f_D (void)
+{
+  return (f_D() && match('.') && match(tok_identifier)) || (f_D() && match(tok_arrow) && match(tok_identifier)) || match(tok_identifier);
+}
 /***********************  E  N  D  ***********************************************/

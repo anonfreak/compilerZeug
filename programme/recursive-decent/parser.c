@@ -99,6 +99,79 @@ static bool FirstFollow_1 (void)
   }
 }
 
+static bool FirstFollow_2 (void)
+{
+  switch (CurToken) {
+  case '+':
+    return true;
+  default:
+    return false;
+  }
+}
+
+static bool FirstFollow_3 (void)
+{
+  switch (CurToken) {
+  case expr_scan_EofToken: case ')':
+    return true;
+  default:
+    return false;
+  }
+}
+
+static bool FirstFollow_4 (void)
+{
+  switch (CurToken) {
+  case '(': case tok_identifier:
+    return true;
+  default:
+    return false;
+  }
+}
+
+static bool FirstFollow_5 (void)
+{
+  switch (CurToken) {
+  case '*':
+    return true;
+  default:
+    return false;
+  }
+}
+
+static bool FirstFollow_6 (void)
+{
+  switch (CurToken) {
+    case expr_scan_EofToken: case ')': case '+':
+    return true;
+  default:
+    return false;
+  }
+}
+
+static bool FirstFollow_7 (void)
+{
+  switch (CurToken) {
+  case '(':
+    return true;
+  default:
+    return false;
+  }
+}
+
+static bool FirstFollow_8 (void)
+{
+  switch (CurToken) {
+    case tok_identifier:
+    return true;
+  default:
+    return false;
+  }
+}
+
+
+
+
   /* fill in the other FirstFollow-functions: FirstFollow_2() .. FirstFollow_8() */
 
 /******************************************************************************
@@ -116,6 +189,11 @@ static bool FirstFollow_1 (void)
  * Note: eof = end-of-file  is a token too.
  */
 
+static bool f_E1 (void);
+static bool f_T  (void);
+static bool f_T1 (void);
+static bool f_F  (void);
+
 bool f_E (void)
 {
   DEBUG_show("E");
@@ -125,6 +203,44 @@ bool f_E (void)
   return false; /* Syntax Error */
 }
 
+bool f_E1 (void)
+{
+  DEBUG_show("E1");
+
+  if (FirstFollow_2()) return match('+') && f_T() && f_E1();
+  if (FirstFollow_3()) return true;
+  Message ("Syntax Error in <E1>", xxError, expr_scan_Attribute.Position);
+  return false; /* Syntax Error */
+}
+
+bool f_T (void)
+{
+  DEBUG_show("T");
+
+  if (FirstFollow_4()) return f_F() && f_T1();
+  Message ("Syntax Error in <T>", xxError, expr_scan_Attribute.Position);
+  return false; /* Syntax Error */
+}
+
+bool f_T1 (void)
+{
+  DEBUG_show("T1");
+
+  if (FirstFollow_5()) return match('*') && f_F() && f_T1();
+  if (FirstFollow_6()) return true;
+  Message ("Syntax Error in <T1>", xxError, expr_scan_Attribute.Position);
+  return false; /* Syntax Error */
+}
+
+bool f_F (void)
+{
+  DEBUG_show("F");
+
+  if (FirstFollow_7()) return match('(') && f_E() && match(')');
+  if (FirstFollow_8()) return match(tok_identifier);
+  Message ("Syntax Error in <F>", xxError, expr_scan_Attribute.Position);
+  return false; /* Syntax Error */
+}
 /* fill in the functions for the other non-terminals */
 
 /***********************  E  N  D  ***********************************************/
