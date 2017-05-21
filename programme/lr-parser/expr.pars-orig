@@ -1,0 +1,141 @@
+/* Project:  COCKTAIL training
+ * Descr:    LR parser for an expression language
+ * Kind:     Parser specification (stub)
+ * Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+ * $Id: expr.pars,v 1.4 2007/06/01 12:04:31 vollmer Exp vollmer $
+ */
+
+// Exercises:
+//  - Add other arithmetic (binary - / **, unary + and -) operations.
+//    Think about accosiactivity and operator precedence.
+//  - Add identifiers as part of an expression to your grammer
+//    extend the scanner.
+//  - Add comma separated list of expressions. The list may be empty.
+//   'expr_l' (expression list) should be the new grammar root symbol.
+//  - Rewrite your grammar, so that precedences are used
+//  - Add C-style statements (e.g. assignment, if, while and statement lists)
+//    to your grammar. 'stmt' should be the new root symbol of your grammar
+//  - Add those statements using Modula-style syntax.
+//  - Add more test sources to test your grammar
+
+SCANNER expr_scan
+
+PARSER  expr_pars
+
+
+
+GLOBAL {
+ # include <stdio.h>
+}
+
+PREC LEFT  '+' '-'
+     LEFT  '*' '/'
+     RIGHT '^'
+     LEFT  UNARY
+
+RULE
+root = program.
+
+program = <
+	= 'X' identifier 'BEGIN' declaration_l execution_l 'END' .
+>.
+
+
+typ = <
+	= 'int' .
+	= 'float' .
+	= 'string' .
+>.
+
+declaration_l = <
+	= declaration_l declaration ';'.
+	= declaration ';'.
+	= .
+>.
+
+declaration = <
+	= typ identifier.
+	= typ assignment.
+>.
+
+block = <
+	= 'BEGIN' execution_l 'END'.
+>.
+
+execution_l = <
+	= execution_l execution.
+	= execution.
+	= .
+>.
+
+execution = <
+	= assignment ';'.
+	= stmt.
+>.
+
+stmt = <
+	= 'if' '(' cond ')' 'then' block.
+	= 'if' '(' cond ')' 'then' block 'else' block.
+	= 'while' '(' cond ')' block.
+	= 'for' '(' declaration ';' cond ';' assignment ')' block.
+>.
+
+cond = <
+	= expr_string operator expr_string.
+>.
+
+operator = <
+	= '<'.
+	= '>'.
+	= '='.
+	= '!='.
+>.
+
+assignment = <
+// 	= identifier '=' expr_numbers.
+	= identifier '=' expr_string.
+> .
+
+expr_string = <
+	= expr_numbers.
+	= expr_string '+' expr_string.
+	= string_const.
+	= identifier.
+>.
+
+expr_numbers = <
+	= expr_numbers '+' expr_numbers
+	.
+	= expr_numbers '-' expr_numbers
+	.
+	= expr_numbers '*' expr_numbers
+	.
+	= expr_numbers '/' expr_numbers
+	.
+	= expr_numbers '^' expr_numbers
+	.
+	= '(' expr_numbers ')'
+	.
+	= '-' expr_numbers PREC UNARY
+	.
+	= '+' expr_numbers PREC UNARY
+	.
+	= int_const
+	.
+	= float_const
+	.
+	= identifier.
+> .
+
+number = <
+	= int_const.
+	= float_const.
+	= identifier.
+>.
+
+/* Tokens */
+string_const: [Value: tIdent] {Value := NoIdent;} .
+identifier:   [Ident: tIdent] {Ident := NoIdent; } .
+int_const:    [Value: long]   {Value := 0;  } .
+float_const:  [Value: double] {Value := 0.0;} .
+

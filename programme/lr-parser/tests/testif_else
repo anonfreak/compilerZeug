@@ -1,0 +1,12 @@
+testif_else
+begin
+int test = 0;
+if(test = 0) then
+begin
+int i = 0;
+end
+else
+begin
+int x = 0;
+end
+end

@@ -37,10 +37,10 @@ pAttribute->string_const.Value = NoIdent;
  break;
  case /* identifier */ 2: 
 pAttribute->identifier.Ident = NoIdent;
-  break;
+ break;
  case /* int_const */ 3: 
 pAttribute->int_const.Value = 0;
-   break;
+ break;
  case /* float_const */ 4: 
 pAttribute->float_const.Value = 0.0;
  break;
@@ -51,26 +51,27 @@ pAttribute->float_const.Value = 0.0;
 2 S identifier identifier
 3 S int_const int_const
 4 S float_const float_const
-5 N yy63 'X'
-6 N yy64 'BEGIN'
-7 N yy65 'int'
-8 N yy66 'float'
-9 N yy67 'string'
-10 N yy68 '='
-11 N yy69 '+'
-12 N yy70 '-'
-13 N yy71 '*'
-14 N yy72 '/'
-15 N yy73 '^'
-16 N yy74 '('
-17 N yy75 ')'
-18 N yy76 ';'
-19 N yy77 'if'
-20 N yy78 '<'
-21 N yy79 '>'
-22 N yy80 '!='
-23 N yy81 'then'
-24 N yy82 'END'
-25 N yy83 'else'
-26 N yy84 'while'
-27 N yy85 'for'
+5 N yy70 'begin'
+6 N yy71 'int'
+7 N yy72 'float'
+8 N yy73 'string'
+9 N yy74 '='
+10 N yy75 '-'
+11 N yy76 '+'
+12 N yy77 '/'
+13 N yy78 '*'
+14 N yy79 '^'
+15 N yy80 '++'
+16 N yy81 ';'
+17 N yy82 'if'
+18 N yy83 '('
+19 N yy84 '<'
+20 N yy85 '>'
+21 N yy86 '!='
+22 N yy87 ')'
+23 N yy88 'then'
+24 N yy89 'elseif'
+25 N yy90 'else'
+26 N yy91 'while'
+27 N yy92 'for'
+28 N yy93 'end'

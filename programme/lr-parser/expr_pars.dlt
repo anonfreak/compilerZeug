@@ -1,18 +1,1 @@
-- Rule     stmt: 'for' '(' declaration cond ';' assignment ')' block 
-
-+ Rule     stmt: 'for' '(' declaration ';' cond ';' assignment ')' block 
-
-+ Conflict State 7 (11) on lookahead {identifier 'if' 'while' 'for' }
-+ Conflict State 49 (73) on lookahead {identifier 'if' 'while' 'for' }
-
-- Conflict State 7 (11) on lookahead {identifier 'if' 'while' 'for' }
-- Conflict State 25 (40) on lookahead {'+' }
-- Conflict State 49 (73) on lookahead {identifier 'if' 'while' 'for' }
-
-Summary
--------
-
-- Rules           1
-+ Rules           1
-- Conflicts       3
-+ Conflicts       2
+no differences

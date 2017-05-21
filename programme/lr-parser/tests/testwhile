@@ -1,0 +1,7 @@
+testwhile
+begin
+int test = 0;
+while(test = 0)
+begin
+end
+end

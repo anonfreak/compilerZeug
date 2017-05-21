@@ -71,10 +71,10 @@ pAttribute->string_const.Value = NoIdent;
  break;
  case /* identifier */ 2: 
 pAttribute->identifier.Ident = NoIdent;
-  break;
+ break;
  case /* int_const */ 3: 
 pAttribute->int_const.Value = 0;
-   break;
+ break;
  case /* float_const */ 4: 
 pAttribute->float_const.Value = 0.0;
  break;
@@ -183,29 +183,30 @@ RULES
 
 
 #@ line 186
- #STD#\X	: { return 5; }
- #STD#\B\E\G\I\N	: { return 6; }
- #STD#\i"n""t"	: { return 7; }
- #STD#"f"\l\o"a""t"	: { return 8; }
- #STD#\s"t""r"\i"n"\g	: { return 9; }
- #STD#\=	: { return 10; }
+ #STD#"b"\e\g\i"n"	: { return 5; }
+ #STD#\i"n""t"	: { return 6; }
+ #STD#"f"\l\o"a""t"	: { return 7; }
+ #STD#\s"t""r"\i"n"\g	: { return 8; }
+ #STD#\=	: { return 9; }
+ #STD#\-	: { return 10; }
  #STD#\+	: { return 11; }
- #STD#\-	: { return 12; }
+ #STD#\/	: { return 12; }
  #STD#\*	: { return 13; }
- #STD#\/	: { return 14; }
- #STD#\^	: { return 15; }
- #STD#\(	: { return 16; }
- #STD#\)	: { return 17; }
- #STD#\;	: { return 18; }
- #STD#\i"f"	: { return 19; }
- #STD#\<	: { return 20; }
- #STD#\>	: { return 21; }
- #STD#\!\=	: { return 22; }
+ #STD#\^	: { return 14; }
+ #STD#\+\+	: { return 15; }
+ #STD#\;	: { return 16; }
+ #STD#\i"f"	: { return 17; }
+ #STD#\(	: { return 18; }
+ #STD#\<	: { return 19; }
+ #STD#\>	: { return 20; }
+ #STD#\!\=	: { return 21; }
+ #STD#\)	: { return 22; }
  #STD#"t"\h\e"n"	: { return 23; }
- #STD#\E\N\D	: { return 24; }
+ #STD#\e\l\s\e\i"f"	: { return 24; }
  #STD#\e\l\s\e	: { return 25; }
  #STD#\w\h\i\l\e	: { return 26; }
  #STD#"f"\o"r"	: { return 27; }
+ #STD#\e"n"\d	: { return 28; }
 #@ line 132
 
 /* Bezeichner */

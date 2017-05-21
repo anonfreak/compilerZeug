@@ -1,0 +1,6 @@
+testDeclaration
+begin
+int x;
+float y;
+string z;
+end

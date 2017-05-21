@@ -22,8 +22,6 @@ SCANNER expr_scan
 
 PARSER  expr_pars
 
-
-
 GLOBAL {
  # include <stdio.h>
 }
@@ -37,105 +35,109 @@ RULE
 root = program.
 
 program = <
-	= 'X' identifier 'BEGIN' declaration_l execution_l 'END' .
+	= identifier block_scoped.
 >.
 
-
-typ = <
-	= 'int' .
-	= 'float' .
-	= 'string' .
+block_scoped = <
+	= 'begin' block_exec 'end'.
 >.
 
-declaration_l = <
-	= declaration_l declaration ';'.
+block_exec = <
+	= block_exec statement.
+	= statement.
+>.
+
+statement = <
 	= declaration ';'.
+	= assignment ';'.
+	= keyword.
 	= .
 >.
 
 declaration = <
-	= typ identifier.
-	= typ assignment.
+	= type identifier.
+	= type assignment.
 >.
 
-block = <
-	= 'BEGIN' execution_l 'END'.
+type = <
+	= 'int'.
+	= 'float'.
+	= 'string'.
 >.
 
-execution_l = <
-	= execution_l execution.
-	= execution.
-	= .
+assignment = <
+	= identifier '=' computation.
 >.
 
-execution = <
-	= assignment ';'.
-	= stmt.
->.
-
-stmt = <
-	= 'if' '(' cond ')' 'then' block.
-	= 'if' '(' cond ')' 'then' block 'else' block.
-	= 'while' '(' cond ')' block.
-	= 'for' '(' declaration ';' cond ';' assignment ')' block.
->.
-
-cond = <
-	= expr_string operator expr_string.
+computation = <
+	= variable operator computation.
+	= variable '++'.
+	= variable.
 >.
 
 operator = <
+	= '+'.
+	= '-'.
+	= '/'.
+	= '*'.
+	= '^'.
+>.
+
+variable = <
+	= variable_.
+	= float_const.
+	= '-' variable_ PREC UNARY.
+	= '+' variable_ PREC UNARY.
+>.
+
+variable_ = <
+	= identifier.
+	= string_const.
+	= int_const.
+	= float_const.
+>.
+
+keyword = <
+	= keyword_if.
+	= keyword_while.
+	= keyword_for.
+>.
+
+keyword_if = <
+	= 'if' '(' condition ')' 'then' block_scoped keyword_elseif.
+>.
+
+keyword_elseif = <
+	= 'elseif' '(' condition ')' 'then' block_scoped keyword_elseif.
+	= keyword_else.
+>.
+
+keyword_else = <
+	= 'else' block_scoped.
+	= .
+>.
+
+keyword_while = <
+	= 'while' '(' condition ')' block_scoped.
+>.
+
+keyword_for = <
+	= 'for' '(' declaration ';' condition ';' assignment ')' block_scoped.
+>.
+
+condition = <
+	= variable compare variable.
+>.
+
+compare = <
 	= '<'.
 	= '>'.
 	= '='.
 	= '!='.
 >.
 
-assignment = <
-// 	= identifier '=' expr_numbers.
-	= identifier '=' expr_string.
-> .
-
-expr_string = <
-	= expr_numbers.
-	= expr_string '+' expr_string.
-	= string_const.
-	= identifier.
->.
-
-expr_numbers = <
-	= expr_numbers '+' expr_numbers
-	.
-	= expr_numbers '-' expr_numbers
-	.
-	= expr_numbers '*' expr_numbers
-	.
-	= expr_numbers '/' expr_numbers
-	.
-	= expr_numbers '^' expr_numbers
-	.
-	= '(' expr_numbers ')'
-	.
-	= '-' expr_numbers PREC UNARY
-	.
-	= '+' expr_numbers PREC UNARY
-	.
-	= int_const
-	.
-	= float_const
-	.
-	= identifier.
-> .
-
-number = <
-	= int_const.
-	= float_const.
-	= identifier.
->.
-
 /* Tokens */
-string_const: [Value: tIdent] {Value := NoIdent;} .
-identifier:   [Ident: tIdent] {Ident := NoIdent; } .
-int_const:    [Value: long]   {Value := 0;  } .
-float_const:  [Value: double] {Value := 0.0;} .
-
+string_const: [Value: tIdent] {Value := NoIdent;}.
+identifier:   [Ident: tIdent] {Ident := NoIdent;}.
+int_const:    [Value: long]   {Value := 0;}.
+float_const:  [Value: double] {Value := 0.0;}.

@@ -1,0 +1,7 @@
+testif
+begin
+int test = 0;
+if(test<-1) then
+begin
+end
+end
