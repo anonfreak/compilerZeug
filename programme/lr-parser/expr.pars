@@ -126,7 +126,7 @@ keyword_for = <
 >.
 
 condition = <
-	= variable compare variable.
+	= computation compare computation.
 >.
 
 compare = <
