@@ -70,8 +70,8 @@ assignment = <
 >.
 
 computation = <
-	= variable operator computation.
-	= variable '++'.
+	= '(' computation ')'.
+	= computation operator variable.
 	= variable.
 >.
 
@@ -85,9 +85,8 @@ operator = <
 
 variable = <
 	= variable_.
-	= float_const.
 	= '-' variable_ PREC UNARY.
-	= '+' variable_ PREC UNARY.
+	= '+' lvariable_ PREC UNARY.
 >.
 
 variable_ = <

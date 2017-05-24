@@ -1,1 +1,12 @@
-no differences
++ Terminal lvariable_
+
+- Rule     variable: '+' variable_ 
+
++ Rule     variable: '+' lvariable_ 
+
+Summary
+-------
+
++ Terminals       1
+- Rules           1
++ Rules           1

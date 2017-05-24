@@ -49,19 +49,19 @@ float_const = 4
 'float' = 7
 'string' = 8
 '=' = 9
-'-' = 10
-'+' = 11
-'/' = 12
-'*' = 13
-'^' = 14
-'++' = 15
-';' = 16
-'if' = 17
-'(' = 18
-'<' = 19
-'>' = 20
-'!=' = 21
-')' = 22
+'(' = 10
+')' = 11
+'+' = 12
+'-' = 13
+'/' = 14
+'*' = 15
+'^' = 16
+lvariable_ = 17
+';' = 18
+'if' = 19
+'<' = 20
+'>' = 21
+'!=' = 22
 'then' = 23
 'elseif' = 24
 'else' = 25
@@ -109,8 +109,8 @@ type : 'string' .
 assignment : identifier '=' computation .
 
 #@ line 73 "expr.pars"
-computation : variable operator computation .
-computation : variable '++' .
+computation : '(' computation ')' .
+computation : computation operator variable .
 computation : variable .
 
 #@ line 79 "expr.pars"
@@ -122,42 +122,41 @@ operator : '^' .
 
 #@ line 87 "expr.pars"
 variable : variable_ .
-variable : float_const .
 variable : '-' variable_ PREC UNARY .
-variable : '+' variable_ PREC UNARY .
+variable : '+' lvariable_ PREC UNARY .
 
-#@ line 94 "expr.pars"
+#@ line 93 "expr.pars"
 variable_ : identifier .
 variable_ : string_const .
 variable_ : int_const .
 variable_ : float_const .
 
-#@ line 101 "expr.pars"
+#@ line 100 "expr.pars"
 keyword : keyword_if .
 keyword : keyword_while .
 keyword : keyword_for .
 
-#@ line 107 "expr.pars"
+#@ line 106 "expr.pars"
 keyword_if : 'if' '(' condition ')' 'then' block_scoped keyword_elseif .
 
-#@ line 111 "expr.pars"
+#@ line 110 "expr.pars"
 keyword_elseif : 'elseif' '(' condition ')' 'then' block_scoped keyword_elseif .
 keyword_elseif : keyword_else .
 
-#@ line 116 "expr.pars"
+#@ line 115 "expr.pars"
 keyword_else : 'else' block_scoped .
 keyword_else : .
 
-#@ line 121 "expr.pars"
+#@ line 120 "expr.pars"
 keyword_while : 'while' '(' condition ')' block_scoped .
 
-#@ line 125 "expr.pars"
+#@ line 124 "expr.pars"
 keyword_for : 'for' '(' declaration ';' condition ';' assignment ')' block_scoped .
 
-#@ line 129 "expr.pars"
-condition : variable compare variable .
+#@ line 128 "expr.pars"
+condition : computation compare computation .
 
-#@ line 133 "expr.pars"
+#@ line 132 "expr.pars"
 compare : '<' .
 compare : '>' .
 compare : '=' .
