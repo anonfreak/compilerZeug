@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 State    4 (   5): derivation trees
 -----------------------------------
 
@@ -428,3 +429,5 @@ retain shift   142  keyword_for: .'for' '(' declaration ';' condition ';' assign
 retain shift    42  block_scoped:  'begin' block_exec.'end' 
 ignore reduce   54  statement: . {'end'}
 
+=======
+>>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4

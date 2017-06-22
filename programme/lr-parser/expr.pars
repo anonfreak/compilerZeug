@@ -104,7 +104,7 @@ fff = <
 variable = <
 	= variable_.
 	= '-' variable_ PREC UNARY.
-	= '+' variable_ PREC UNARY.
+	= '+' lvariable_ PREC UNARY.
 >.
 
 variable_ = <

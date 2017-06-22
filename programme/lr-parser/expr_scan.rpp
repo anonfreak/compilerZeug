@@ -51,6 +51,7 @@ pAttribute->float_const.Value = 0.0;
 2 S identifier identifier
 3 S int_const int_const
 4 S float_const float_const
+<<<<<<< HEAD
 5 N yy70 'begin'
 6 N yy71 'int'
 7 N yy72 'float'
@@ -73,3 +74,29 @@ pAttribute->float_const.Value = 0.0;
 24 N yy89 'while'
 25 N yy90 'for'
 26 N yy91 'end'
+=======
+5 N yy69 'begin'
+6 N yy70 'int'
+7 N yy71 'float'
+8 N yy72 'string'
+9 N yy73 '='
+10 N yy74 '('
+11 N yy75 ')'
+12 N yy76 '+'
+13 N yy77 '-'
+14 N yy78 '/'
+15 N yy79 '*'
+16 N yy80 '^'
+17 N yy81 lvariable_
+18 N yy82 ';'
+19 N yy83 'if'
+20 N yy84 '<'
+21 N yy85 '>'
+22 N yy86 '!='
+23 N yy87 'then'
+24 N yy88 'elseif'
+25 N yy89 'else'
+26 N yy90 'while'
+27 N yy91 'for'
+28 N yy92 'end'
+>>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4

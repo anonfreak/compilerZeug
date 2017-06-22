@@ -49,6 +49,7 @@ float_const = 4
 'float' = 7
 'string' = 8
 '=' = 9
+<<<<<<< HEAD
 '+' = 10
 '*' = 11
 '(' = 12
@@ -66,6 +67,27 @@ float_const = 4
 'while' = 24
 'for' = 25
 'end' = 26
+=======
+'(' = 10
+')' = 11
+'+' = 12
+'-' = 13
+'/' = 14
+'*' = 15
+'^' = 16
+lvariable_ = 17
+';' = 18
+'if' = 19
+'<' = 20
+'>' = 21
+'!=' = 22
+'then' = 23
+'elseif' = 24
+'else' = 25
+'while' = 26
+'for' = 27
+'end' = 28
+>>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 
 OPER
 
@@ -107,9 +129,15 @@ type : 'string' .
 assignment : identifier '=' computation .
 
 #@ line 73 "expr.pars"
+<<<<<<< HEAD
 computation : computation '+' ttt .
 computation : computation '-' ttt .
 computation : ttt .
+=======
+computation : '(' computation ')' .
+computation : computation operator variable .
+computation : variable .
+>>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 
 #@ line 79 "expr.pars"
 ttt : ttt '*' fff .
@@ -123,19 +151,28 @@ fff : variable .
 #@ line 105 "expr.pars"
 variable : variable_ .
 variable : '-' variable_ PREC UNARY .
-variable : '+' variable_ PREC UNARY .
+variable : '+' lvariable_ PREC UNARY .
 
+<<<<<<< HEAD
 #@ line 111 "expr.pars"
+=======
+#@ line 93 "expr.pars"
+>>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 variable_ : identifier .
 variable_ : string_const .
 variable_ : int_const .
 variable_ : float_const .
 
+<<<<<<< HEAD
 #@ line 118 "expr.pars"
+=======
+#@ line 100 "expr.pars"
+>>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 keyword : keyword_if .
 keyword : keyword_while .
 keyword : keyword_for .
 
+<<<<<<< HEAD
 #@ line 124 "expr.pars"
 keyword_if : 'if' '(' condition ')' 'then' block_scoped keyword_elseif .
 
@@ -157,6 +194,29 @@ keyword_for : 'for' '(' declaration ';' condition ';' assignment ')' block_scope
 condition : computation compare computation .
 
 #@ line 150 "expr.pars"
+=======
+#@ line 106 "expr.pars"
+keyword_if : 'if' '(' condition ')' 'then' block_scoped keyword_elseif .
+
+#@ line 110 "expr.pars"
+keyword_elseif : 'elseif' '(' condition ')' 'then' block_scoped keyword_elseif .
+keyword_elseif : keyword_else .
+
+#@ line 115 "expr.pars"
+keyword_else : 'else' block_scoped .
+keyword_else : .
+
+#@ line 120 "expr.pars"
+keyword_while : 'while' '(' condition ')' block_scoped .
+
+#@ line 124 "expr.pars"
+keyword_for : 'for' '(' declaration ';' condition ';' assignment ')' block_scoped .
+
+#@ line 128 "expr.pars"
+condition : computation compare computation .
+
+#@ line 132 "expr.pars"
+>>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 compare : '<' .
 compare : '>' .
 compare : '=' .
