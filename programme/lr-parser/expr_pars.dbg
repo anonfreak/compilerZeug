@@ -124,7 +124,7 @@ example   r  identifier begin .if ( float_const != float_const ) then begin end 
 .keyword_if 
 .'if' '(' condition ')' 'then' block_scoped keyword_elseif 
 
-shift   107  keyword_if: .'if' '(' condition ')' 'then' block_scoped keyword_elseif ?
+shift   124  keyword_if: .'if' '(' condition ')' 'then' block_scoped keyword_elseif ?
 
 example   s  identifier begin .if ( float_const != float_const ) then begin end end 
 
@@ -149,7 +149,7 @@ example   r  identifier begin .while ( float_const != float_const ) begin end en
 .keyword_while 
 .'while' '(' condition ')' block_scoped 
 
-shift   121  keyword_while: .'while' '(' condition ')' block_scoped ?
+shift   138  keyword_while: .'while' '(' condition ')' block_scoped ?
 
 example   s  identifier begin .while ( float_const != float_const ) begin end end 
 
@@ -174,7 +174,7 @@ example   r  identifier begin .for ( string identifier ; float_const != float_co
 .keyword_for 
 .'for' '(' declaration ';' condition ';' assignment ')' block_scoped 
 
-shift   125  keyword_for: .'for' '(' declaration ';' condition ';' assignment ')' block_scoped ?
+shift   142  keyword_for: .'for' '(' declaration ';' condition ';' assignment ')' block_scoped ?
 
 example   s  identifier begin .for ( string identifier ; float_const != float_const ; identifier = float_const ) begin end end 
 
@@ -194,13 +194,13 @@ ignore reduce   54  statement: . {'string'}
 retain shift    65  type: .'string' 
 
 ignore reduce   54  statement: . {'if'}
-retain shift   107  keyword_if: .'if' '(' condition ')' 'then' block_scoped keyword_elseif 
+retain shift   124  keyword_if: .'if' '(' condition ')' 'then' block_scoped keyword_elseif 
 
 ignore reduce   54  statement: . {'while'}
-retain shift   121  keyword_while: .'while' '(' condition ')' block_scoped 
+retain shift   138  keyword_while: .'while' '(' condition ')' block_scoped 
 
 ignore reduce   54  statement: . {'for'}
-retain shift   125  keyword_for: .'for' '(' declaration ';' condition ';' assignment ')' block_scoped 
+retain shift   142  keyword_for: .'for' '(' declaration ';' condition ';' assignment ')' block_scoped 
 
 State    9 (  14): derivation trees
 -----------------------------------
@@ -328,7 +328,7 @@ example   r  identifier begin .if ( float_const != float_const ) then begin end 
 .keyword_if 
 .'if' '(' condition ')' 'then' block_scoped keyword_elseif 
 
-shift   107  keyword_if: .'if' '(' condition ')' 'then' block_scoped keyword_elseif ?
+shift   124  keyword_if: .'if' '(' condition ')' 'then' block_scoped keyword_elseif ?
 
 example   s  identifier begin .if ( float_const != float_const ) then begin end end 
 
@@ -353,7 +353,7 @@ example   r  identifier begin .while ( float_const != float_const ) begin end en
 .keyword_while 
 .'while' '(' condition ')' block_scoped 
 
-shift   121  keyword_while: .'while' '(' condition ')' block_scoped ?
+shift   138  keyword_while: .'while' '(' condition ')' block_scoped ?
 
 example   s  identifier begin .while ( float_const != float_const ) begin end end 
 
@@ -378,7 +378,7 @@ example   r  identifier begin .for ( string identifier ; float_const != float_co
 .keyword_for 
 .'for' '(' declaration ';' condition ';' assignment ')' block_scoped 
 
-shift   125  keyword_for: .'for' '(' declaration ';' condition ';' assignment ')' block_scoped ?
+shift   142  keyword_for: .'for' '(' declaration ';' condition ';' assignment ')' block_scoped ?
 
 example   s  identifier begin .for ( string identifier ; float_const != float_const ; identifier = float_const ) begin end end 
 
@@ -417,287 +417,14 @@ ignore reduce   54  statement: . {'string'}
 retain shift    65  type: .'string' 
 
 ignore reduce   54  statement: . {'if'}
-retain shift   107  keyword_if: .'if' '(' condition ')' 'then' block_scoped keyword_elseif 
+retain shift   124  keyword_if: .'if' '(' condition ')' 'then' block_scoped keyword_elseif 
 
 ignore reduce   54  statement: . {'while'}
-retain shift   121  keyword_while: .'while' '(' condition ')' block_scoped 
+retain shift   138  keyword_while: .'while' '(' condition ')' block_scoped 
 
 ignore reduce   54  statement: . {'for'}
-retain shift   125  keyword_for: .'for' '(' declaration ';' condition ';' assignment ')' block_scoped 
+retain shift   142  keyword_for: .'for' '(' declaration ';' condition ';' assignment ')' block_scoped 
 
 retain shift    42  block_scoped:  'begin' block_exec.'end' 
 ignore reduce   54  statement: . {'end'}
-
-State    0 (  36): derivation trees
------------------------------------
-
-	reduce reduce conflict implicitly repaired
-
-.root _EOF_ 
-.program 
- identifier.block_scoped 
- 'begin'.block_exec 'end' 
-.statement 
-.keyword 
-.keyword_if 
- 'if' '('.condition ')' 'then' block_scoped keyword_elseif 
-.variable compare variable 
-|  variable.compare variable 
-| .'=' 
- float_const.
-
-reduce   88  variable:  float_const. {'='} ?
-
-example   r  identifier begin if ( float_const .= float_const ) then begin end end 
-
- ...
-| .'=' 
-.variable_ 
- float_const.
-
-reduce   97  variable_:  float_const. {'='} ?
-
-example   r  identifier begin if ( float_const .= float_const ) then begin end end 
-
- ...
-.statement 
-.assignment ';' 
- identifier '='.computation 
-.variable operator computation 
-|  variable.operator computation 
-| .'-' 
- float_const.
-
-reduce   88  variable:  float_const. {'-'} ?
-
-example   r  identifier begin identifier = float_const .- float_const ; end 
-
- ...
-| .'-' 
-.variable_ 
- float_const.
-
-reduce   97  variable_:  float_const. {'-'} ?
-
-example   r  identifier begin identifier = float_const .- float_const ; end 
-
- ...
-|  variable.operator computation 
-| .'+' 
- float_const.
-
-reduce   88  variable:  float_const. {'+'} ?
-
-example   r  identifier begin identifier = float_const .+ float_const ; end 
-
- ...
-| .'+' 
-.variable_ 
- float_const.
-
-reduce   97  variable_:  float_const. {'+'} ?
-
-example   r  identifier begin identifier = float_const .+ float_const ; end 
-
- ...
-|  variable.operator computation 
-| .'/' 
- float_const.
-
-reduce   88  variable:  float_const. {'/'} ?
-
-example   r  identifier begin identifier = float_const ./ float_const ; end 
-
- ...
-| .'/' 
-.variable_ 
- float_const.
-
-reduce   97  variable_:  float_const. {'/'} ?
-
-example   r  identifier begin identifier = float_const ./ float_const ; end 
-
- ...
-|  variable.operator computation 
-| .'*' 
- float_const.
-
-reduce   88  variable:  float_const. {'*'} ?
-
-example   r  identifier begin identifier = float_const .* float_const ; end 
-
- ...
-| .'*' 
-.variable_ 
- float_const.
-
-reduce   97  variable_:  float_const. {'*'} ?
-
-example   r  identifier begin identifier = float_const .* float_const ; end 
-
- ...
-|  variable.operator computation 
-| .'^' 
- float_const.
-
-reduce   88  variable:  float_const. {'^'} ?
-
-example   r  identifier begin identifier = float_const .^ float_const ; end 
-
- ...
-| .'^' 
-.variable_ 
- float_const.
-
-reduce   97  variable_:  float_const. {'^'} ?
-
-example   r  identifier begin identifier = float_const .^ float_const ; end 
-
- ...
- identifier '='.computation 
-.variable '++' 
-|  variable.'++' 
- float_const.
-
-reduce   88  variable:  float_const. {'++'} ?
-
-example   r  identifier begin identifier = float_const .++ ; end 
-
- ...
-|  variable.'++' 
-.variable_ 
- float_const.
-
-reduce   97  variable_:  float_const. {'++'} ?
-
-example   r  identifier begin identifier = float_const .++ ; end 
-
- ...
-.assignment ';' 
-|  assignment.';' 
- identifier '='.computation 
-.variable 
- float_const.
-
-reduce   88  variable:  float_const. {';'} ?
-
-example   r  identifier begin identifier = float_const .; end 
-
- ...
-.variable 
-.variable_ 
- float_const.
-
-reduce   97  variable_:  float_const. {';'} ?
-
-example   r  identifier begin identifier = float_const .; end 
-
- ...
-.statement 
-.keyword 
-.keyword_if 
- 'if' '('.condition ')' 'then' block_scoped keyword_elseif 
-.variable compare variable 
-|  variable.compare variable 
-| .'<' 
- float_const.
-
-reduce   88  variable:  float_const. {'<'} ?
-
-example   r  identifier begin if ( float_const .< float_const ) then begin end end 
-
- ...
-| .'<' 
-.variable_ 
- float_const.
-
-reduce   97  variable_:  float_const. {'<'} ?
-
-example   r  identifier begin if ( float_const .< float_const ) then begin end end 
-
- ...
-|  variable.compare variable 
-| .'>' 
- float_const.
-
-reduce   88  variable:  float_const. {'>'} ?
-
-example   r  identifier begin if ( float_const .> float_const ) then begin end end 
-
- ...
-| .'>' 
-.variable_ 
- float_const.
-
-reduce   97  variable_:  float_const. {'>'} ?
-
-example   r  identifier begin if ( float_const .> float_const ) then begin end end 
-
- ...
-|  variable.compare variable 
-| .'!=' 
- float_const.
-
-reduce   88  variable:  float_const. {'!='} ?
-
-example   r  identifier begin if ( float_const .!= float_const ) then begin end end 
-
- ...
-| .'!=' 
-.variable_ 
- float_const.
-
-reduce   97  variable_:  float_const. {'!='} ?
-
-example   r  identifier begin if ( float_const .!= float_const ) then begin end end 
-
- ...
-.keyword 
-.keyword_for 
- 'for' '(' declaration ';' condition ';'.assignment ')' block_scoped 
-|  'for' '(' declaration ';' condition ';' assignment.')' block_scoped 
- identifier '='.computation 
-.variable 
- float_const.
-
-reduce   88  variable:  float_const. {')'} ?
-
-example   r  identifier begin for ( string identifier ; float_const != float_const ; identifier = float_const .) begin end end 
-
- ...
-.variable 
-.variable_ 
- float_const.
-
-reduce   97  variable_:  float_const. {')'} ?
-
-example   r  identifier begin for ( string identifier ; float_const != float_const ; identifier = float_const .) begin end end 
-
-State    0 (  36): summary
---------------------------
-
-retain reduce   88  variable:  float_const. {'='}
-ignore reduce   97  variable_:  float_const. {'='}
-
-on lookahead '-': as above
-
-on lookahead '+': as above
-
-on lookahead '/': as above
-
-on lookahead '*': as above
-
-on lookahead '^': as above
-
-on lookahead '++': as above
-
-on lookahead ';': as above
-
-on lookahead '<': as above
-
-on lookahead '>': as above
-
-on lookahead '!=': as above
-
-on lookahead ')': as above
 

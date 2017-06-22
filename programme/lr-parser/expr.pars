@@ -70,22 +70,39 @@ assignment = <
 >.
 
 computation = <
-	= variable operator computation.
-	= variable '++'.
+	= computation '+' ttt.
+	= computation '-' ttt.
+	= ttt.
+>.
+
+ttt = <
+	= ttt '*' fff.
+	= ttt '/' fff.
+	= fff.
+>.
+
+fff = <
+	= '(' computation ')'.
 	= variable.
 >.
 
-operator = <
-	= '+'.
-	= '-'.
-	= '/'.
-	= '*'.
-	= '^'.
->.
+//computation = <
+//	= '(' computation ')'.
+//	= computation operator variable.
+//	= variable.
+//	= computation2.
+//>.
+
+//operator = <
+//	= '+'.
+//	= '-'.
+//	= '/'.
+//	= '*'.
+//	= '^'.
+//>.
 
 variable = <
 	= variable_.
-	= float_const.
 	= '-' variable_ PREC UNARY.
 	= '+' variable_ PREC UNARY.
 >.

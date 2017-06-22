@@ -1,15 +1,21 @@
 /* Project:  COCKTAIL training
- * Descr:    A simple pocket computer (scanner, parser, AST construction)
- * Kind:     Parser specification
- * Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
- * $Id: expr.pars.in,v 1.6 2010/04/26 14:00:29 vollmer Exp $
+ * Descr:    LR parser for an expression language
+ * Kind:     Parser specification (stub)
+ * Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+ * $Id: expr.pars,v 1.4 2007/06/01 12:04:31 vollmer Exp vollmer $
  */
 
 // Exercises:
-//  - Add computation of the "Tree" Attribute to all grammar rules.
-//  - Add grammar and tree construction rules to construct an AST for
-//    "sin()", "cos()", and "tan()" (see expr.ast)
-//    Add a grammar and evaluation rule for the constant    "pi"
+//  - Add other arithmetic (binary - / **, unary + and -) operations.
+//    Think about accosiactivity and operator precedence.
+//  - Add identifiers as part of an expression to your grammer
+//    extend the scanner.
+//  - Add comma separated list of expressions. The list may be empty.
+//   'expr_l' (expression list) should be the new grammar root symbol.
+//  - Rewrite your grammar, so that precedences are used
+//  - Add C-style statements (e.g. assignment, if, while and statement lists)
+//    to your grammar. 'stmt' should be the new root symbol of your grammar
+//  - Add those statements using Modula-style syntax.
 //  - Add more test sources to test your grammar
 
 SCANNER expr_scan
@@ -18,103 +24,137 @@ PARSER  expr_pars
 
 GLOBAL {
  # include <stdio.h>
- # include "Tree.h"
 }
 
-PREC LEFT  '?'
-     LEFT  '|'
-     LEFT  '&'
-     LEFT  '!'
-     NONE  '<' '>' '='
-     LEFT  '+' '-'
+PREC LEFT  '+' '-'
      LEFT  '*' '/'
      RIGHT '^'
-     LEFT UNARY
+     LEFT  UNARY
 
 RULE
-root 	= l:expr_l
-	  {=> {TreeRoot = ReverseTree (l:tree);};}
-	  // ReverseTree() is needed since expr_l is a left recursive list
-	.
+root = l:program
+	{=> {TreeRoot = ReverseTree (l:tree);};}.
 
-expr_l	= <
-	= /* epsilon */
-	  {tree := mno_exprs();}
-	.
- exprs  = <
-	= e:expr
-	  {tree := mexprs (mno_exprs(), e:tree);}
-	.
-	= l:exprs ',' e:expr
-	  // left recursive list
-	  {tree := mexprs (l:tree, e:tree);}
-	.
-/* TODO: try what's happening if a right recursive list is used instead of a left one.
-        = e:expr ',' l:exprs
-	  // right recursive list
-	  {tree := mexprs (l:tree, e:tree);}
-	.
-*/
- > . /* exprs */
-> . /* expr_l */
+program = <
+	= i:identifier b:block_scoped
+	{tree := mprogram(midentifier(i:Position, i:Value), b:Tree);}.
+>.
 
-expr = <
-	= c:int_const
-	  {tree := mint_const (c:Position, c:Value);}
-	.
-	= c:float_const
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-	= '(' expr ')'
-	.
-	= l:expr o:'+' r:expr
-	  {tree := mbinary_expr (o:Position, '+', l:tree, r:tree);}
-	.
-	= l:expr o:'-' r:expr
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-	= l:expr o:'*'r:expr
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-	= l:expr o:'/' r:expr
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-	= l:expr o:'^' r:expr
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-	= c:expr o:'?' t:expr ':' e:expr
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-	= o:'+' expr   PREC UNARY
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-	= o:'-' expr   PREC UNARY
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-	= l:expr o:'>' r:expr
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-	= l:expr o:'<' r:expr
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-	= l:expr o:'=' r:expr
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-	= l:expr o:'&' r:expr
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-	= l:expr o:'|' r:expr
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-	= o:'!' expr
-	  {tree := 0; } // TODO: fix this by adding the correct tree construction
-	.
-// Add rules for sin(), cos(), tan() and the constant pi, how is it represented in the AST?
-> . /* expr */
+block_scoped = <
+	= 'begin' b:block_exec 'end'
+	{tree := mblockscoped(b:tree);}.
+>.
+
+block_exec = <
+	= l:block_exec r:statement
+	{tree := mblocklist(l:Tree, r:Tree);}.
+	= s:statement
+	{tree := mblockstmt(s:Tree);}.
+>.
+
+statement = <
+	= d:declaration ';'
+	{tree := mdeclaration(d:Tree);}.
+	= a:assignment ';'
+	{tree := massignment(a:Tree);}.
+	= k:keyword
+	{tree := mkeyword(k:Tree);}.
+	= .
+	{tree := mno_stmt();}
+>.
+
+declaration = < 
+	= l:type r:identifier
+	{tree := mdecl_ident(l:Tree, r:Tree);}.
+	= l:type r:assignment.
+	{tree := mdecl_assignm(l:Tree, r:Tree);}.
+>.
+
+type = <
+	= 'int'.
+	= 'float'.
+	= 'string'.
+>.
+
+assignment = <
+	= identifier '=' computation.
+>.
+
+computation = <
+	= computation '+' ttt.
+	= computation '-' ttt.
+	= ttt.
+>.
+
+ttt = <
+	= ttt '*' fff.
+	= ttt '/' fff.
+	= fff.
+>.
+
+fff = <
+	= '(' computation ')'.
+	= variable.
+>.
+
+variable = <
+	= variable_.
+	= float_const.
+	= '-' variable_ PREC UNARY.
+	= '+' variable_ PREC UNARY.
+>.
+
+variable_ = <
+	= identifier.
+	= string_const.
+	= int_const.
+	= float_const.
+>.
+
+keyword = <
+	= keyword_if.
+	= keyword_while.
+	= keyword_for.
+>.
+
+keyword_if = <
+	= 'if' '(' condition ')' 'then' block_scoped keyword_elseif.
+>.
+
+keyword_elseif = <
+	= 'elseif' '(' condition ')' 'then' block_scoped keyword_elseif.
+	= keyword_else.
+>.
+
+keyword_else = <
+	= 'else' block_scoped.
+	= .
+>.
+
+keyword_while = <
+	= 'while' '(' condition ')' block_scoped.
+>.
+
+keyword_for = <
+	= 'for' '(' declaration ';' condition ';' assignment ')' block_scoped.
+>.
+
+condition = <
+	= computation compare computation.
+>.
+
+compare = <
+	= '<'.
+	= '>'.
+	= '='.
+	= '!='.
+>.
 
 /* Tokens */
-int_const:    [Value: long]   {Value := 0;  } .
-float_const:  [Value: double] {Value := 0.0;} .
+string_const: [Value: tIdent] {Value := NoIdent;}.
+identifier:   [Ident: tIdent] {Ident := NoIdent;}.
+int_const:    [Value: long]   {Value := 0;}.
+float_const:  [Value: double] {Value := 0.0;}.
 
 /* non-terminal attributes */
 MODULE attributes

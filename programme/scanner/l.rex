@@ -57,7 +57,7 @@ char string [MAX_STRING_LEN+1]; int length;
 
 DEFAULT {
   /* What happens if no scanner rule matches the input */
-  MessageI ("Illegal character", xxError, l_scan_Attribute.Position, xxCharacter, (char*)*l_scan_TokenPtr);
+  MessageI ("Illegal character", xxError, l_scan_Attribute.Position, xxCharacter, (char*)l_scan_TokenPtr);
 } // DEFAULT
 
 EOF {

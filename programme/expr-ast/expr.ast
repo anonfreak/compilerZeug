@@ -50,6 +50,63 @@ PROPERTY INPUT  /* all attributes are parameters of the generate the mXX() routi
 
 RULE  /* Here we define the node types */
 
+
+PROGRAM = <
+  program = [Name: tIdent] 
+	    Block: BLOCKSCOPED.
+>.
+
+
+BLOCKSCOPED = <
+  blockscoped = Block: BLOCKEXEC .
+>.
+
+BLOCKEXEC = <
+  blocklist = Next: BLOCKEXEC 
+	      Stmt: STATEMENT.
+  blockstmt = Stmt: STATEMENT.
+>.
+
+STATEMENT = <
+  no_stmt = .
+  declaration = Next: DECLARATION.
+  assignment = Next: ASSIGNMENT.
+  keyword = Next: KEYWORD.
+>.
+
+DECLARATION = <
+  decl_ident = Type:TYPE,
+		Expr: [Name: tIdent].
+  decl_assignm = Type:TYPE,
+		  Expr: ASSIGNMENT.
+>.
+
+TYPE = <
+  type = [Str: tIdent].
+>.
+
+ASSIGNMENT = <
+  assignment = Left: [Name: tIdent]
+		Right: COMPUTATION.
+>.
+
+COMPUTATION = <
+  computation_l = Left:VARIABLE,
+		[Op: char],
+		Right: COMPUTATION.
+  increment = Left: VARIABLE,
+	      Right: [Op: tIdent].
+  nocomp = Comp: VARIABLE. 
+>.
+
+VARIABLE = <
+  
+>.
+
+KEYWORD = <
+ 
+>.
+
 /* list of expressions */
 EXPRS = <
   no_exprs	= /* end of list */

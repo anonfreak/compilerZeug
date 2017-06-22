@@ -1,4 +1,4 @@
-X testFullProgramm BEGIN
+testFullProgramm BEGIN
   int a = 0;
   if (1 = 2) then
   BEGIN

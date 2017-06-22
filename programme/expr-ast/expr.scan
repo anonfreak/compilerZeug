@@ -1,8 +1,8 @@
 /* Project:  COCKTAIL training
- * Descr:    A simple pocket computer (scanner, parser, evaluator)
+ * Descr:    LR parser for an expression language
  * Kind:     Scanner specification
- * Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
- * $Id: expr.scan,v 1.3 2010/04/23 20:39:36 vollmer Exp $
+ * Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+ * $Id: expr.scan,v 1.1 2007/06/01 11:37:53 vollmer draft $
  */
 
 SCANNER expr_scan
@@ -36,6 +36,7 @@ LOCAL {
 # define MAX_STRING_LEN 2048
 char string[MAX_STRING_LEN];
 int nesting = 0;
+int length = 0;
 }
 
 DEFAULT {
@@ -72,9 +73,11 @@ EOF {
 
 DEFINE /* some abbreviations */
   digit  = {0-9}       .
+  letter = {a-z_A-Z}.
+  string = - {"\\\n\r\f}.
 
 /* define start states, note STD is defined by default */
-START COMMENT, COMMENT2
+START COMMENT, COMMENT2, STRING
 
 RULES
 
@@ -126,5 +129,83 @@ RULES
 	}
 
 INSERT RULES #STD#
+
+/* Bezeichner */
+#STD# letter (letter | digit) * :
+	{
+	  return identifier;
+	}
+
+/* Goes into String state after the start of a string is detected */
+#STD# \" :
+	{
+	  yyStart(STRING);
+	  length = 0;
+	}
+/*Strings*/
+#STRING# string* :
+	{
+	  if (length + expr_scan_TokenLength+1 >= MAX_STRING_LEN) {
+	    Message ("String too long", xxError, expr_scan_Attribute.Position);
+	    length = 0;
+	  } else {
+	    /*Write input to acutal adress of string char array */
+	    length += expr_scan_GetWord (&string[length]); 
+	  }
+	}  
+/*End of String*/
+#STRING# \" :
+	{
+	  /* Back to start*/
+	  yyStart(STD);
+	  /*Add zero at the end of string*/
+	  string[length] = '\0'; 
+	   /*Allocate enough space in memory and pass startadress to const value*/ 
+	  expr_scan_Attribute.string_const.Value = malloc (length + 1);
+	  /*copy real input to const */
+	  strcpy (expr_scan_Attribute.string_const.Value, string); 
+	  return string_const;
+	}
+
+#STRING# \\ \" :
+	{
+	  if (length + expr_scan_TokenLength+1 >= MAX_STRING_LEN) {
+	    Message ("String too long", xxError, expr_scan_Attribute.Position);
+	    length = 0;
+	  } else {
+	    /*Write input to acutal adress of string char array */
+	    string[length++] = '"';
+	  }
+	}
+#STRING# \\ n :
+	{
+	  if (length + expr_scan_TokenLength+1 >= MAX_STRING_LEN) {
+	    Message ("String too long", xxError, expr_scan_Attribute.Position);
+	    length = 0;
+	  } else {
+	    /*Write input to acutal adress of string char array */
+	    string[length++] = '\n';
+	  }
+	}
+#STRING# \\ :
+	{
+	  if (length + expr_scan_TokenLength+1 >= MAX_STRING_LEN) {
+	    Message ("String too long", xxError, expr_scan_Attribute.Position);
+	    length = 0;
+	  } else {
+	    /*Write input to acutal adress of string char array */
+	    string[length++] = '\\';
+	  }
+	}
+#STRING# \n :
+	{ /* error handling of typical errors:
+	   *  a string not closed at the end of a line
+           */
+          yyStart(STD);
+	  yyEol (0);
+          Message ("String nicht beendet", xxError, expr_scan_Attribute.Position);
+	  expr_scan_Attribute.string_const.Value = "";
+          return string_const;
+        }
 
 /**********************************************************************/
