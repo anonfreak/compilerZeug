@@ -24,6 +24,7 @@ PARSER  expr_pars
 
 GLOBAL {
  # include <stdio.h>
+ # include "Tree.h"
 }
 
 PREC LEFT  '+' '-'
@@ -33,7 +34,7 @@ PREC LEFT  '+' '-'
 
 RULE
 root = l:program
-	{=> {TreeRoot = ReverseTree (l:tree);};}.
+	{=> {TreeRoot = ReverseTree (l:Tree);};}.
 
 program = <
 	= i:identifier b:block_scoped
@@ -42,7 +43,7 @@ program = <
 
 block_scoped = <
 	= 'begin' b:block_exec 'end'
-	{tree := mblockscoped(b:tree);}.
+	{tree := mblockscoped(b:Tree);}.
 >.
 
 block_exec = <

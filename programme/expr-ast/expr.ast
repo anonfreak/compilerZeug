@@ -57,11 +57,11 @@ PROGRAM = <
 >.
 
 
-BLOCKSCOPED = <
+BLOCKSCOPED = [Pos: tPosition] <
   blockscoped = Block: BLOCKEXEC .
 >.
 
-BLOCKEXEC = <
+BLOCKEXEC = [Pos:tPosition] <
   blocklist = Next: BLOCKEXEC 
 	      Stmt: STATEMENT.
   blockstmt = Stmt: STATEMENT.
