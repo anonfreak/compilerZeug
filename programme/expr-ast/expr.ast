@@ -75,10 +75,10 @@ STATEMENT = <
 >.
 
 DECLARATION = <
-  decl_ident = Type:TYPE,
-		Expr: [Name: tIdent].
-  decl_assignm = Type:TYPE,
-		  Expr: ASSIGNMENT.
+  decl_ident = Left:[Name: tIdent],
+		Right: [Name: tIdent].
+  decl_assignm = Left:[Name: TYPE],
+		  Right: ASSIGNMENT.
 >.
 
 TYPE = <

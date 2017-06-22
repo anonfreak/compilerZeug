@@ -65,7 +65,7 @@ statement = <
 
 declaration = < 
 	= l:type r:identifier
-	{tree := mdecl_ident(l:Tree, r:Tree);}.
+	{tree := mdecl_ident(l:Position, l:Tree, r:Poistion, r:Tree);}.
 	= l:type r:assignment.
 	{tree := mdecl_assignm(l:Tree, r:Tree);}.
 >.
@@ -77,18 +77,24 @@ type = <
 >.
 
 assignment = <
-	= identifier '=' computation.
+	= l:identifier '=' r:computation
+	{tree := massignment(midentifier(i:Position, i:Value), r:Tree);}.
 >.
 
 computation = <
-	= computation '+' ttt.
-	= computation '-' ttt.
-	= ttt.
+	= l:computation o:'+' r:ttt
+	{tree := mcomputation(l:Tree, o:Position, '+', r:Tree);}.
+	= computation o:'-' ttt
+	{tree := mcomputation(l:Tree, o:Position, '-', r:Tree);}.
+	= ttt
+	{tree := mcomputation}.
 >.
 
 ttt = <
-	= ttt '*' fff.
-	= ttt '/' fff.
+	= l:ttt o:'*' r:fff
+	{tree := mcomputation(l:Tree, o:Position, '*', r:Tree);}.
+	= l:ttt o:'/' r:fff
+	{tree := mcomputation(l:Tree, o:Position, '/', r:Tree);}.
 	= fff.
 >.
 
