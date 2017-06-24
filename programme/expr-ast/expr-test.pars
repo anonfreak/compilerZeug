@@ -1,0 +1,102 @@
+/* Project:  COCKTAIL training
+ * Descr:    A simple pocket computer (scanner, parser, AST construction)
+ * Kind:     Parser specification
+ * Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+ * $Id: expr.pars.in,v 1.6 2010/04/26 14:00:29 vollmer Exp $
+ */
+
+// Exercises:
+//  - Add computation of the "Tree" Attribute to all grammar rules.
+//  - Add grammar and tree construction rules to construct an AST for
+//    "sin()", "cos()", and "tan()" (see expr.ast)
+//    Add a grammar and evaluation rule for the constant    "pi"
+//  - Add more test sources to test your grammar
+
+SCANNER expr_scan
+
+PARSER  expr_pars
+
+GLOBAL {
+ # include <stdio.h>
+ # include "Tree.h"
+}
+
+PREC LEFT  '?'
+     LEFT  '|'
+     LEFT  '&'
+     LEFT  '!'
+     NONE  '<' '>' '='
+     LEFT  '+' '-'
+     LEFT  '*' '/'
+     RIGHT '^'
+     LEFT UNARY
+
+RULE
+root = l:expr_l
+  {=> {TreeRoot = ReverseTree (l:tree);};}.
+
+expr_l	= <
+	= /* epsilon */
+	  {tree := mno_exprs();}
+	.
+ exprs  = <
+	= e:expr
+	  {tree := mexprs (mno_exprs(), e:tree);}
+	.
+	= l:exprs ',' e:expr
+	  // left recursive list
+	  {tree := mexprs (l:tree, e:tree);}
+	.
+/* TODO: try what's happening if a right recursive list is used instead of a left one.
+        = e:expr ',' l:exprs
+	  // right recursive list
+	  {tree := mexprs (l:tree, e:tree);}
+	.
+*/
+ > . /* exprs */
+> . /* expr_l */
+
+expr = <
+	= l:expr o:'+' r:term
+	{tree := mbinary_expr(o:Position, '+', l:tree, r:tree);}.
+	= l:expr o:'-' r:term
+	{tree := mbinary_expr(o:Position, '-', l:tree, r:tree);}.
+	= t:term
+	{tree := mexpr (t:tree);}.
+> .
+
+term = <
+	= l:expr o:'*' r:term
+	{tree := mbinary_expr (o:Position, '*', l:tree, r:tree);}.
+	= l:expr o:'/' r:term
+	{tree := mbinary_expr (o:Position, '/', l:tree, r:tree);}.
+	= t:factor
+	{tree := mexpr (t:tree);}.
+> .
+
+factor = <
+	= '(' t:expr ')'
+	{tree := mexpr (t:tree);}.
+	= o:'-' r:factor
+	{tree := munary_expr (o:Position, '-', r:tree);}.
+	= '+' factor
+	{tree := munary_expr (o:Position, '+', r:tree);}.
+	= i:int_const
+	{tree := mint_const (i:Position, i:Value);}.
+	= f:float_const
+	{tree := mfloat_const (f:Position, f:Value);}.
+> .
+
+/* Tokens */
+int_const:    [Value: long]   {Value := 0;  } .
+float_const:  [Value: double] {Value := 0.0;} .
+string_const: [Value: tIdent] {Value := NoIdent;} .
+identifier:   [Ident: tIdent] {Ident := NoIdent; } .
+
+/* non-terminal attributes */
+MODULE attributes
+PROPERTY SYN
+DECLARE
+ expr
+ expr_l = [tree: tTree].
+END attributes

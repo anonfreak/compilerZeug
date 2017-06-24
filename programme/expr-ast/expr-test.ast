@@ -50,63 +50,6 @@ PROPERTY INPUT  /* all attributes are parameters of the generate the mXX() routi
 
 RULE  /* Here we define the node types */
 
-
-PROGRAM = <
-  program = [Name: tIdent] 
-	    Block: BLOCKSCOPED.
->.
-
-
-BLOCKSCOPED = [Pos: tPosition] <
-  blockscoped = Block: BLOCKEXEC .
->.
-
-BLOCKEXEC = [Pos:tPosition] <
-  blocklist = Next: BLOCKEXEC REV 
-	      Stmt: STATEMENT.
-  blockstmt = Stmt: STATEMENT.
->.
-
-STATEMENT = <
-  no_stmt = .
-  declaration = Next: DECLARATION.
-  assignment = Next: ASSIGNMENT.
-  keyword = Next: KEYWORD.
->.
-
-DECLARATION = <
-  decl_ident = Left:[Name: tIdent],
-		Right: [Name: tIdent].
-  decl_assignm = Left:[Name: TYPE],
-		  Right: ASSIGNMENT.
->.
-
-TYPE = <
-  type = [Str: tIdent].
->.
-
-ASSIGNMENT = <
-  assignment = Left: [Name: tIdent]
-		Right: COMPUTATION.
->.
-
-COMPUTATION = <
-  computation_l = Left:VARIABLE,
-		[Op: char],
-		Right: COMPUTATION.
-  increment = Left: VARIABLE,
-	      Right: [Op: tIdent].
-  nocomp = Comp: VARIABLE. 
->.
-
-VARIABLE = <
-  
->.
-
-KEYWORD = <
- 
->.
-
 /* list of expressions */
 EXPRS = <
   no_exprs	= /* end of list */
@@ -121,23 +64,33 @@ EXPRS = <
 
 /* expressions */
 EXPR = [Pos: tPosition] <
-   int_const	= [Value: int]
-		.
-/* TODO: - add tree specification for floating point constants,
- *         node name "float_const"
- *       - add unary expressions, node name "unary_expr"
- */
    binary_expr	= [Op  : char ]     /* binary expressions */
 		  Left : EXPR
-		  Right: EXPR
-  		.
-/* TODO: add conditional expressions, node name "cond_expr" */
-
-// TODO: Add rules for sin(), cos(), tan()
-//       Note: Generalize: only one AST-node type should be used,
-//             and functions may take list of expressions.
-//             Use the reuse tIdent  data type to represent the function's name.
+		  Right: TERM .
+    int_const	= [Value: int]
+		.
+   float_const	= [Value: double]
+		.
+   unary_expr   = [Op     : char ]   /* unary expressions */
+		  Argument: EXPR
+		.
+  epxr		= Expr: EXPR.
 > .
+
+TERM = [Pos: tPosition] <
+   binary_expr	= [Op  : char ]     /* binary expressions */
+		  Left : TERM
+		  Right: EXPR .
+    int_const	= [Value: int]
+		.
+   float_const	= [Value: double]
+		.
+   unary_expr   = [Op     : char ]   /* unary expressions */
+		  Argument: TERM
+		.
+  epxr		= Expr: EXPR.
+> .
+
 END abstract_syntax
 
 /* REAMDE about this specification.
