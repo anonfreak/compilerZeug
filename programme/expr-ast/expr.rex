@@ -1,3 +1,4 @@
+#@ line 1
 /* Project:  COCKTAIL training
  * Descr:    LR parser for an expression language
  * Kind:     Scanner specification
@@ -17,7 +18,33 @@ EXPORT {
  * LPP extracts the token-attribute declaration from the parser specification.
  * They are inserted here.
  */
-INSERT tScanAttribute
+
+#@ line 23
+# ifndef CommonScanAttrs
+# define CommonScanAttrs
+# endif
+
+# define zzCommonScanAttrs tPosition Position; CommonScanAttrs
+
+typedef struct { zzCommonScanAttrs tIdent Value; } zz_expr_scan_string_const;
+typedef struct { zzCommonScanAttrs tIdent Ident; } zz_expr_scan_identifier;
+typedef struct { zzCommonScanAttrs long Value; } zz_expr_scan_int_const;
+typedef struct { zzCommonScanAttrs double Value; } zz_expr_scan_float_const;
+
+typedef union {
+tPosition Position;
+struct { zzCommonScanAttrs } Common;
+zz_expr_scan_string_const string_const;
+zz_expr_scan_identifier identifier;
+zz_expr_scan_int_const int_const;
+zz_expr_scan_float_const float_const;
+} expr_scan_tScanAttribute;
+
+# undef zzCommonScanAttrs
+
+extern void expr_scan_ErrorAttribute ARGS((int Token, expr_scan_tScanAttribute * pAttribute));
+#@ line 20
+
 }
 
 GLOBAL {
@@ -28,7 +55,33 @@ GLOBAL {
 /* Insert the routine computing "error-values" of attributes, in case the
  * parser decides during error repair to insert a token.
  */
-INSERT ErrorAttribute
+
+#@ line 60
+void expr_scan_ErrorAttribute
+# ifdef HAVE_ARGS
+ (int Token, expr_scan_tScanAttribute * pAttribute)
+# else
+ (Token, pAttribute) int Token; expr_scan_tScanAttribute * pAttribute;
+# endif
+{
+ pAttribute->Position = expr_scan_Attribute.Position;
+ switch (Token) {
+ case /* string_const */ 1: 
+pAttribute->string_const.Value = NoIdent;
+ break;
+ case /* identifier */ 2: 
+pAttribute->identifier.Ident = NoIdent;
+ break;
+ case /* int_const */ 3: 
+pAttribute->int_const.Value = 0;
+ break;
+ case /* float_const */ 4: 
+pAttribute->float_const.Value = 0.0;
+ break;
+ }
+}
+#@ line 31
+
 }
 
 LOCAL {
@@ -85,14 +138,14 @@ RULES
 #STD# {0-9}+ :
 	{expr_scan_GetWord (string);
 	 expr_scan_Attribute.int_const.Value = atol (string);
-	 return int_const;
+	 return 3;
 	}
 
 /* Float numbers */
 #STD# digit + "." digit * (("E"|"e") ("+"|"-") ? digit +) ? :
 	{expr_scan_GetWord (string);
 	 expr_scan_Attribute.float_const.Value = atof (string);
-	 return float_const;
+	 return 4;
 	}
 
 #STD# < "--" ANY * > :
@@ -128,12 +181,36 @@ RULES
 	  }
 	}
 
-INSERT RULES #STD#
+
+#@ line 186
+ #STD#"b"\e\g\i"n"	: { return 5; }
+ #STD#\i"n""t"	: { return 6; }
+ #STD#"f"\l\o"a""t"	: { return 7; }
+ #STD#\s"t""r"\i"n"\g	: { return 8; }
+ #STD#\=	: { return 9; }
+ #STD#\+	: { return 10; }
+ #STD#\*	: { return 11; }
+ #STD#\(	: { return 12; }
+ #STD#\)	: { return 13; }
+ #STD#\-	: { return 14; }
+ #STD#\/	: { return 15; }
+ #STD#\;	: { return 16; }
+ #STD#\i"f"	: { return 17; }
+ #STD#\<	: { return 18; }
+ #STD#\>	: { return 19; }
+ #STD#\!\=	: { return 20; }
+ #STD#"t"\h\e"n"	: { return 21; }
+ #STD#\e\l\s\e\i"f"	: { return 22; }
+ #STD#\e\l\s\e	: { return 23; }
+ #STD#\w\h\i\l\e	: { return 24; }
+ #STD#"f"\o"r"	: { return 25; }
+ #STD#\e"n"\d	: { return 26; }
+#@ line 132
 	
 /* Bezeichner */
 #STD# letter (letter | digit) * :
 	{
-	  return identifier;
+	  return 2;
 	}
 
 /* Goes into String state after the start of a string is detected */
@@ -164,7 +241,7 @@ INSERT RULES #STD#
 	  expr_scan_Attribute.string_const.Value = malloc (length + 1);
 	  /*copy real input to const */
 	  strcpy (expr_scan_Attribute.string_const.Value, string); 
-	  return string_const;
+	  return 1;
 	}
 
 #STRING# \\ \" :
@@ -205,7 +282,7 @@ INSERT RULES #STD#
 	  yyEol (0);
           Message ("String nicht beendet", xxError, expr_scan_Attribute.Position);
 	  expr_scan_Attribute.string_const.Value = "";
-          return string_const;
+          return 1;
         }
 
 /**********************************************************************/

@@ -27,19 +27,14 @@ EXPORT {
   # include "Idents.h"
 
   /* tIdent's for function names */
-  extern tIdent id_sin, id_cos, id_tan;
 } // EXPORT
 
 GLOBAL {
   /* The target-code of this section is copied into the generated .c file */
-   tIdent id_sin, id_cos, id_tan;
 } // GLOBAL
 
 BEGIN {
   /* Target code to be placerd in the BeginTREE() function */
-  id_sin = MakeIdent1 ("sin");
-  id_cos = MakeIdent1 ("cos");
-  id_tan = MakeIdent1 ("tan");
 } // BEGIN
 
 CLOSE {
@@ -51,93 +46,68 @@ PROPERTY INPUT  /* all attributes are parameters of the generate the mXX() routi
 RULE  /* Here we define the node types */
 
 
-PROGRAM = <
-  program = [Name: tIdent] 
-	    Block: BLOCKSCOPED.
+PROGRAM = [Pos:tPosition] <
+  program = [Ident: tIdent] 
+	    Block: BLOCKEXEC.
 >.
 
 
-BLOCKSCOPED = [Pos: tPosition] <
-  blockscoped = Block: BLOCKEXEC .
->.
-
-BLOCKEXEC = [Pos:tPosition] <
-  blocklist = Next: BLOCKEXEC REV 
+BLOCKEXEC = <
+  blocklist = Next: BLOCKEXEC
 	      Stmt: STATEMENT.
-  blockstmt = Stmt: STATEMENT.
+  blocknostmt = .
 >.
 
-STATEMENT = <
+
+STATEMENT =  <
   no_stmt = .
   declaration = Next: DECLARATION.
   assignment = Next: ASSIGNMENT.
   keyword = Next: KEYWORD.
 >.
 
-DECLARATION = <
-  decl_ident = Left:[Name: tIdent],
-		Right: [Name: tIdent].
-  decl_assignm = Left:[Name: TYPE],
-		  Right: ASSIGNMENT.
+DECLARATION = [Pos:tPosition] <
+  decl_ident = [Value: tIdent]
+	       [Ident: tIdent].
+  decl_assignm = [Value: tIdent]
+		 Right: ASSIGNMENT.
 >.
 
-TYPE = <
-  type = [Str: tIdent].
->.
-
-ASSIGNMENT = <
-  assignment = Left: [Name: tIdent]
+ASSIGNMENT = [Pos:tPosition] <
+  assign = [Ident: tIdent]
 		Right: COMPUTATION.
 >.
 
-COMPUTATION = <
-  computation_l = Left:VARIABLE,
-		[Op: char],
-		Right: COMPUTATION.
-  increment = Left: VARIABLE,
-	      Right: [Op: tIdent].
-  nocomp = Comp: VARIABLE. 
->.
-
-VARIABLE = <
-  
+COMPUTATION = [Pos:tPosition] <
+  binary_comp	= [Op  : char ]     /* binary expressions */
+		  Left : COMPUTATION
+		  Right: COMPUTATION .
+    int_const	= [Value: int]
+		.
+   float_const	= [Value: double]
+		.
+   unary_comp   = [Op     : char ]   /* unary expressions */
+		  Argument: COMPUTATION
+		.
+  string_const	= [Value: tIdent].
+  identifier	= [Ident: tIdent].
 >.
 
 KEYWORD = <
- 
+  keyword_if = Cond: COMPUTATION
+		Block: BLOCKEXEC
+		ElseIf: KEYWORD.
+  keyword_else = Block: BLOCKSCOPED.
+  nokeyword = .
+  keyword_while = Cond: COMPUTATION
+		  Block: BLOCKEXEC.
+  keyword_for = Decl: DECLARATION
+		Cond: COMPUTATION
+		Ass: ASSIGNMENT
+		Block: BLOCKEXEC.
 >.
 
-/* list of expressions */
-EXPRS = <
-  no_exprs	= /* end of list */
-		.
-  exprs		= Next: EXPRS   REV /* a PROPERTY of a node child
-                                     * REV: "this is the list-next-pointer"
-				     * `ReverseTREE' reverses the list "over" this field
-				     */
-		  Expr: EXPR
-		.
-> .
 
-/* expressions */
-EXPR = [Pos: tPosition] <
-   int_const	= [Value: int]
-		.
-/* TODO: - add tree specification for floating point constants,
- *         node name "float_const"
- *       - add unary expressions, node name "unary_expr"
- */
-   binary_expr	= [Op  : char ]     /* binary expressions */
-		  Left : EXPR
-		  Right: EXPR
-  		.
-/* TODO: add conditional expressions, node name "cond_expr" */
-
-// TODO: Add rules for sin(), cos(), tan()
-//       Note: Generalize: only one AST-node type should be used,
-//             and functions may take list of expressions.
-//             Use the reuse tIdent  data type to represent the function's name.
-> .
 END abstract_syntax
 
 /* REAMDE about this specification.

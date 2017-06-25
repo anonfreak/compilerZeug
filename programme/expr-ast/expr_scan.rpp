@@ -1,0 +1,75 @@
+c
+# ifndef CommonScanAttrs
+# define CommonScanAttrs
+# endif
+
+# define zzCommonScanAttrs tPosition Position; CommonScanAttrs
+
+typedef struct { zzCommonScanAttrs tIdent Value; } zz_expr_scan_string_const;
+typedef struct { zzCommonScanAttrs tIdent Ident; } zz_expr_scan_identifier;
+typedef struct { zzCommonScanAttrs long Value; } zz_expr_scan_int_const;
+typedef struct { zzCommonScanAttrs double Value; } zz_expr_scan_float_const;
+
+typedef union {
+tPosition Position;
+struct { zzCommonScanAttrs } Common;
+zz_expr_scan_string_const string_const;
+zz_expr_scan_identifier identifier;
+zz_expr_scan_int_const int_const;
+zz_expr_scan_float_const float_const;
+} expr_scan_tScanAttribute;
+
+# undef zzCommonScanAttrs
+
+extern void expr_scan_ErrorAttribute ARGS((int Token, expr_scan_tScanAttribute * pAttribute));
+%%
+void expr_scan_ErrorAttribute
+# ifdef HAVE_ARGS
+ (int Token, expr_scan_tScanAttribute * pAttribute)
+# else
+ (Token, pAttribute) int Token; expr_scan_tScanAttribute * pAttribute;
+# endif
+{
+ pAttribute->Position = expr_scan_Attribute.Position;
+ switch (Token) {
+ case /* string_const */ 1: 
+pAttribute->string_const.Value = NoIdent;
+ break;
+ case /* identifier */ 2: 
+pAttribute->identifier.Ident = NoIdent;
+ break;
+ case /* int_const */ 3: 
+pAttribute->int_const.Value = 0;
+ break;
+ case /* float_const */ 4: 
+pAttribute->float_const.Value = 0.0;
+ break;
+ }
+}
+%%
+1 S string_const string_const
+2 S identifier identifier
+3 S int_const int_const
+4 S float_const float_const
+5 N yy67 'begin'
+6 N yy68 'int'
+7 N yy69 'float'
+8 N yy70 'string'
+9 N yy71 '='
+10 N yy72 '+'
+11 N yy73 '*'
+12 N yy74 '('
+13 N yy75 ')'
+14 N yy76 '-'
+15 N yy77 '/'
+16 N yy78 ';'
+17 N yy79 'if'
+18 N yy80 '<'
+19 N yy81 '>'
+20 N yy82 '!='
+21 N yy83 'then'
+22 N yy84 'elseif'
+23 N yy85 'else'
+24 N yy86 'while'
+25 N yy87 'for'
+26 N yy88 'end'

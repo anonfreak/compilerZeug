@@ -38,19 +38,18 @@ root = l:program
 
 program = <
 	= i:identifier b:block_scoped
-	{tree := mprogram (midentifier(i:Position, i:Value), b:tree);}.
+	{tree := mprogram (i:Position, i:Ident, b:tree);}.
 >.
 
 block_scoped = <
-	= 'begin' b:block_exec 'end'
-	{tree := mblockscoped (b:tree);}.
->.
-
+	= 'begin' block_exec 'end'.
+>. 
+ 
 block_exec = <
-	= l:block_exec r:statement
-	{tree := mblocklist (l:tree, r:tree);}.
-	= s:statement
-	{tree := mblockstmt (s:tree);}.
+	  = l:block_exec r:statement
+	  {tree := mblocklist (l:tree, r:tree);}.
+	  = 
+	  {tree := mblocknostmt ();}.
 >.
 
 statement = <
@@ -60,42 +59,41 @@ statement = <
 	{tree := massignment (a:tree);}.
 	= k:keyword
 	{tree := mkeyword (k:tree);}.
-	= .
-	{tree := mno_stmt ();}
 >.
 
 declaration = < 
-	= l:type r:identifier
-	{tree := mdecl_ident (l:Position, l:tree, r:Position, r:tree);}.
-	= l:type r:assignment.
-	{tree := mdecl_assignm (l:tree, r:tree);}.
->.
-
-type = <
-	= 'int'.
-	= 'float'.
-	= 'string'.
+	= l:'int' r:identifier
+	{tree := mdecl_ident (l:Position, 'int', r:Ident);}.
+	= l:'float' r:identifier
+	{tree := mdecl_ident (l:Position, 'float', r:Ident);}.
+	= l:'string' r:identifier
+	{tree := mdecl_ident (l:Position, 'string', r:Ident);}.
+	= l:'float' r:assignment
+	{tree := mdecl_assignm (l:Position, 'float', r:tree);}.
+	= l:'int' r:assignment
+	{tree := mdecl_assignm (l:Position, 'int', r:tree);}.
+	= l:'string' r:assignment
+	{tree := mdecl_assignm (l:Position, 'string', r:tree);}.
 >.
 
 assignment = <
-	= l:identifier '=' r:computation
-	{tree := massignment (midentifier(i:Position, i:Value), r:tree);}.
+	= i:identifier '=' r:computation
+	{tree := massign (i:Position, i:Ident, r:tree);}.
 >.
 
 computation = <
 	= l:computation o:'+' r:ttt
-	{tree := mcomputation (l:tree, o:Position, '+', r:tree);}.
-	= computation o:'-' ttt
-	{tree := mcomputation (l:tree, o:Position, '-', r:tree);}.
-	= ttt
-	{tree := mcomputation}.
+	{tree := mbinary_comp (o:Position, '+', l:tree, r:tree);}.
+	= l:computation o:'-' r:ttt
+	{tree := mbinary_comp (o:Position, '-', l:tree, r:tree);}.
+	= ttt.
 >.
 
 ttt = <
 	= l:ttt o:'*' r:fff
-	{tree := mcomputation (l:tree, o:Position, '*', r:tree);}.
+	{tree := mbinary_comp (o:Position, '*', l:tree, r:tree);}.
 	= l:ttt o:'/' r:fff
-	{tree := mcomputation (l:tree, o:Position, '/', r:tree);}.
+	{tree := mbinary_comp (o:Position, '/', l:tree, r:tree);}.
 	= fff.
 >.
 
@@ -106,16 +104,21 @@ fff = <
 
 variable = <
 	= variable_.
-	= float_const.
-	= '-' variable_ PREC UNARY.
-	= '+' variable_ PREC UNARY.
+	= o:'-' l:variable_ PREC UNARY
+	{tree := munary_comp (o:Position, '-', l:tree);}.
+	= o:'+' l:variable_ PREC UNARY
+	{tree := munary_comp (o:Position, '+', l:tree);}.
 >.
 
 variable_ = <
-	= identifier.
-	= string_const.
-	= int_const.
-	= float_const.
+	= i:identifier
+	{tree := midentifier (i:Position, i:Ident);}.
+	= s:string_const
+	{tree := mstring_const (s:Position, s:Value);}.
+	= i:int_const
+	{tree := mint_const (i:Position, i:Value);}.
+	= f:float_const
+	{tree := mfloat_const (f:Position, f:Value);}.
 >.
 
 keyword = <
@@ -125,36 +128,42 @@ keyword = <
 >.
 
 keyword_if = <
-	= 'if' '(' condition ')' 'then' block_scoped keyword_elseif.
+	= 'if' '(' c:condition ')' 'then' b:block_scoped e:keyword_elseif
+	{tree := mkeyword_if(c:tree, b:tree, e:tree);}.
 >.
 
 keyword_elseif = <
-	= 'elseif' '(' condition ')' 'then' block_scoped keyword_elseif.
+	= 'elseif' '(' c:condition ')' 'then' b:block_scoped e:keyword_elseif
+	{tree := mkeyword_if(c:tree, b:tree, e:tree);}.
 	= keyword_else.
 >.
 
 keyword_else = <
-	= 'else' block_scoped.
-	= .
+	= 'else' b:block_scoped
+	{tree := mkeyword_else(b:tree);}.
+	= 
+	{tree := mnokeyword();}.
 >.
 
 keyword_while = <
-	= 'while' '(' condition ')' block_scoped.
+	= 'while' '(' c:condition ')' b:block_scoped
+	{tree := mkeyword_while(c:tree, b:tree);}.
 >.
 
 keyword_for = <
-	= 'for' '(' declaration ';' condition ';' assignment ')' block_scoped.
+	= 'for' '(' d:declaration ';' c:condition ';' a:assignment ')' b:block_scoped
+	{tree := mkeyword_for(d:tree, c:tree, a:tree, b:tree);}.
 >.
 
 condition = <
-	= computation compare computation.
->.
-
-compare = <
-	= '<'.
-	= '>'.
-	= '='.
-	= '!='.
+	= l:computation c:'<' r:computation
+	{tree := mbinary_comp (c:Position, '<', l:tree, r:tree);}.
+	= l:computation c:'>' r:computation
+	{tree := mbinary_comp (c:Position, '>', l:tree, r:tree);}.
+	= l:computation c:'=' r:computation
+	{tree := mbinary_comp (c:Position, '=', l:tree, r:tree);}.
+	= l:computation c:'!=' r:computation
+	{tree := mbinary_comp (c:Position, '!=', l:tree, r:tree);}.
 >.
 
 /* Tokens */
@@ -167,6 +176,23 @@ float_const:  [Value: double] {Value := 0.0;}.
 MODULE attributes
 PROPERTY SYN
 DECLARE
- expr
- expr_l = [tree: ttree].
+ block_scoped
+ block_exec
+ statement
+ declaration
+ assignment
+ computation
+ ttt
+ fff
+ variable
+ variable_
+ keyword
+ keyword_if
+ keyword_else
+ keyword_elseif
+ keyword_while
+ keyword_for
+ condition 
+ program = [tree: tTree].
+ 
 END attributes

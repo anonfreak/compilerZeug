@@ -56,42 +56,36 @@ expr_l	= <
  > . /* exprs */
 > . /* expr_l */
 
-expr = <
-	= l:expr o:'+' r:term
-	{tree := mbinary_expr(o:Position, '+', l:tree, r:tree);}.
-	= l:expr o:'-' r:term
-	{tree := mbinary_expr(o:Position, '-', l:tree, r:tree);}.
-	= t:term
-	{tree := mexpr (t:tree);}.
-> .
-
-term = <
-	= l:expr o:'*' r:term
+expr = [Pos:tPosition] <
+	= l:expr o:'+' r:expr
+	{tree := mbinary_expr (o:Position, '+', l:tree, r:tree);}.
+	= l:expr o:'-' r:expr
+	{tree := mbinary_expr (o:Position, '-', l:tree, r:tree);}.
+	= l:expr o:'*' r:expr
 	{tree := mbinary_expr (o:Position, '*', l:tree, r:tree);}.
-	= l:expr o:'/' r:term
+	= l:expr o:'/' r:expr
 	{tree := mbinary_expr (o:Position, '/', l:tree, r:tree);}.
-	= t:factor
-	{tree := mexpr (t:tree);}.
-> .
-
-factor = <
-	= '(' t:expr ')'
-	{tree := mexpr (t:tree);}.
-	= o:'-' r:factor
+	= '(' t:expr ')'.
+	= o:'-' r:expr PREC UNARY
 	{tree := munary_expr (o:Position, '-', r:tree);}.
-	= '+' factor
+	= o:'+' r:expr PREC UNARY
 	{tree := munary_expr (o:Position, '+', r:tree);}.
 	= i:int_const
 	{tree := mint_const (i:Position, i:Value);}.
 	= f:float_const
 	{tree := mfloat_const (f:Position, f:Value);}.
+	= s:string_const
+	{tree := mstring_const (s:Position, s:Value);}.
+	= i:identifier
+	{tree := midentifier (i:Position, i:Ident);}.
 > .
 
 /* Tokens */
-int_const:    [Value: long]   {Value := 0;  } .
-float_const:  [Value: double] {Value := 0.0;} .
-string_const: [Value: tIdent] {Value := NoIdent;} .
-identifier:   [Ident: tIdent] {Ident := NoIdent; } .
+string_const: [Value: tIdent] {Value := NoIdent;}.
+identifier:   [Ident: tIdent] {Ident := NoIdent;}.
+int_const:    [Value: long]   {Value := 0;}.
+float_const:  [Value: double] {Value := 0.0;}.
+
 
 /* non-terminal attributes */
 MODULE attributes
@@ -99,4 +93,5 @@ PROPERTY SYN
 DECLARE
  expr
  expr_l = [tree: tTree].
+
 END attributes

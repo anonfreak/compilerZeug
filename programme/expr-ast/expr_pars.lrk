@@ -1,0 +1,268 @@
+SCANNER expr_scan PARSER expr_pars
+IMPORT {
+}
+
+EXPORT {
+}
+
+GLOBAL {
+
+#@ line 25 "expr.pars"
+
+ # include <stdio.h>
+ # include "Tree.h"
+
+
+#@ line 17 "expr_pars.lrk"
+# ifdef CommonParsAttrs
+typedef struct { CommonParsAttrs } yytCommonParsAttrs;
+#  define yyCommon yytCommonParsAttrs Common;
+#  define yyCommonParsAttrs CommonParsAttrs
+# else
+#  define yyCommon
+#  define yyCommonParsAttrs
+# endif
+
+typedef struct { yyCommonParsAttrs tTree tree; } zz_program;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_block_scoped;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_block_exec;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_statement;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_declaration;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_assignment;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_computation;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_ttt;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_fff;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_variable;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_variable_;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_keyword;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_keyword_if;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_keyword_elseif;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_keyword_else;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_keyword_while;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_keyword_for;
+typedef struct { yyCommonParsAttrs tTree tree; } zz_condition;
+
+typedef union {
+expr_scan_tScanAttribute Scan;
+yyCommon
+zz_program program;
+zz_block_scoped block_scoped;
+zz_block_exec block_exec;
+zz_statement statement;
+zz_declaration declaration;
+zz_assignment assignment;
+zz_computation computation;
+zz_ttt ttt;
+zz_fff fff;
+zz_variable variable;
+zz_variable_ variable_;
+zz_keyword keyword;
+zz_keyword_if keyword_if;
+zz_keyword_elseif keyword_elseif;
+zz_keyword_else keyword_else;
+zz_keyword_while keyword_while;
+zz_keyword_for keyword_for;
+zz_condition condition;
+} tParsAttribute;
+}
+
+LOCAL {
+}
+
+BEGIN {
+}
+
+CLOSE {
+}
+
+TOKEN
+
+string_const = 1
+identifier = 2
+int_const = 3
+float_const = 4
+'begin' = 5
+'int' = 6
+'float' = 7
+'string' = 8
+'=' = 9
+'+' = 10
+'*' = 11
+'(' = 12
+')' = 13
+'-' = 14
+'/' = 15
+';' = 16
+'if' = 17
+'<' = 18
+'>' = 19
+'!=' = 20
+'then' = 21
+'elseif' = 22
+'else' = 23
+'while' = 24
+'for' = 25
+'end' = 26
+
+OPER
+
+LEFT  '+' '-'
+LEFT  '*' '/'
+RIGHT '^'
+LEFT  UNARY
+
+RULE
+
+root : program {
+#@ line 37 "expr.pars"
+{  TreeRoot = ReverseTree ($1.program.tree);; }} .
+
+#@ line 40 "expr.pars"
+program : identifier block_scoped {
+$$.program.tree = mprogram ($1.Scan.Position, $1.Scan.identifier.Ident, $2.block_scoped.tree);} .
+
+#@ line 45 "expr.pars"
+block_scoped : 'begin' block_exec 'end' {
+#@ line 127 "expr_pars.lrk"
+$$.block_scoped.tree = $2.block_exec.tree;
+} .
+
+#@ line 49 "expr.pars"
+block_exec : block_exec statement {
+$$.block_exec.tree = mblocklist ($1.block_exec.tree, $2.statement.tree);} .
+block_exec : {
+$$.block_exec.tree = mblocknostmt ();} .
+
+#@ line 56 "expr.pars"
+statement : declaration ';' {
+$$.statement.tree = mdeclaration ($1.declaration.tree);} .
+statement : assignment ';' {
+$$.statement.tree = massignment ($1.assignment.tree);} .
+statement : keyword {
+$$.statement.tree = mkeyword ($1.keyword.tree);} .
+
+#@ line 65 "expr.pars"
+declaration : 'int' identifier {
+$$.declaration.tree = mdecl_ident ($1.Scan.Position, 'int', $2.Scan.identifier.Ident);} .
+declaration : 'float' identifier {
+$$.declaration.tree = mdecl_ident ($1.Scan.Position, 'float', $2.Scan.identifier.Ident);} .
+declaration : 'string' identifier {
+$$.declaration.tree = mdecl_ident ($1.Scan.Position, 'string', $2.Scan.identifier.Ident);} .
+declaration : 'float' assignment {
+$$.declaration.tree = mdecl_assignm ($1.Scan.Position, 'float', $2.assignment.tree);} .
+declaration : 'int' assignment {
+$$.declaration.tree = mdecl_assignm ($1.Scan.Position, 'int', $2.assignment.tree);} .
+declaration : 'string' assignment {
+$$.declaration.tree = mdecl_assignm ($1.Scan.Position, 'string', $2.assignment.tree);} .
+
+#@ line 80 "expr.pars"
+assignment : identifier '=' computation {
+$$.assignment.tree = massign ($1.Scan.Position, $1.Scan.identifier.Ident, $3.computation.tree);} .
+
+#@ line 85 "expr.pars"
+computation : computation '+' ttt {
+$$.computation.tree = mbinary_comp ($2.Scan.Position, '+', $1.computation.tree, $3.ttt.tree);} .
+computation : computation '-' ttt {
+$$.computation.tree = mbinary_comp ($2.Scan.Position, '-', $1.computation.tree, $3.ttt.tree);} .
+computation : ttt {
+#@ line 169 "expr_pars.lrk"
+$$.computation.tree = $1.ttt.tree;
+} .
+
+#@ line 93 "expr.pars"
+ttt : ttt '*' fff {
+$$.ttt.tree = mbinary_comp ($2.Scan.Position, '*', $1.ttt.tree, $3.fff.tree);} .
+ttt : ttt '/' fff {
+$$.ttt.tree = mbinary_comp ($2.Scan.Position, '/', $1.ttt.tree, $3.fff.tree);} .
+ttt : fff {
+#@ line 179 "expr_pars.lrk"
+$$.ttt.tree = $1.fff.tree;
+} .
+
+#@ line 101 "expr.pars"
+fff : '(' computation ')' {
+#@ line 185 "expr_pars.lrk"
+$$.fff.tree = $2.computation.tree;
+} .
+
+#@ line 102 "expr.pars"
+fff : variable {
+#@ line 191 "expr_pars.lrk"
+$$.fff.tree = $1.variable.tree;
+} .
+
+#@ line 106 "expr.pars"
+variable : variable_ {
+#@ line 197 "expr_pars.lrk"
+$$.variable.tree = $1.variable_.tree;
+} .
+
+#@ line 107 "expr.pars"
+variable : '-' variable_ PREC UNARY {
+$$.variable.tree = munary_comp ($1.Scan.Position, '-', $2.variable_.tree);} .
+variable : '+' variable_ PREC UNARY {
+$$.variable.tree = munary_comp ($1.Scan.Position, '+', $2.variable_.tree);} .
+
+#@ line 114 "expr.pars"
+variable_ : identifier {
+$$.variable_.tree = midentifier ($1.Scan.Position, $1.Scan.identifier.Ident);} .
+variable_ : string_const {
+$$.variable_.tree = mstring_const ($1.Scan.Position, $1.Scan.string_const.Value);} .
+variable_ : int_const {
+$$.variable_.tree = mint_const ($1.Scan.Position, $1.Scan.int_const.Value);} .
+variable_ : float_const {
+$$.variable_.tree = mfloat_const ($1.Scan.Position, $1.Scan.float_const.Value);} .
+
+#@ line 125 "expr.pars"
+keyword : keyword_if {
+#@ line 219 "expr_pars.lrk"
+$$.keyword.tree = $1.keyword_if.tree;
+} .
+
+#@ line 126 "expr.pars"
+keyword : keyword_while {
+#@ line 225 "expr_pars.lrk"
+$$.keyword.tree = $1.keyword_while.tree;
+} .
+
+#@ line 127 "expr.pars"
+keyword : keyword_for {
+#@ line 231 "expr_pars.lrk"
+$$.keyword.tree = $1.keyword_for.tree;
+} .
+
+#@ line 131 "expr.pars"
+keyword_if : 'if' '(' condition ')' 'then' block_scoped keyword_elseif {
+$$.keyword_if.tree = mkeyword_if($3.condition.tree, $6.block_scoped.tree, $7.keyword_elseif.tree);} .
+
+#@ line 136 "expr.pars"
+keyword_elseif : 'elseif' '(' condition ')' 'then' block_scoped keyword_elseif {
+$$.keyword_elseif.tree = mkeyword_if($3.condition.tree, $6.block_scoped.tree, $7.keyword_elseif.tree);} .
+keyword_elseif : keyword_else {
+#@ line 243 "expr_pars.lrk"
+$$.keyword_elseif.tree = $1.keyword_else.tree;
+} .
+
+#@ line 142 "expr.pars"
+keyword_else : 'else' block_scoped {
+$$.keyword_else.tree = mkeyword_else($2.block_scoped.tree);} .
+keyword_else : {
+$$.keyword_else.tree = mnokeyword();} .
+
+#@ line 149 "expr.pars"
+keyword_while : 'while' '(' condition ')' block_scoped {
+$$.keyword_while.tree = mkeyword_while($3.condition.tree, $5.block_scoped.tree);} .
+
+#@ line 154 "expr.pars"
+keyword_for : 'for' '(' declaration ';' condition ';' assignment ')' block_scoped {
+$$.keyword_for.tree = mkeyword_for($3.declaration.tree, $5.condition.tree, $7.assignment.tree, $9.block_scoped.tree);} .
+
+#@ line 159 "expr.pars"
+condition : computation '<' computation {
+$$.condition.tree = mbinary_comp ($2.Scan.Position, '<', $1.computation.tree, $3.computation.tree);} .
+condition : computation '>' computation {
+$$.condition.tree = mbinary_comp ($2.Scan.Position, '>', $1.computation.tree, $3.computation.tree);} .
+condition : computation '=' computation {
+$$.condition.tree = mbinary_comp ($2.Scan.Position, '=', $1.computation.tree, $3.computation.tree);} .
+condition : computation '!=' computation {
+$$.condition.tree = mbinary_comp ($2.Scan.Position, '!=', $1.computation.tree, $3.computation.tree);} .

@@ -1,0 +1,97 @@
+GRAMMAR 28 20 48 45
+TERMINAL
+0 _EOF_
+1 string_const
+2 identifier
+3 int_const
+4 float_const
+5 'begin'
+6 'int'
+7 'float'
+8 'string'
+9 '='
+10 '+'
+11 '*'
+12 '('
+13 ')'
+14 '-'
+15 '/'
+16 ';'
+17 'if'
+18 '<'
+19 '>'
+20 '!='
+21 'then'
+22 'elseif'
+23 'else'
+24 'while'
+25 'for'
+26 'end'
+27 UNARY
+NONTERMINAL
+29 0_intern
+30 root
+31 program
+32 block_scoped
+33 block_exec
+34 statement
+35 declaration
+36 assignment
+37 computation
+38 ttt
+39 fff
+40 variable
+41 variable_
+42 keyword
+43 keyword_if
+44 keyword_elseif
+45 keyword_else
+46 keyword_while
+47 keyword_for
+48 condition
+RULE
+1 2 29 30 0 
+2 1 30 31 
+3 2 31 2 32 
+4 3 32 5 33 26 
+6 0 33 
+5 2 33 33 34 
+7 2 34 35 16 
+8 2 34 36 16 
+9 1 34 42 
+12 2 35 8 2 
+11 2 35 7 2 
+10 2 35 6 2 
+15 2 35 8 36 
+14 2 35 6 36 
+13 2 35 7 36 
+16 3 36 2 9 37 
+19 1 37 38 
+18 3 37 37 14 38 
+17 3 37 37 10 38 
+22 1 38 39 
+21 3 38 38 15 39 
+20 3 38 38 11 39 
+24 1 39 40 
+23 3 39 12 37 13 
+25 1 40 41 
+27 2 40 10 41 
+26 2 40 14 41 
+31 1 41 4 
+30 1 41 3 
+29 1 41 1 
+28 1 41 2 
+33 1 42 46 
+32 1 42 43 
+34 1 42 47 
+35 7 43 17 12 48 13 21 32 44 
+37 1 44 45 
+36 7 44 22 12 48 13 21 32 44 
+39 0 45 
+38 2 45 23 32 
+40 5 46 24 12 48 13 32 
+41 9 47 25 12 35 16 48 16 36 13 32 
+45 3 48 37 20 37 
+44 3 48 37 9 37 
+43 3 48 37 19 37 
+42 3 48 37 18 37 
