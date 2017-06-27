@@ -49,45 +49,24 @@ float_const = 4
 'float' = 7
 'string' = 8
 '=' = 9
-<<<<<<< HEAD
 '+' = 10
 '*' = 11
 '(' = 12
 ')' = 13
 '-' = 14
-'/' = 15
-';' = 16
-'if' = 17
-'<' = 18
-'>' = 19
-'!=' = 20
-'then' = 21
-'elseif' = 22
-'else' = 23
-'while' = 24
-'for' = 25
-'end' = 26
-=======
-'(' = 10
-')' = 11
-'+' = 12
-'-' = 13
-'/' = 14
-'*' = 15
-'^' = 16
-lvariable_ = 17
-';' = 18
-'if' = 19
-'<' = 20
-'>' = 21
-'!=' = 22
-'then' = 23
-'elseif' = 24
-'else' = 25
-'while' = 26
-'for' = 27
-'end' = 28
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+lvariable_ = 15
+'/' = 16
+';' = 17
+'if' = 18
+'<' = 19
+'>' = 20
+'!=' = 21
+'then' = 22
+'elseif' = 23
+'else' = 24
+'while' = 25
+'for' = 26
+'end' = 27
 
 OPER
 
@@ -108,115 +87,76 @@ block_scoped : 'begin' block_exec 'end' .
 
 #@ line 46 "expr.pars"
 block_exec : block_exec statement .
-block_exec : statement .
+block_exec : .
 
 #@ line 51 "expr.pars"
 statement : declaration ';' .
 statement : assignment ';' .
 statement : keyword .
-statement : .
 
-#@ line 58 "expr.pars"
+#@ line 57 "expr.pars"
 declaration : type identifier .
 declaration : type assignment .
 
-#@ line 63 "expr.pars"
+#@ line 62 "expr.pars"
 type : 'int' .
 type : 'float' .
 type : 'string' .
 
-#@ line 69 "expr.pars"
+#@ line 68 "expr.pars"
 assignment : identifier '=' computation .
 
-#@ line 73 "expr.pars"
-<<<<<<< HEAD
+#@ line 72 "expr.pars"
 computation : computation '+' ttt .
 computation : computation '-' ttt .
 computation : ttt .
-=======
-computation : '(' computation ')' .
-computation : computation operator variable .
-computation : variable .
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 
-#@ line 79 "expr.pars"
+#@ line 78 "expr.pars"
 ttt : ttt '*' fff .
 ttt : ttt '/' fff .
 ttt : fff .
 
-#@ line 85 "expr.pars"
+#@ line 84 "expr.pars"
 fff : '(' computation ')' .
 fff : variable .
 
-#@ line 105 "expr.pars"
+#@ line 104 "expr.pars"
 variable : variable_ .
 variable : '-' variable_ PREC UNARY .
 variable : '+' lvariable_ PREC UNARY .
 
-<<<<<<< HEAD
-#@ line 111 "expr.pars"
-=======
-#@ line 93 "expr.pars"
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+#@ line 110 "expr.pars"
 variable_ : identifier .
 variable_ : string_const .
 variable_ : int_const .
 variable_ : float_const .
 
-<<<<<<< HEAD
-#@ line 118 "expr.pars"
-=======
-#@ line 100 "expr.pars"
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+#@ line 117 "expr.pars"
 keyword : keyword_if .
 keyword : keyword_while .
 keyword : keyword_for .
 
-<<<<<<< HEAD
-#@ line 124 "expr.pars"
+#@ line 123 "expr.pars"
 keyword_if : 'if' '(' condition ')' 'then' block_scoped keyword_elseif .
 
-#@ line 128 "expr.pars"
+#@ line 127 "expr.pars"
 keyword_elseif : 'elseif' '(' condition ')' 'then' block_scoped keyword_elseif .
 keyword_elseif : keyword_else .
-
-#@ line 133 "expr.pars"
-keyword_else : 'else' block_scoped .
-keyword_else : .
-
-#@ line 138 "expr.pars"
-keyword_while : 'while' '(' condition ')' block_scoped .
-
-#@ line 142 "expr.pars"
-keyword_for : 'for' '(' declaration ';' condition ';' assignment ')' block_scoped .
-
-#@ line 146 "expr.pars"
-condition : computation compare computation .
-
-#@ line 150 "expr.pars"
-=======
-#@ line 106 "expr.pars"
-keyword_if : 'if' '(' condition ')' 'then' block_scoped keyword_elseif .
-
-#@ line 110 "expr.pars"
-keyword_elseif : 'elseif' '(' condition ')' 'then' block_scoped keyword_elseif .
-keyword_elseif : keyword_else .
-
-#@ line 115 "expr.pars"
-keyword_else : 'else' block_scoped .
-keyword_else : .
-
-#@ line 120 "expr.pars"
-keyword_while : 'while' '(' condition ')' block_scoped .
-
-#@ line 124 "expr.pars"
-keyword_for : 'for' '(' declaration ';' condition ';' assignment ')' block_scoped .
-
-#@ line 128 "expr.pars"
-condition : computation compare computation .
 
 #@ line 132 "expr.pars"
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+keyword_else : 'else' block_scoped .
+keyword_else : .
+
+#@ line 137 "expr.pars"
+keyword_while : 'while' '(' condition ')' block_scoped .
+
+#@ line 141 "expr.pars"
+keyword_for : 'for' '(' declaration ';' condition ';' assignment ')' block_scoped .
+
+#@ line 145 "expr.pars"
+condition : computation compare computation .
+
+#@ line 149 "expr.pars"
 compare : '<' .
 compare : '>' .
 compare : '=' .

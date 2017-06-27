@@ -70,28 +70,11 @@ typedef unsigned short	yyStateRange	;
 typedef unsigned short	yySymbolRange	;
 typedef struct { yyStateRange Check, Next; } yytComb;
 typedef enum {
-yyNT0_intern	= 30,
-yyNTroot	= 31,
-yyNTprogram	= 32,
-yyNTblock_scoped	= 33,
-yyNTblock_exec	= 34,
-yyNTstatement	= 35,
-yyNTdeclaration	= 36,
-yyNTtype	= 37,
-yyNTassignment	= 38,
-yyNTcomputation	= 39,
-yyNTttt	= 40,
-yyNTfff	= 41,
-yyNTvariable	= 42,
-yyNTvariable_	= 43,
-yyNTkeyword	= 44,
-yyNTkeyword_if	= 45,
-yyNTkeyword_elseif	= 46,
-yyNTkeyword_else	= 47,
-yyNTkeyword_while	= 48,
-yyNTkeyword_for	= 49,
-yyNTcondition	= 50,
-yyNTcompare	= 51
+yyNT0_intern	= 20,
+yyNTroot	= 21,
+yyNTexpr_l	= 22,
+yyNTexprs	= 23,
+yyNTexpr	= 24
 } yytNonterminal;
 typedef struct { short yyMode; rbool yyActions, yyMessages; } yytControl;
 
@@ -99,21 +82,21 @@ static	yytControl	yyControl	= { 0, rtrue, rtrue };
 	rbool		expr_pars_Debug	= rfalse;
 
 # define yyFirstTerminal	0
-# define yyLastTerminal	29
-# define yySetSize	30
+# define yyLastTerminal	19
+# define yySetSize	20
 # define yyFirstSymbol	0
-# define yyLastSymbol	51
-# define yyTTableMax	109
-# define yyNTableMax	88
+# define yyLastSymbol	24
+# define yyTTableMax	236
+# define yyNTableMax	41
 # define yyStartState	1
 # define yyFirstReadState	1
-# define yyLastReadState	51
-# define yyFirstReadReduceState	52
-# define yyLastReadReduceState	67
-# define yyFirstReduceState	68
-# define yyLastReduceState	112
-# define yyLastState	112
-# define yyLastStopState	68
+# define yyLastReadState	35
+# define yyFirstReadReduceState	36
+# define yyLastReadReduceState	38
+# define yyFirstReduceState	39
+# define yyLastReduceState	62
+# define yyLastState	62
+# define yyLastStopState	39
 # define YYTDefault
 # define YYNDefault
 
@@ -141,12 +124,13 @@ static void xxGetAttribute	ARGS ((int yyk, yySymbolRange yyToken,
 /* line 8 "expr_pars.lrk" */
 
 
-/* line 25 "expr.pars" */
+/* line 20 "expr.pars" */
 
  # include <stdio.h>
+ # include <math.h>
 
 
-/* line 16 "expr_pars.lrk" */
+/* line 17 "expr_pars.lrk" */
 # ifdef CommonParsAttrs
 typedef struct { CommonParsAttrs } yytCommonParsAttrs;
 #  define yyCommon yytCommonParsAttrs Common;
@@ -156,13 +140,15 @@ typedef struct { CommonParsAttrs } yytCommonParsAttrs;
 #  define yyCommonParsAttrs
 # endif
 
+typedef struct { yyCommonParsAttrs double Value; } zz_expr;
 
 typedef union {
 expr_scan_tScanAttribute Scan;
 yyCommon
+zz_expr expr;
 } tParsAttribute;
 
-/* line 166 "expr_pars.c" */
+/* line 152 "expr_pars.c" */
 
 # if defined lex_interface & ! defined yylvalDef
      tParsAttribute yylval;
@@ -204,184 +190,156 @@ static	void		yyNl		ARGS ((void));
 
 static	char *		yyRule		[] = { 0,
 "0_intern : root _EOF_ ",
-"root : program ",
-"program : identifier block_scoped ",
-"block_scoped : 'begin' block_exec 'end' ",
-"block_exec : block_exec statement ",
-"block_exec : ",
-"statement : declaration ';' ",
-"statement : assignment ';' ",
-"statement : keyword ",
-"declaration : type identifier ",
-"declaration : type assignment ",
-"type : 'int' ",
-"type : 'float' ",
-"type : 'string' ",
-"assignment : identifier '=' computation ",
-"computation : computation '+' ttt ",
-"computation : computation '-' ttt ",
-"computation : ttt ",
-"ttt : ttt '*' fff ",
-"ttt : ttt '/' fff ",
-"ttt : fff ",
-"fff : '(' computation ')' ",
-"fff : variable ",
-"variable : variable_ ",
-"variable : '-' variable_ ",
-"variable : '+' lvariable_ ",
-"variable_ : identifier ",
-"variable_ : string_const ",
-"variable_ : int_const ",
-"variable_ : float_const ",
-"keyword : keyword_if ",
-"keyword : keyword_while ",
-"keyword : keyword_for ",
-"keyword_if : 'if' '(' condition ')' 'then' block_scoped keyword_elseif ",
-"keyword_elseif : 'elseif' '(' condition ')' 'then' block_scoped \
-keyword_elseif ",
-"keyword_elseif : keyword_else ",
-"keyword_else : 'else' block_scoped ",
-"keyword_else : ",
-"keyword_while : 'while' '(' condition ')' block_scoped ",
-"keyword_for : 'for' '(' declaration ';' condition ';' assignment ')' \
-block_scoped ",
-"condition : computation compare computation ",
-"compare : '<' ",
-"compare : '>' ",
-"compare : '=' ",
-"compare : '!=' ",
+"root : expr_l ",
+"expr_l : ",
+"expr_l : expr ",
+"expr_l : exprs ',' expr ",
+"exprs : expr ",
+"exprs : exprs ',' expr ",
+"expr : int_const ",
+"expr : float_const ",
+"expr : '(' expr ')' ",
+"expr : expr '+' expr ",
+"expr : expr '*' expr ",
+"expr : expr '-' expr ",
+"expr : expr '/' expr ",
+"expr : expr '^' expr ",
+"expr : expr '?' expr ':' expr ",
+"expr : '+' expr ",
+"expr : '-' expr ",
+"expr : expr '>' expr ",
+"expr : expr '<' expr ",
+"expr : expr '=' expr ",
+"expr : expr '&' expr ",
+"expr : expr '|' expr ",
+"expr : '!' expr ",
 ""
 };
 # endif
 	char *		expr_pars_TokenName	[yyLastTerminal + 2] = {
 "_EOF_",
-"string_const",
-"identifier",
 "int_const",
 "float_const",
-"begin",
-"int",
-"float",
-"string",
-"=",
-"+",
-"*",
 "(",
 ")",
+"+",
+"*",
 "-",
-"lvariable_",
 "/",
-";",
-"if",
-"<",
+"^",
+"?",
+":",
 ">",
-"!=",
-"then",
-"elseif",
-"else",
-"while",
-"for",
-"end",
-0,
+"<",
+"=",
+"&",
+"|",
+"!",
+",",
 0,
 ""
 };
 static	yytComb		yyTComb		[yyTTableMax + 1] = {
-{   3,   68}, {   0,    0}, {  41,  105}, {  42,    6}, {   1,    2}, 
-{  11,   17}, {  41,  105}, {  41,  105}, {  41,  105}, {  22,   85}, 
-{  22,   85}, {  22,   30}, {  44,    4}, {  22,   85}, {  22,   85}, 
-{  39,    4}, {  22,   31}, {  22,   85}, {  41,  105}, {  22,   85}, 
-{  22,   85}, {  22,   85}, {  34,    4}, {  41,   43}, {  41,   44}, 
-{  41,  105}, {  41,  105}, {  41,  105}, {  36,   83}, {  36,   83}, 
-{  47,    4}, {  27,   28}, {  36,   83}, {  36,   83}, {  27,   58}, 
-{  27,   29}, {  36,   83}, {  50,    4}, {  36,   83}, {  36,   83}, 
-{  36,   83}, {  37,   84}, {  37,   84}, {   2,    4}, {  38,  108}, 
-{  37,   84}, {  37,   84}, {   5,    6}, {  38,  108}, {  37,   84}, 
-{   4,   73}, {  37,   84}, {  37,   84}, {  37,   84}, {   4,   73}, 
-{   4,   73}, {   4,   73}, {  23,   66}, {  23,   28}, {  16,   55}, 
-{  16,   56}, {  16,   57}, {  23,   29}, {   5,    7}, {   6,   13}, 
-{  43,   46}, {   4,   73}, {  23,   64}, {  23,   65}, {  23,   67}, 
-{   5,    8}, {   5,    9}, {   5,   52}, {   4,   73}, {   4,   73}, 
-{   4,   73}, {  20,   61}, {  20,   60}, {  20,   62}, {  20,   63}, 
-{  46,   18}, {  21,   82}, {  46,   19}, {   8,   15}, {  46,   20}, 
-{  21,   82}, {   9,   16}, {   7,   14}, {  25,   34}, {  24,   33}, 
-{  45,   47}, {  48,   49}, {  18,   59}, {  12,   54}, {  40,   42}, 
-{  26,   35}, {  17,   77}, {  10,   53}, {  49,   50}, {  33,   39}, 
+{  27,   53}, {  22,   43}, {   1,   41}, {   6,   39}, {  27,   53}, 
+{  27,   53}, {  27,   53}, {  27,   53}, {  27,   53}, {   0,    0}, 
+{  27,   53}, {  27,   53}, {  27,   53}, {  27,   53}, {  27,   53}, 
+{  27,   53}, {  27,   53}, {  26,   52}, {  27,   53}, {  22,   45}, 
+{   7,   10}, {  26,   52}, {  26,   52}, {  26,   52}, {  26,   52}, 
+{  26,   52}, {   0,    0}, {  26,   52}, {  26,   52}, {  26,   52}, 
+{  26,   52}, {  26,   52}, {  26,   52}, {  26,   52}, {  24,   50}, 
+{  26,   52}, {   0,    0}, {   0,    0}, {  24,   50}, {  24,   50}, 
+{  24,   50}, {  24,   50}, {  24,   50}, {   0,    0}, {  24,   50}, 
+{  24,   50}, {  24,   50}, {  24,   50}, {  24,   50}, {  24,   50}, 
+{  24,   50}, {   8,   42}, {  24,   50}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   8,   11}, {   8,   12}, {   8,   13}, {   8,   14}, 
+{   8,   15}, {   8,   16}, {   0,    0}, {   8,   17}, {   8,   18}, 
+{   8,   19}, {   8,   20}, {   8,   21}, {   0,    0}, {   8,   44}, 
+{   9,   38}, {   9,   11}, {   9,   12}, {   9,   13}, {   9,   14}, 
+{   9,   15}, {   9,   16}, {   0,    0}, {   9,   17}, {   9,   18}, 
+{   9,   19}, {   9,   20}, {   9,   21}, {  28,   11}, {  28,   12}, 
+{  28,   13}, {  28,   14}, {  28,   15}, {  28,   16}, {  28,   34}, 
+{  28,   17}, {  28,   18}, {  28,   19}, {  28,   20}, {  28,   21}, 
+{  25,   51}, {   0,    0}, {   0,    0}, {   0,    0}, {  25,   51}, 
+{  25,   51}, {   0,    0}, {  25,   51}, {   0,    0}, {   0,    0}, 
+{  25,   51}, {  25,   51}, {  25,   51}, {  25,   51}, {  25,   51}, 
+{  25,   51}, {  25,   51}, {  23,   49}, {  25,   51}, {   0,    0}, 
+{   0,    0}, {  23,   49}, {  23,   49}, {   0,    0}, {  23,   49}, 
+{   0,    0}, {   0,    0}, {  23,   49}, {  23,   49}, {  23,   49}, 
+{  23,   49}, {  23,   49}, {  23,   49}, {  23,   49}, {  29,   57}, 
+{  23,   49}, {   0,    0}, {   0,    0}, {  29,   57}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {  29,   57}, 
+{  29,   57}, {  29,   57}, {  29,   57}, {  29,   57}, {  29,   57}, 
+{  29,   57}, {  30,   58}, {  29,   57}, {   0,    0}, {   0,    0}, 
+{  30,   58}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {  30,   58}, {  30,   58}, {  30,   58}, {  30,   58}, 
+{  30,   58}, {  30,   58}, {  30,   58}, {  31,   59}, {  30,   58}, 
+{   0,    0}, {   0,    0}, {  31,   59}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {  31,   59}, {  31,   59}, 
+{  31,   59}, {  31,   59}, {  31,   59}, {  31,   59}, {  31,   59}, 
+{  32,   60}, {  31,   59}, {   0,    0}, {   0,    0}, {  32,   60}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{  32,   60}, {  32,   60}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{  32,   60}, {  32,   60}, {   0,    0}, {  32,   60}, {  11,   36}, 
+{  11,   37}, {  11,    2}, {  33,   61}, {  11,    3}, {   0,    0}, 
+{  11,    4}, {  33,   61}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {  33,   61}, {  33,   61}, {   0,    0}, 
+{  11,    5}, {   0,    0}, {  35,   54}, {  33,   61}, {   0,    0}, 
+{  33,   61}, {  35,   54}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {  35,   54}, {  35,   54}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{  35,   54}, {   0,    0}, 
 };
 static	yytNComb	yyNComb		[yyNTableMax - yyLastTerminal] = {
-{   0,    0}, {   1,    3}, {   1,   69}, {   0,    0}, {   0,    0}, 
-{   5,   72}, {   5,   10}, {   0,    0}, {   5,   12}, {  14,   23}, 
-{  13,   21}, {  31,   87}, {  31,   90}, {  31,   91}, {   5,   76}, 
-{   5,   98}, {  41,  101}, {  41,  103}, {   5,   99}, {   5,  100}, 
-{  14,   24}, {  32,   38}, {  32,   22}, {  16,   26}, {  16,   11}, 
-{  28,   36}, {  28,   88}, {  29,   37}, {  15,   25}, {  30,   86}, 
-{  19,   27}, {  46,   48}, {  51,  102}, {  35,   40}, {  11,   78}, 
-{  44,  104}, {  39,   41}, {  34,  106}, {  47,  107}, {  50,   51}, 
-{   2,   70}, {   4,    5}, {  23,   32}, {  20,   92}, {  42,   45}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   1,    6}, {   1,   40}, {   1,    7}, {   1,    8}, 
+{  12,   24}, {  13,   25}, {   5,   62}, {   4,   56}, {   3,   55}, 
+{   2,    9}, {  10,   22}, {  34,   35}, {  21,   33}, {  20,   32}, 
+{  19,   31}, {  11,   23}, {  18,   30}, {  17,   29}, {  16,   28}, 
+{  15,   27}, {  14,   26}, 
 };
 static	yytComb *	yyTBasePtr	[yyLastReadState + 1] = { 0,
-& yyTComb [   2], & yyTComb [  38], & yyTComb [   0], & yyTComb [  48], 
-& yyTComb [  45], & yyTComb [  55], & yyTComb [  75], & yyTComb [  71], 
-& yyTComb [  74], & yyTComb [  80], & yyTComb [   3], & yyTComb [  76], 
-& yyTComb [   0], & yyTComb [   0], & yyTComb [   0], & yyTComb [  53], 
-& yyTComb [  79], & yyTComb [  77], & yyTComb [   0], & yyTComb [  75], 
-& yyTComb [  68], & yyTComb [   0], & yyTComb [  48], & yyTComb [  76], 
-& yyTComb [  75], & yyTComb [  78], & yyTComb [  21], & yyTComb [   0], 
+& yyTComb [   2], & yyTComb [   0], & yyTComb [   0], & yyTComb [   0], 
+& yyTComb [   0], & yyTComb [   3], & yyTComb [   2], & yyTComb [  51], 
+& yyTComb [  66], & yyTComb [   0], & yyTComb [ 198], & yyTComb [   0], 
 & yyTComb [   0], & yyTComb [   0], & yyTComb [   0], & yyTComb [   0], 
-& yyTComb [  77], & yyTComb [  17], & yyTComb [   0], & yyTComb [  19], 
-& yyTComb [  32], & yyTComb [  31], & yyTComb [  10], & yyTComb [  77], 
-& yyTComb [   0], & yyTComb [   1], & yyTComb [  53], & yyTComb [   7], 
-& yyTComb [  77], & yyTComb [  70], & yyTComb [  25], & yyTComb [  78], 
-& yyTComb [  76], & yyTComb [  32], & yyTComb [   0], 
+& yyTComb [   0], & yyTComb [   0], & yyTComb [   0], & yyTComb [   0], 
+& yyTComb [   0], & yyTComb [   1], & yyTComb [ 112], & yyTComb [  34], 
+& yyTComb [  95], & yyTComb [  17], & yyTComb [   0], & yyTComb [  78], 
+& yyTComb [ 129], & yyTComb [ 146], & yyTComb [ 163], & yyTComb [ 180], 
+& yyTComb [ 202], & yyTComb [   0], & yyTComb [ 217], 
 };
 static	yytNComb *	yyNBasePtr	[yyLastReadState + 1] = { 0,
-& yyNComb [ -30], & yyNComb [   7], & yyNComb [ -30], & yyNComb [   7], 
-& yyNComb [ -30], & yyNComb [ -30], & yyNComb [ -30], & yyNComb [ -30], 
-& yyNComb [ -30], & yyNComb [ -30], & yyNComb [  -4], & yyNComb [ -30], 
-& yyNComb [ -29], & yyNComb [ -30], & yyNComb [ -22], & yyNComb [ -13], 
-& yyNComb [ -30], & yyNComb [ -30], & yyNComb [  -9], & yyNComb [   0], 
-& yyNComb [ -30], & yyNComb [ -30], & yyNComb [  -9], & yyNComb [ -30], 
-& yyNComb [ -30], & yyNComb [ -30], & yyNComb [ -30], & yyNComb [ -15], 
-& yyNComb [ -13], & yyNComb [ -12], & yyNComb [ -30], & yyNComb [ -18], 
-& yyNComb [ -30], & yyNComb [   4], & yyNComb [ -17], & yyNComb [ -30], 
-& yyNComb [ -30], & yyNComb [ -30], & yyNComb [   3], & yyNComb [ -30], 
-& yyNComb [ -30], & yyNComb [   6], & yyNComb [ -30], & yyNComb [   2], 
-& yyNComb [ -30], & yyNComb [ -19], & yyNComb [   5], & yyNComb [ -30], 
-& yyNComb [ -30], & yyNComb [   6], & yyNComb [ -14], 
+& yyNComb [ -20], & yyNComb [ -14], & yyNComb [ -15], & yyNComb [ -16], 
+& yyNComb [ -17], & yyNComb [ -20], & yyNComb [ -20], & yyNComb [ -20], 
+& yyNComb [ -20], & yyNComb [ -13], & yyNComb [  -8], & yyNComb [ -19], 
+& yyNComb [ -18], & yyNComb [  -3], & yyNComb [  -4], & yyNComb [  -5], 
+& yyNComb [  -6], & yyNComb [  -7], & yyNComb [  -9], & yyNComb [ -10], 
+& yyNComb [ -11], & yyNComb [ -20], & yyNComb [ -20], & yyNComb [ -20], 
+& yyNComb [ -20], & yyNComb [ -20], & yyNComb [ -20], & yyNComb [ -20], 
+& yyNComb [ -20], & yyNComb [ -20], & yyNComb [ -20], & yyNComb [ -20], 
+& yyNComb [ -20], & yyNComb [ -12], & yyNComb [ -20], 
 };
 # ifdef YYTDefault
 static	unsigned short	yyTDefault	[yyLastReadState + 1] = { 0,
-    0,     0,     0,     0,    16,     0,     0,     0,     0,     0, 
-    0,     0,    46,    46,    46,     0,     6,     0,    46,     0, 
-   38,     0,     0,     0,     0,     0,     0,    46,    46,    46, 
-   46,    46,     0,     0,    46,    22,    22,    27,     0,     0, 
-    0,     0,     0,     0,     0,    20,     0,     0,     0,     0, 
-   41, 
+   11,    11,    11,    11,    11,     0,     0,     0,     0,    11, 
+    0,    11,    11,    11,    11,    11,    11,    11,    11,    11, 
+   11,     8,    25,    25,    35,    25,    25,     0,    35,    35, 
+   35,    35,    35,    11,     8, 
 };
 # endif
 # ifdef YYNDefault
 static	unsigned short	yyNDefault	[yyLastReadState + 1] = { 0,
-    0,     0,     0,     0,    16,     0,     0,     0,     0,     0, 
-    0,     0,    32,    32,    14,     0,     0,     0,    32,     0, 
-    0,     0,     0,     0,     0,     0,     0,    31,    28,    31, 
-    0,    28,     0,     0,    14,     0,     0,     0,     0,     0, 
-    0,     0,     0,     0,     0,    14,     0,     0,     0,     0, 
-   41, 
+    0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
+    0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
+    0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
+    0,     0,     0,     0,     0, 
 };
 # endif
 # if ! defined NO_RECOVER | defined YYDEC_TABLE | defined YYCSTree
 static	unsigned char	yyLength	[yyLastReduceState - yyFirstReduceState
 							+ 1] = {
-    2,     1,     2,     3,     2,     0,     2,     2,     1,     2, 
-    2,     1,     1,     1,     3,     3,     3,     1,     3,     3, 
-    1,     3,     1,     1,     2,     2,     1,     1,     1,     1, 
-    1,     1,     1,     7,     7,     1,     2,     0,     5,     9, 
-    3,     1,     1,     1,     1, 
+    2,     1,     0,     1,     3,     1,     3,     1,     1,     3, 
+    3,     3,     3,     3,     3,     5,     2,     2,     3,     3, 
+    3,     3,     3,     2, 
 };
 # endif
 # if ! defined NO_RECOVER | defined YYDEC_TABLE
@@ -389,59 +347,36 @@ static	yytNonterminal	yyLeftHandSide	[yyLastReduceState - yyFirstReduceState
 							+ 1] = {
 yyNT0_intern,
 yyNTroot,
-yyNTprogram,
-yyNTblock_scoped,
-yyNTblock_exec,
-yyNTblock_exec,
-yyNTstatement,
-yyNTstatement,
-yyNTstatement,
-yyNTdeclaration,
-yyNTdeclaration,
-yyNTtype,
-yyNTtype,
-yyNTtype,
-yyNTassignment,
-yyNTcomputation,
-yyNTcomputation,
-yyNTcomputation,
-yyNTttt,
-yyNTttt,
-yyNTttt,
-yyNTfff,
-yyNTfff,
-yyNTvariable,
-yyNTvariable,
-yyNTvariable,
-yyNTvariable_,
-yyNTvariable_,
-yyNTvariable_,
-yyNTvariable_,
-yyNTkeyword,
-yyNTkeyword,
-yyNTkeyword,
-yyNTkeyword_if,
-yyNTkeyword_elseif,
-yyNTkeyword_elseif,
-yyNTkeyword_else,
-yyNTkeyword_else,
-yyNTkeyword_while,
-yyNTkeyword_for,
-yyNTcondition,
-yyNTcompare,
-yyNTcompare,
-yyNTcompare,
-yyNTcompare,
+yyNTexpr_l,
+yyNTexpr_l,
+yyNTexpr_l,
+yyNTexprs,
+yyNTexprs,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
+yyNTexpr,
 };
 # endif
 # ifndef NO_RECOVER
 static	yySymbolRange	yyContinuation	[yyLastReadState + 1] = { 0,
-    2,     5,     0,     2,    27,     9,    12,    12,    12,    17, 
-    2,    17,     4,     4,     4,     8,    17,    15,     4,     4, 
-   13,     9,    21,    13,    13,    17,    13,     4,     4,     4, 
-    4,     4,    22,     5,     4,     9,     9,    13,     5,    17, 
-    2,     2,    12,     5,    13,     4,     5,    13,    22,     5, 
-    2, 
+    0,     2,     2,     2,     2,     0,    18,     0,     4,     2, 
+    2,     2,     2,     2,     2,     2,     2,     2,     2,     2, 
+    2,     0,     0,     0,     0,     0,     0,    11,     0,     0, 
+    0,     0,     0,     2,     0, 
 };
 static	unsigned short	yyCondition	[yyLastState - yyLastReduceState + 1] =
 { 0,
@@ -449,13 +384,12 @@ static	unsigned short	yyCondition	[yyLastState - yyLastReduceState + 1] =
 # endif
 static	unsigned short	yyFinalToProd	[yyLastReadReduceState -
 						yyFirstReadReduceState + 2] = {
-   71,    74,    75,    79,    80,    81,    89,    93,    94,    95, 
-   96,    97,   109,   110,   111,   112, 
+   46,    47,    48, 
 0
 };
 static	unsigned short	yyStartLine	[yyLastStopState - yyFirstReduceState
 							+ 2] = { 0,
-80,
+79,
 };
 # ifdef YYaccDefault
 
@@ -1003,10 +937,10 @@ static int yyParse
 		yySymbolRange	yy2;
 # endif
 
-/* line 32 "expr_pars.lrk" */
+/* line 35 "expr_pars.lrk" */
 
 
-/* line 1010 "expr_pars.c" */
+/* line 944 "expr_pars.c" */
 
 # ifdef YYDEBUG
       if (expr_pars_Debug) {
@@ -1198,202 +1132,193 @@ static int yyParse
 	       }
 # endif
 switch (yyState) {
-case 68:
+case 39:
 YYACCEPT;
-case 69: /* root : program */
+case 40: /* root : expr_l */
 yyDecrement (1) yySetNT (yyNTroot) {
-/* line 1206 "expr_pars.c" */
+/* line 1140 "expr_pars.c" */
 } break;
-case 70: /* program : identifier block_scoped */
-yyDecrement (2) yySetNT (yyNTprogram) {
-/* line 1210 "expr_pars.c" */
+case 41: /* expr_l : */
+yySetNT (yyNTexpr_l) {
+/* line 1144 "expr_pars.c" */
 } break;
-case 71:
-case 52: /* block_scoped : 'begin' block_exec 'end' */
-yyDecrement (3) yySetNT (yyNTblock_scoped) {
-/* line 1215 "expr_pars.c" */
+case 42: /* expr_l : expr */
+yyDecrement (1) yySetNT (yyNTexpr_l) {
+/* line 42 "expr.pars" */
+
+{  printf (" ==> %6.2f\n", yyA [0].expr.Value); } 
+/* line 1151 "expr_pars.c" */
 } break;
-case 72: /* block_exec : block_exec statement */
-yyDecrement (2) yySetNT (yyNTblock_exec) {
-/* line 1219 "expr_pars.c" */
+case 43: /* expr_l : exprs ',' expr */
+yyDecrement (3) yySetNT (yyNTexpr_l) {
+/* line 45 "expr.pars" */
+
+{  printf (" ==> %6.2f\n", yyA [2].expr.Value); } 
+/* line 1158 "expr_pars.c" */
 } break;
-case 73: /* block_exec : */
-yySetNT (yyNTblock_exec) {
+case 44: /* exprs : expr */
+yyDecrement (1) yySetNT (yyNTexprs) {
+/* line 42 "expr.pars" */
+
+{  printf (" ==> %6.2f\n", yyA [0].expr.Value); } 
+/* line 1165 "expr_pars.c" */
+} break;
+case 45: /* exprs : exprs ',' expr */
+yyDecrement (3) yySetNT (yyNTexprs) {
+/* line 45 "expr.pars" */
+
+{  printf (" ==> %6.2f\n", yyA [2].expr.Value); } 
+/* line 1172 "expr_pars.c" */
+} break;
+case 46:
+case 36: /* expr : int_const */
+yyDecrement (1) yySetNT (yyNTexpr) {
+/* line 52 "expr.pars" */
+
+yyS.expr.Value  =  yyA [0].Scan.int_const.Value;
+/* line 1180 "expr_pars.c" */
+} break;
+case 47:
+case 37: /* expr : float_const */
+yyDecrement (1) yySetNT (yyNTexpr) {
+/* line 55 "expr.pars" */
+
+/* line 104 "expr_pars.lrk" */
+yyS.expr.Value = yyA [0].Scan.float_const.Value;
+
+/* line 1190 "expr_pars.c" */
+} break;
+case 48:
+case 38: /* expr : '(' expr ')' */
+yyDecrement (3) yySetNT (yyNTexpr) {
+/* line 57 "expr.pars" */
+
+/* line 110 "expr_pars.lrk" */
+yyS.expr.Value = yyA [1].expr.Value;
+
+/* line 1200 "expr_pars.c" */
+} break;
+case 49: /* expr : expr '+' expr */
+yyDecrement (3) yySetNT (yyNTexpr) {
+/* line 59 "expr.pars" */
+
+yyS.expr.Value    = yyA [0].expr.Value + yyA [2].expr.Value; 
+/* line 1207 "expr_pars.c" */
+} break;
+case 50: /* expr : expr '*' expr */
+yyDecrement (3) yySetNT (yyNTexpr) {
+/* line 62 "expr.pars" */
+
+yyS.expr.Value    = yyA [0].expr.Value * yyA [2].expr.Value; 
+/* line 1214 "expr_pars.c" */
+} break;
+case 51: /* expr : expr '-' expr */
+yyDecrement (3) yySetNT (yyNTexpr) {
+/* line 65 "expr.pars" */
+
+/* line 122 "expr_pars.lrk" */
+yyS.expr.Value = yyA [2].expr.Value;
+
 /* line 1223 "expr_pars.c" */
 } break;
-case 74:
-case 53: /* statement : declaration ';' */
-yyDecrement (2) yySetNT (yyNTstatement) {
-/* line 1228 "expr_pars.c" */
+case 52: /* expr : expr '/' expr */
+yyDecrement (3) yySetNT (yyNTexpr) {
+/* line 68 "expr.pars" */
+
+/* line 128 "expr_pars.lrk" */
+yyS.expr.Value = yyA [2].expr.Value;
+
+/* line 1232 "expr_pars.c" */
 } break;
-case 75:
-case 54: /* statement : assignment ';' */
-yyDecrement (2) yySetNT (yyNTstatement) {
-/* line 1233 "expr_pars.c" */
-} break;
-case 76: /* statement : keyword */
-yyDecrement (1) yySetNT (yyNTstatement) {
-/* line 1237 "expr_pars.c" */
-} break;
-case 77: /* declaration : type identifier */
-yyDecrement (2) yySetNT (yyNTdeclaration) {
+case 53: /* expr : expr '^' expr */
+yyDecrement (3) yySetNT (yyNTexpr) {
+/* line 70 "expr.pars" */
+
+/* line 134 "expr_pars.lrk" */
+yyS.expr.Value = yyA [2].expr.Value;
+
 /* line 1241 "expr_pars.c" */
 } break;
-case 78: /* declaration : type assignment */
-yyDecrement (2) yySetNT (yyNTdeclaration) {
-/* line 1245 "expr_pars.c" */
-} break;
-case 79:
-case 55: /* type : 'int' */
-yyDecrement (1) yySetNT (yyNTtype) {
+case 54: /* expr : expr '?' expr ':' expr */
+yyDecrement (5) yySetNT (yyNTexpr) {
+/* line 73 "expr.pars" */
+
+/* line 140 "expr_pars.lrk" */
+yyS.expr.Value = yyA [4].expr.Value;
+
 /* line 1250 "expr_pars.c" */
 } break;
-case 80:
-case 56: /* type : 'float' */
-yyDecrement (1) yySetNT (yyNTtype) {
-/* line 1255 "expr_pars.c" */
+case 55: /* expr : '+' expr */
+yyDecrement (2) yySetNT (yyNTexpr) {
+/* line 75 "expr.pars" */
+
+/* line 146 "expr_pars.lrk" */
+yyS.expr.Value = yyA [1].expr.Value;
+
+/* line 1259 "expr_pars.c" */
 } break;
-case 81:
-case 57: /* type : 'string' */
-yyDecrement (1) yySetNT (yyNTtype) {
-/* line 1260 "expr_pars.c" */
-} break;
-case 82: /* assignment : identifier '=' computation */
-yyDecrement (3) yySetNT (yyNTassignment) {
-/* line 1264 "expr_pars.c" */
-} break;
-case 83: /* computation : computation '+' ttt */
-yyDecrement (3) yySetNT (yyNTcomputation) {
+case 56: /* expr : '-' expr */
+yyDecrement (2) yySetNT (yyNTexpr) {
+/* line 77 "expr.pars" */
+
+/* line 152 "expr_pars.lrk" */
+yyS.expr.Value = yyA [1].expr.Value;
+
 /* line 1268 "expr_pars.c" */
 } break;
-case 84: /* computation : computation '-' ttt */
-yyDecrement (3) yySetNT (yyNTcomputation) {
-/* line 1272 "expr_pars.c" */
+case 57: /* expr : expr '>' expr */
+yyDecrement (3) yySetNT (yyNTexpr) {
+/* line 79 "expr.pars" */
+
+/* line 158 "expr_pars.lrk" */
+yyS.expr.Value = yyA [2].expr.Value;
+
+/* line 1277 "expr_pars.c" */
 } break;
-case 85: /* computation : ttt */
-yyDecrement (1) yySetNT (yyNTcomputation) {
-/* line 1276 "expr_pars.c" */
+case 58: /* expr : expr '<' expr */
+yyDecrement (3) yySetNT (yyNTexpr) {
+/* line 81 "expr.pars" */
+
+/* line 164 "expr_pars.lrk" */
+yyS.expr.Value = yyA [2].expr.Value;
+
+/* line 1286 "expr_pars.c" */
 } break;
-case 86: /* ttt : ttt '*' fff */
-yyDecrement (3) yySetNT (yyNTttt) {
-/* line 1280 "expr_pars.c" */
+case 59: /* expr : expr '=' expr */
+yyDecrement (3) yySetNT (yyNTexpr) {
+/* line 83 "expr.pars" */
+
+/* line 170 "expr_pars.lrk" */
+yyS.expr.Value = yyA [2].expr.Value;
+
+/* line 1295 "expr_pars.c" */
 } break;
-case 87: /* ttt : ttt '/' fff */
-yyDecrement (3) yySetNT (yyNTttt) {
-/* line 1284 "expr_pars.c" */
+case 60: /* expr : expr '&' expr */
+yyDecrement (3) yySetNT (yyNTexpr) {
+/* line 85 "expr.pars" */
+
+/* line 176 "expr_pars.lrk" */
+yyS.expr.Value = yyA [2].expr.Value;
+
+/* line 1304 "expr_pars.c" */
 } break;
-case 88: /* ttt : fff */
-yyDecrement (1) yySetNT (yyNTttt) {
-/* line 1288 "expr_pars.c" */
+case 61: /* expr : expr '|' expr */
+yyDecrement (3) yySetNT (yyNTexpr) {
+/* line 87 "expr.pars" */
+
+/* line 182 "expr_pars.lrk" */
+yyS.expr.Value = yyA [2].expr.Value;
+
+/* line 1313 "expr_pars.c" */
 } break;
-case 89:
-case 58: /* fff : '(' computation ')' */
-yyDecrement (3) yySetNT (yyNTfff) {
-/* line 1293 "expr_pars.c" */
-} break;
-case 90: /* fff : variable */
-yyDecrement (1) yySetNT (yyNTfff) {
-/* line 1297 "expr_pars.c" */
-} break;
-case 91: /* variable : variable_ */
-yyDecrement (1) yySetNT (yyNTvariable) {
-/* line 1301 "expr_pars.c" */
-} break;
-case 92: /* variable : '-' variable_ */
-yyDecrement (2) yySetNT (yyNTvariable) {
-/* line 1305 "expr_pars.c" */
-} break;
-case 93:
-case 59: /* variable : '+' lvariable_ */
-yyDecrement (2) yySetNT (yyNTvariable) {
-/* line 1310 "expr_pars.c" */
-} break;
-case 94:
-case 60: /* variable_ : identifier */
-yyDecrement (1) yySetNT (yyNTvariable_) {
-/* line 1315 "expr_pars.c" */
-} break;
-case 95:
-case 61: /* variable_ : string_const */
-yyDecrement (1) yySetNT (yyNTvariable_) {
-/* line 1320 "expr_pars.c" */
-} break;
-case 96:
-case 62: /* variable_ : int_const */
-yyDecrement (1) yySetNT (yyNTvariable_) {
-/* line 1325 "expr_pars.c" */
-} break;
-case 97:
-case 63: /* variable_ : float_const */
-yyDecrement (1) yySetNT (yyNTvariable_) {
-/* line 1330 "expr_pars.c" */
-} break;
-case 98: /* keyword : keyword_if */
-yyDecrement (1) yySetNT (yyNTkeyword) {
-/* line 1334 "expr_pars.c" */
-} break;
-case 99: /* keyword : keyword_while */
-yyDecrement (1) yySetNT (yyNTkeyword) {
-/* line 1338 "expr_pars.c" */
-} break;
-case 100: /* keyword : keyword_for */
-yyDecrement (1) yySetNT (yyNTkeyword) {
-/* line 1342 "expr_pars.c" */
-} break;
-case 101: /* keyword_if : 'if' '(' condition ')' 'then' block_scoped \
-keyword_elseif */
-yyDecrement (7) yySetNT (yyNTkeyword_if) {
-/* line 1347 "expr_pars.c" */
-} break;
-case 102: /* keyword_elseif : 'elseif' '(' condition ')' 'then' \
-block_scoped keyword_elseif */
-yyDecrement (7) yySetNT (yyNTkeyword_elseif) {
-/* line 1352 "expr_pars.c" */
-} break;
-case 103: /* keyword_elseif : keyword_else */
-yyDecrement (1) yySetNT (yyNTkeyword_elseif) {
-/* line 1356 "expr_pars.c" */
-} break;
-case 104: /* keyword_else : 'else' block_scoped */
-yyDecrement (2) yySetNT (yyNTkeyword_else) {
-/* line 1360 "expr_pars.c" */
-} break;
-case 105: /* keyword_else : */
-yySetNT (yyNTkeyword_else) {
-/* line 1364 "expr_pars.c" */
-} break;
-case 106: /* keyword_while : 'while' '(' condition ')' block_scoped */
-yyDecrement (5) yySetNT (yyNTkeyword_while) {
-/* line 1368 "expr_pars.c" */
-} break;
-case 107: /* keyword_for : 'for' '(' declaration ';' condition ';' \
-assignment ')' block_scoped */
-yyDecrement (9) yySetNT (yyNTkeyword_for) {
-/* line 1373 "expr_pars.c" */
-} break;
-case 108: /* condition : computation compare computation */
-yyDecrement (3) yySetNT (yyNTcondition) {
-/* line 1377 "expr_pars.c" */
-} break;
-case 109:
-case 64: /* compare : '<' */
-yyDecrement (1) yySetNT (yyNTcompare) {
-/* line 1382 "expr_pars.c" */
-} break;
-case 110:
-case 65: /* compare : '>' */
-yyDecrement (1) yySetNT (yyNTcompare) {
-/* line 1387 "expr_pars.c" */
-} break;
-case 111:
-case 66: /* compare : '=' */
-yyDecrement (1) yySetNT (yyNTcompare) {
-/* line 1392 "expr_pars.c" */
-} break;
-case 112:
-case 67: /* compare : '!=' */
-yyDecrement (1) yySetNT (yyNTcompare) {
-/* line 1397 "expr_pars.c" */
+case 62: /* expr : '!' expr */
+yyDecrement (2) yySetNT (yyNTexpr) {
+/* line 89 "expr.pars" */
+
+/* line 188 "expr_pars.lrk" */
+yyS.expr.Value = yyA [1].expr.Value;
+
+/* line 1322 "expr_pars.c" */
 } break;
 default: switch (yyState) {
 case 1: goto yyAbort;
@@ -1818,17 +1743,17 @@ static yyStateRange yyNext
 
 void Beginexpr_pars ARGS ((void))
    {
-/* line 35 "expr_pars.lrk" */
+/* line 38 "expr_pars.lrk" */
 
 
-/* line 1825 "expr_pars.c" */
+/* line 1750 "expr_pars.c" */
    }
 
 void Closeexpr_pars ARGS ((void))
    {
-/* line 38 "expr_pars.lrk" */
+/* line 41 "expr_pars.lrk" */
 
 
-/* line 1833 "expr_pars.c" */
+/* line 1758 "expr_pars.c" */
    }
 

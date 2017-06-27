@@ -48,13 +48,8 @@ EXTERN_C_END
 # define yyFirstCh	(yytusChar) '\0'
 # define yyEolCh	(yytusChar) '\12'
 # define yyEobCh	(yytusChar) '\177'
-<<<<<<< HEAD
-# define yyDStateCount	95
-# define yyTableSize	1454
-=======
-# define yyDStateCount	106
+# define yyDStateCount	105
 # define yyTableSize	1464
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 # define yyEobState	24
 # define yyDefaultState	25
 # define yyToClassArraySize	0
@@ -89,50 +84,24 @@ static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {   7,   33}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-<<<<<<< HEAD
 {   0,    0}, {   0,    0}, {   1,   29}, {   1,   59}, {   1,   38}, 
 {   3,   27}, {   3,   26}, {   7,   32}, {  34,   36}, {   7,   37}, 
-{   1,   69}, {   1,   68}, {   1,   70}, {   1,   71}, {   0,    0}, 
-{   1,   67}, {   2,   14}, {   1,   66}, {   1,   12}, {   1,   12}, 
+{   1,   79}, {   1,   78}, {   1,   80}, {   1,   81}, {   0,    0}, 
+{   1,   77}, {   2,   14}, {   1,   66}, {   1,   12}, {   1,   12}, 
 {   1,   12}, {   1,   12}, {   1,   12}, {   1,   12}, {   1,   12}, 
 {   1,   12}, {   1,   12}, {   1,   12}, {   3,   30}, {   1,   65}, 
-{   1,   62}, {   1,   72}, {   1,   61}, {   5,   27}, {   5,   26}, 
-{  11,   94}, {  14,   19}, {  12,   21}, {   3,   11}, {  12,   12}, 
+{   1,   62}, {   1,   82}, {   1,   61}, {   5,   27}, {   5,   26}, 
+{  11,  104}, {  14,   19}, {  12,   21}, {   3,   11}, {  12,   12}, 
 {  12,   12}, {  12,   12}, {  12,   12}, {  12,   12}, {  12,   12}, 
 {  12,   12}, {  12,   12}, {  12,   12}, {  12,   12}, {  22,   20}, 
 {   0,    0}, {  22,   20}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   5,   31}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   5,   93}, 
-{   0,    0}, {   5,   90}, {   7,   34}, {   1,   85}, {   0,    0}, 
-{   0,    0}, {   1,   39}, {   1,   42}, {  63,   64}, {   0,    0}, 
-{   1,   63}, {   0,    0}, {   0,    0}, {  39,   50}, {  42,   79}, 
-{  39,   40}, {  63,   83}, {  42,   43}, {   0,    0}, {  34,   35}, 
-{   1,   73}, {   1,   55}, {   0,    0}, {   0,    0}, {   1,   45}, 
-=======
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   1,   29}, {   1,   59}, {   1,   38}, 
-{   3,   27}, {   3,   26}, {  34,   36}, {   0,    0}, {   0,    0}, 
-{   1,   82}, {   1,   81}, {   1,   77}, {   1,   80}, {   0,    0}, 
-{   1,   79}, {   2,   14}, {   1,   78}, {   1,   12}, {   1,   12}, 
-{   1,   12}, {   1,   12}, {   1,   12}, {   1,   12}, {   1,   12}, 
-{   1,   12}, {   1,   12}, {   1,   12}, {   3,   30}, {   1,   65}, 
-{   1,   62}, {   1,   83}, {   1,   61}, {  11,  105}, {   5,   27}, 
-{   5,   26}, {   7,   28}, {   7,   33}, {   3,   11}, {  12,   21}, 
-{  14,   19}, {  12,   12}, {  12,   12}, {  12,   12}, {  12,   12}, 
-{  12,   12}, {  12,   12}, {  12,   12}, {  12,   12}, {  12,   12}, 
-{  12,   12}, {  22,   20}, {   0,    0}, {  22,   20}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   5,   31}, {   0,    0}, {   7,   32}, 
-{   0,    0}, {   7,   37}, {   0,    0}, {   0,    0}, {   1,   76}, 
-{   5,  104}, {   0,    0}, {   5,  101}, {   1,   96}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   5,  103}, 
+{   0,    0}, {   5,  100}, {   7,   34}, {   1,   95}, {   0,    0}, 
 {   0,    0}, {   1,   39}, {   1,   42}, {   0,    0}, {  63,   64}, 
-{   1,   63}, {   0,    0}, {   0,    0}, {   1,   66}, {  39,   50}, 
-{   0,    0}, {  39,   40}, {  63,   94}, {  34,   35}, {  42,   90}, 
-{   1,   84}, {   1,   55}, {  42,   43}, {   0,    0}, {   1,   45}, 
-{  16,   16}, {  16,   16}, {  16,   16}, {  16,   16}, {  16,   16}, 
-{  16,   16}, {  16,   16}, {  16,   16}, {  16,   16}, {  16,   16}, 
-{  23,   24}, {  40,   41}, {  43,   44}, {  45,   46}, {  46,   47}, 
-{  47,   48}, {   9,    9}, {   9,    9}, {   9,    9}, {   9,    9}, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+{   1,   63}, {   0,    0}, {   0,    0}, {   1,   67}, {  39,   50}, 
+{  42,   89}, {  39,   40}, {  63,   93}, {  42,   43}, {  34,   35}, 
+{   1,   83}, {   1,   55}, {   0,    0}, {   0,    0}, {   1,   45}, 
 {   9,    9}, {   9,    9}, {   9,    9}, {   9,    9}, {   9,    9}, 
 {   9,    9}, {   9,    9}, {   9,    9}, {   9,    9}, {   9,    9}, 
 {  23,   24}, {   9,    9}, {  40,   41}, {  43,   44}, {   9,    9}, 
@@ -186,25 +155,15 @@ static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {   9,    9}, {   9,    9}, {   9,    9}, {   9,    9}, {   9,    9}, 
 {   9,    9}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
 {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
-<<<<<<< HEAD
 {  13,   13}, {  48,   49}, {  50,   51}, {  51,   52}, {  52,   53}, 
 {  53,   54}, {  55,   56}, {  56,   57}, {  13,   13}, {  13,   13}, 
-=======
-{  13,   13}, {  13,   13}, {  55,   56}, {  56,   57}, {  57,   58}, 
-{  59,   60}, {  66,   67}, {  67,   68}, {  68,   69}, {  13,   13}, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
 {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
 {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
 {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
 {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  57,   58}, 
-{  59,   60}, {  66,   95}, {  69,   92}, {  13,   13}, {  73,   74}, 
+{  59,   60}, {  66,  105}, {  67,   68}, {  13,   13}, {  68,   69}, 
 {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
-<<<<<<< HEAD
-=======
-{  69,   70}, {  70,   71}, {  71,   72}, {  72,   73}, {  13,   13}, 
-{  73,   74}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
 {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
 {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
@@ -213,21 +172,13 @@ static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {  16,   16}, {  16,   16}, {  16,   16}, {  16,   16}, {  16,   16}, 
 {  16,   16}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
-<<<<<<< HEAD
-{  74,   75}, {  75,   76}, {  17,   17}, {  17,   17}, {  17,   17}, 
-=======
-{  17,   17}, {  74,   75}, {  78,  106}, {  17,   17}, {  17,   17}, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+{  69,   70}, {  70,   71}, {  17,   17}, {  17,   17}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
-<<<<<<< HEAD
-{  17,   17}, {  76,   77}, {  17,   17}, {  77,   78}, {  17,   17}, 
-=======
-{  17,   17}, {  17,   17}, {  82,  103}, {  17,   17}, {  84,   85}, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+{  17,   17}, {  71,   72}, {  17,   17}, {  72,   73}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
@@ -244,11 +195,7 @@ static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
-<<<<<<< HEAD
-{  17,   17}, {  17,   17}, {  17,   17}, {  79,   80}, {  17,   17}, 
-=======
-{  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  85,   86}, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+{  17,   17}, {  17,   17}, {  17,   17}, {  73,   74}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
@@ -276,11 +223,24 @@ static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
 {  17,   17}, {  17,   17}, {  18,   18}, {  18,   18}, {  18,   18}, 
 {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-<<<<<<< HEAD
-{  18,   18}, {  80,   81}, {  81,   82}, {  18,   18}, {  18,   18}, 
-=======
-{  18,   18}, {  18,   18}, {  86,   87}, {  87,   88}, {  18,   18}, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+{  18,   18}, {  74,   75}, {  75,   76}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  79,  102}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
+{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
 {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
 {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
 {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
@@ -288,31 +248,6 @@ static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
 {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  83,   84}, 
 {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-<<<<<<< HEAD
-=======
-{  88,   89}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  85,   86}, 
-{  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
-<<<<<<< HEAD
-=======
-{  90,   91}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
 {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
 {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, {  18,   18}, 
@@ -345,12 +280,8 @@ static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
-<<<<<<< HEAD
-=======
-{  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  91,   92}, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
-{  19,   19}, {  19,   19}, {  19,   19}, {  86,   87}, {  19,   19}, 
+{  19,   19}, {  19,   19}, {  19,   19}, {  84,   85}, {  19,   19}, 
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
@@ -366,12 +297,8 @@ static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
-<<<<<<< HEAD
-=======
-{  19,   19}, {  92,   93}, {  19,   19}, {  19,   19}, {  19,   19}, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
-{  87,   88}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
+{  85,   86}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
@@ -398,20 +325,13 @@ static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, 
 {  19,   19}, {  19,   19}, {  19,   19}, {  19,   19}, {  21,   21}, 
 {  21,   21}, {  21,   21}, {  21,   21}, {  21,   21}, {  21,   21}, 
-<<<<<<< HEAD
-{  21,   21}, {  21,   21}, {  21,   21}, {  21,   21}, {  88,   89}, 
-{  90,   91}, {  93,   92}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{  21,   22}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{  21,   21}, {  21,   21}, {  21,   21}, {  21,   21}, {  86,   87}, 
+{  87,   88}, {  89,   90}, {  90,   91}, {  91,   92}, {  93,   94}, 
+{  95,   96}, {  96,   97}, {  97,   98}, {  98,   99}, { 100,  101}, 
+{  21,   22}, { 103,  102}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-=======
-{  21,   21}, {  21,   21}, {  21,   21}, {  21,   21}, {  21,   21}, 
-{  94,   95}, {  96,   97}, {  97,   98}, {  98,   99}, {  99,  100}, 
-{ 101,  102}, { 104,  103}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {  21,   22}, {   0,    0}, {   0,    0}, {   0,    0}, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {  21,   22}, {   0,    0}, {   0,    0}, 
@@ -449,14 +369,8 @@ static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-<<<<<<< HEAD
-=======
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 };
 static	yyCombType *	yyBasePtr	[yyDStateCount + 1] = { 0,
 & yyComb [   0], & yyComb [   1], & yyComb [  26], & yyComb [   0], 
@@ -467,44 +381,25 @@ static	yyCombType *	yyBasePtr	[yyDStateCount + 1] = { 0,
 & yyComb [1181], & yyComb [  36], & yyComb [   3], & yyComb [   0], 
 & yyComb [   0], & yyComb [   0], & yyComb [   0], & yyComb [   0], 
 & yyComb [   0], & yyComb [   0], & yyComb [   0], & yyComb [   0], 
-<<<<<<< HEAD
 & yyComb [   0], & yyComb [   4], & yyComb [   0], & yyComb [   0], 
-& yyComb [   0], & yyComb [   0], & yyComb [   0], & yyComb [  32], 
-& yyComb [   0], & yyComb [   1], & yyComb [  19], & yyComb [   0], 
+& yyComb [   0], & yyComb [   0], & yyComb [   1], & yyComb [  32], 
+& yyComb [   0], & yyComb [   2], & yyComb [  19], & yyComb [   0], 
 & yyComb [  50], & yyComb [ 107], & yyComb [ 139], & yyComb [ 285], 
 & yyComb [   0], & yyComb [ 272], & yyComb [ 287], & yyComb [ 284], 
 & yyComb [ 288], & yyComb [   0], & yyComb [ 287], & yyComb [ 291], 
 & yyComb [ 309], & yyComb [   0], & yyComb [ 359], & yyComb [   0], 
-& yyComb [   0], & yyComb [   0], & yyComb [   1], & yyComb [   0], 
-& yyComb [   0], & yyComb [ 379], & yyComb [   0], & yyComb [   0], 
-& yyComb [ 380], & yyComb [   0], & yyComb [   0], & yyComb [   0], 
-& yyComb [ 308], & yyComb [ 356], & yyComb [ 366], & yyComb [ 391], 
-& yyComb [ 400], & yyComb [   0], & yyComb [ 477], & yyComb [ 629], 
-& yyComb [ 611], & yyComb [   0], & yyComb [ 643], & yyComb [   0], 
-& yyComb [ 743], & yyComb [ 915], & yyComb [ 995], & yyComb [1129], 
-& yyComb [   0], & yyComb [1199], & yyComb [   0], & yyComb [   0], 
-& yyComb [1199], & yyComb [   0], & yyComb [   0], 
-=======
-& yyComb [   0], & yyComb [   3], & yyComb [   0], & yyComb [   0], 
-& yyComb [   0], & yyComb [   0], & yyComb [   1], & yyComb [  31], 
-& yyComb [   0], & yyComb [   6], & yyComb [  18], & yyComb [   0], 
-& yyComb [  29], & yyComb [  29], & yyComb [  27], & yyComb [  45], 
-& yyComb [   0], & yyComb [  33], & yyComb [  69], & yyComb [ 123], 
-& yyComb [ 161], & yyComb [   0], & yyComb [ 298], & yyComb [ 302], 
-& yyComb [ 294], & yyComb [   0], & yyComb [ 344], & yyComb [   0], 
 & yyComb [   0], & yyComb [   0], & yyComb [   2], & yyComb [   0], 
-& yyComb [   0], & yyComb [ 288], & yyComb [ 310], & yyComb [ 294], 
-& yyComb [ 330], & yyComb [ 339], & yyComb [ 339], & yyComb [ 330], 
-& yyComb [ 339], & yyComb [ 381], & yyComb [   0], & yyComb [   0], 
-& yyComb [   0], & yyComb [ 435], & yyComb [   0], & yyComb [   0], 
-& yyComb [   0], & yyComb [ 465], & yyComb [   0], & yyComb [ 393], 
-& yyComb [ 480], & yyComb [ 627], & yyComb [ 623], & yyComb [ 662], 
-& yyComb [   0], & yyComb [ 739], & yyComb [ 927], & yyComb [ 990], 
-& yyComb [   0], & yyComb [1129], & yyComb [   0], & yyComb [1145], 
-& yyComb [1144], & yyComb [1143], & yyComb [1139], & yyComb [   0], 
-& yyComb [1209], & yyComb [   0], & yyComb [   0], & yyComb [1209], 
-& yyComb [   0], & yyComb [   0], 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+& yyComb [   0], & yyComb [ 379], & yyComb [ 304], & yyComb [ 327], 
+& yyComb [ 356], & yyComb [ 366], & yyComb [ 404], & yyComb [ 405], 
+& yyComb [ 480], & yyComb [ 625], & yyComb [ 632], & yyComb [   0], 
+& yyComb [   0], & yyComb [   0], & yyComb [ 717], & yyComb [   0], 
+& yyComb [   0], & yyComb [   0], & yyComb [ 728], & yyComb [ 904], 
+& yyComb [ 995], & yyComb [1129], & yyComb [1137], & yyComb [   0], 
+& yyComb [1130], & yyComb [1145], & yyComb [1127], & yyComb [   0], 
+& yyComb [1128], & yyComb [   0], & yyComb [1144], & yyComb [1143], 
+& yyComb [1142], & yyComb [1138], & yyComb [   0], & yyComb [1208], 
+& yyComb [   0], & yyComb [   0], & yyComb [1209], & yyComb [   0], 
+& yyComb [   0], 
 };
 static	yyStateRange	yyDefault	[yyDStateCount + 1] = { 0,
    13,     1,    18,     3,    17,     5,     9,     7,    23,    23, 
@@ -513,18 +408,11 @@ static	yyStateRange	yyDefault	[yyDStateCount + 1] = { 0,
    17,     9,    26,    23,     0,     0,     0,     0,    13,    13, 
    13,    13,    13,    13,    13,    13,    13,    13,    13,    13, 
    13,    13,    13,    13,    13,    13,    13,    13,    23,     0, 
-<<<<<<< HEAD
-    0,     0,    13,    13,     0,    23,     0,     0,    23,     0, 
+    0,     0,    13,    13,     0,    23,    13,    13,    13,    13, 
+   13,    13,    13,    13,    13,    13,     0,     0,    23,     0, 
     0,     0,    13,    13,    13,    13,    13,    13,    13,    13, 
    13,    13,    13,    13,    13,    13,    13,    13,    13,    10, 
     0,     0,    10,     0,     0, 
-=======
-    0,     0,    13,    13,     0,    13,    13,    13,    13,    13, 
-   13,    13,    13,    13,    13,     0,     0,    23,     0,     0, 
-    0,    23,     0,    13,    13,    13,    13,    13,    13,    13, 
-   13,    13,    13,    13,    13,    13,    13,    13,    13,    13, 
-   10,     0,     0,    10,     0,     0, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 };
 static	yyStateRange	yyEobTrans	[yyDStateCount + 1] = { 0,
     0,     0,    18,    18,    17,    17,     9,     9,     9,     0, 
@@ -536,12 +424,8 @@ static	yyStateRange	yyEobTrans	[yyDStateCount + 1] = { 0,
     0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
     0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
     0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
-<<<<<<< HEAD
-    0,     0,     0,     0,     0, 
-=======
     0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
-    0,     0,     0,     0,     0,     0, 
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+    0,     0,     0,     0,     0, 
 };
 
 # if expr_scan_xxMaxCharacter < 256
@@ -689,11 +573,7 @@ pAttribute->float_const.Value = 0.0;
 /* line 84 "expr.rex" */
 
 
-<<<<<<< HEAD
-/* line 570 "expr_scan.c" */
-=======
 /* line 577 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 
 # ifndef yySetPosition
 # define yySetPosition expr_scan_Attribute.Position.Line = yyLineCount; \
@@ -864,11 +744,7 @@ char string[MAX_STRING_LEN];
 int nesting = 0;
 int length = 0;
 
-<<<<<<< HEAD
-/* line 741 "expr_scan.c" */
-=======
 /* line 748 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 
 yyBegin:
    yyState		= yyStartState;		/* initialize */
@@ -905,11 +781,7 @@ yySetPosition
 	 expr_scan_Attribute.int_const.Value = atol (string);
 	 return 3;
 	
-<<<<<<< HEAD
-/* line 778 "expr_scan.c" */
-=======
 /* line 785 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 } goto yyBegin;
 case 16:;
 case 21:;
@@ -919,11 +791,7 @@ yySetPosition
 	 expr_scan_Attribute.float_const.Value = atof (string);
 	 return 4;
 	
-<<<<<<< HEAD
-/* line 788 "expr_scan.c" */
-=======
 /* line 795 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 } goto yyBegin;
 case 15:;
 yyChBufferIndex -= 1;
@@ -932,25 +800,15 @@ yySetPosition
 /* line 152 "expr.rex" */
 { /* comment up to end of line, nothing to do */
         
-<<<<<<< HEAD
-/* line 797 "expr_scan.c" */
-} goto yyBegin;
-case 95:;
-=======
 /* line 804 "expr_scan.c" */
 } goto yyBegin;
-case 106:;
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+case 105:;
 yySetPosition
 /* line 157 "expr.rex" */
 { /**/
 	  yyStart (COMMENT);
 	
-<<<<<<< HEAD
-/* line 805 "expr_scan.c" */
-=======
 /* line 812 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 } goto yyBegin;
 case 11:;
 case 18:;
@@ -958,61 +816,34 @@ case 30:;
 yySetPosition
 /* line 162 "expr.rex" */
 {
-<<<<<<< HEAD
-/* line 813 "expr_scan.c" */
-} goto yyBegin;
-case 94:;
-=======
 /* line 820 "expr_scan.c" */
 } goto yyBegin;
-case 105:;
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+case 104:;
 yySetPosition
 /* line 165 "expr.rex" */
 {yyStart (STD);
 	
-<<<<<<< HEAD
-/* line 820 "expr_scan.c" */
-} goto yyBegin;
-case 92:;
-=======
 /* line 827 "expr_scan.c" */
 } goto yyBegin;
-case 103:;
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+case 102:;
 yySetPosition
 /* line 170 "expr.rex" */
 { yyStart (COMMENT2);
 	  nesting ++;
 	
-<<<<<<< HEAD
-/* line 828 "expr_scan.c" */
-=======
 /* line 835 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 } goto yyBegin;
 case 10:;
 case 17:;
 case 31:;
-<<<<<<< HEAD
-case 90:;
-case 93:;
-yySetPosition
-/* line 175 "expr.rex" */
-{
-/* line 838 "expr_scan.c" */
-} goto yyBegin;
-case 91:;
-=======
-case 101:;
-case 104:;
+case 100:;
+case 103:;
 yySetPosition
 /* line 175 "expr.rex" */
 {
 /* line 845 "expr_scan.c" */
 } goto yyBegin;
-case 102:;
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+case 101:;
 yySetPosition
 /* line 178 "expr.rex" */
 { nesting --;
@@ -1020,269 +851,146 @@ yySetPosition
 	    yyStart (STD);
 	  }
 	
-<<<<<<< HEAD
-/* line 848 "expr_scan.c" */
-} goto yyBegin;
-case 89:;
-yySetPosition
-/* line 186 "expr.rex" */
-{ return 5; 
-/* line 854 "expr_scan.c" */
-} goto yyBegin;
-case 84:;
-yySetPosition
-/* line 187 "expr.rex" */
-{ return 6; 
-/* line 860 "expr_scan.c" */
-} goto yyBegin;
-case 82:;
-yySetPosition
-/* line 188 "expr.rex" */
-{ return 7; 
-/* line 866 "expr_scan.c" */
-} goto yyBegin;
-case 78:;
-yySetPosition
-/* line 189 "expr.rex" */
-{ return 8; 
-/* line 872 "expr_scan.c" */
-} goto yyBegin;
-case 72:;
-yySetPosition
-/* line 190 "expr.rex" */
-{ return 9; 
-/* line 878 "expr_scan.c" */
-} goto yyBegin;
-case 71:;
-=======
 /* line 855 "expr_scan.c" */
 } goto yyBegin;
-case 100:;
+case 99:;
 yySetPosition
 /* line 186 "expr.rex" */
 { return 5; 
 /* line 861 "expr_scan.c" */
 } goto yyBegin;
-case 95:;
+case 94:;
 yySetPosition
 /* line 187 "expr.rex" */
 { return 6; 
 /* line 867 "expr_scan.c" */
 } goto yyBegin;
-case 93:;
+case 92:;
 yySetPosition
 /* line 188 "expr.rex" */
 { return 7; 
 /* line 873 "expr_scan.c" */
 } goto yyBegin;
-case 89:;
+case 88:;
 yySetPosition
 /* line 189 "expr.rex" */
 { return 8; 
 /* line 879 "expr_scan.c" */
 } goto yyBegin;
-case 83:;
+case 82:;
 yySetPosition
 /* line 190 "expr.rex" */
 { return 9; 
 /* line 885 "expr_scan.c" */
 } goto yyBegin;
-case 82:;
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+case 81:;
 yySetPosition
 /* line 191 "expr.rex" */
 { return 10; 
 /* line 891 "expr_scan.c" */
 } goto yyBegin;
-<<<<<<< HEAD
-case 70:;
-=======
-case 81:;
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+case 80:;
 yySetPosition
 /* line 192 "expr.rex" */
 { return 11; 
 /* line 897 "expr_scan.c" */
 } goto yyBegin;
-<<<<<<< HEAD
-case 69:;
-=======
-case 80:;
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+case 79:;
 yySetPosition
 /* line 193 "expr.rex" */
 { return 12; 
 /* line 903 "expr_scan.c" */
 } goto yyBegin;
-<<<<<<< HEAD
-case 68:;
-=======
-case 14:;
-case 79:;
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+case 78:;
 yySetPosition
 /* line 194 "expr.rex" */
 { return 13; 
-/* line 910 "expr_scan.c" */
-} goto yyBegin;
-<<<<<<< HEAD
-case 14:;
-case 67:;
-yySetPosition
-/* line 195 "expr.rex" */
-{ return 14; 
 /* line 909 "expr_scan.c" */
 } goto yyBegin;
-case 66:;
-yySetPosition
-/* line 196 "expr.rex" */
-{ return 15; 
-/* line 915 "expr_scan.c" */
-} goto yyBegin;
-case 65:;
-yySetPosition
-/* line 197 "expr.rex" */
-{ return 16; 
-/* line 921 "expr_scan.c" */
-} goto yyBegin;
-case 64:;
-yySetPosition
-/* line 198 "expr.rex" */
-{ return 17; 
-/* line 927 "expr_scan.c" */
-} goto yyBegin;
-case 62:;
-yySetPosition
-/* line 199 "expr.rex" */
-{ return 18; 
-/* line 933 "expr_scan.c" */
-} goto yyBegin;
-case 61:;
-yySetPosition
-/* line 200 "expr.rex" */
-{ return 19; 
-/* line 939 "expr_scan.c" */
-=======
-case 78:;
+case 14:;
+case 77:;
 yySetPosition
 /* line 195 "expr.rex" */
 { return 14; 
 /* line 916 "expr_scan.c" */
 } goto yyBegin;
-case 77:;
+case 76:;
 yySetPosition
 /* line 196 "expr.rex" */
 { return 15; 
 /* line 922 "expr_scan.c" */
 } goto yyBegin;
-case 76:;
+case 66:;
 yySetPosition
 /* line 197 "expr.rex" */
 { return 16; 
 /* line 928 "expr_scan.c" */
 } goto yyBegin;
-case 75:;
+case 65:;
 yySetPosition
 /* line 198 "expr.rex" */
 { return 17; 
 /* line 934 "expr_scan.c" */
 } goto yyBegin;
-case 65:;
+case 64:;
 yySetPosition
 /* line 199 "expr.rex" */
 { return 18; 
 /* line 940 "expr_scan.c" */
 } goto yyBegin;
-case 64:;
+case 62:;
 yySetPosition
 /* line 200 "expr.rex" */
 { return 19; 
 /* line 946 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 } goto yyBegin;
-case 60:;
+case 61:;
 yySetPosition
 /* line 201 "expr.rex" */
 { return 20; 
-<<<<<<< HEAD
-/* line 945 "expr_scan.c" */
-=======
 /* line 952 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 } goto yyBegin;
-case 58:;
+case 60:;
 yySetPosition
 /* line 202 "expr.rex" */
 { return 21; 
-<<<<<<< HEAD
-/* line 951 "expr_scan.c" */
-} goto yyBegin;
-case 54:;
-yySetPosition
-/* line 203 "expr.rex" */
-{ return 22; 
-/* line 957 "expr_scan.c" */
-=======
 /* line 958 "expr_scan.c" */
 } goto yyBegin;
-case 60:;
+case 58:;
 yySetPosition
 /* line 203 "expr.rex" */
 { return 22; 
 /* line 964 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 } goto yyBegin;
-case 52:;
+case 54:;
 yySetPosition
 /* line 204 "expr.rex" */
 { return 23; 
-<<<<<<< HEAD
-/* line 963 "expr_scan.c" */
-=======
 /* line 970 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 } goto yyBegin;
-case 49:;
+case 52:;
 yySetPosition
 /* line 205 "expr.rex" */
 { return 24; 
-<<<<<<< HEAD
-/* line 969 "expr_scan.c" */
-=======
 /* line 976 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 } goto yyBegin;
-case 44:;
+case 49:;
 yySetPosition
 /* line 206 "expr.rex" */
 { return 25; 
-<<<<<<< HEAD
-/* line 975 "expr_scan.c" */
-=======
 /* line 982 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 } goto yyBegin;
-case 41:;
+case 44:;
 yySetPosition
 /* line 207 "expr.rex" */
 { return 26; 
-<<<<<<< HEAD
-/* line 981 "expr_scan.c" */
-=======
 /* line 988 "expr_scan.c" */
 } goto yyBegin;
-case 44:;
+case 41:;
 yySetPosition
 /* line 208 "expr.rex" */
 { return 27; 
 /* line 994 "expr_scan.c" */
-} goto yyBegin;
-case 41:;
-yySetPosition
-/* line 209 "expr.rex" */
-{ return 28; 
-/* line 1000 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 } goto yyBegin;
 case 13:;
 case 39:;
@@ -1300,18 +1008,6 @@ case 55:;
 case 56:;
 case 57:;
 case 63:;
-<<<<<<< HEAD
-case 73:;
-case 74:;
-case 75:;
-case 76:;
-case 77:;
-case 79:;
-case 80:;
-case 81:;
-case 83:;
-=======
-case 66:;
 case 67:;
 case 68:;
 case 69:;
@@ -1320,52 +1016,41 @@ case 71:;
 case 72:;
 case 73:;
 case 74:;
+case 75:;
+case 83:;
 case 84:;
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 case 85:;
 case 86:;
 case 87:;
-case 88:;
-<<<<<<< HEAD
-=======
+case 89:;
 case 90:;
 case 91:;
-case 92:;
-case 94:;
+case 93:;
+case 95:;
 case 96:;
 case 97:;
 case 98:;
-case 99:;
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
 yySetPosition
-/* line 212 "expr.rex" */
+/* line 213 "expr.rex" */
 {
 	  return 2;
 	
-<<<<<<< HEAD
-/* line 1017 "expr_scan.c" */
-=======
-/* line 1045 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1039 "expr_scan.c" */
 } goto yyBegin;
 case 38:;
 yySetPosition
-/* line 218 "expr.rex" */
+/* line 219 "expr.rex" */
 {
 	  yyStart(STRING);
 	  length = 0;
 	
-<<<<<<< HEAD
-/* line 1026 "expr_scan.c" */
-=======
-/* line 1054 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1048 "expr_scan.c" */
 } goto yyBegin;
 case 9:;
 case 28:;
 case 32:;
 yySetPosition
-/* line 224 "expr.rex" */
+/* line 225 "expr.rex" */
 {
 	  if (length + expr_scan_TokenLength+1 >= MAX_STRING_LEN) {
 	    Message ("String too long", xxError, expr_scan_Attribute.Position);
@@ -1375,15 +1060,11 @@ yySetPosition
 	    length += expr_scan_GetWord (&string[length]); 
 	  }
 	
-<<<<<<< HEAD
-/* line 1042 "expr_scan.c" */
-=======
-/* line 1070 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1064 "expr_scan.c" */
 } goto yyBegin;
 case 37:;
 yySetPosition
-/* line 235 "expr.rex" */
+/* line 236 "expr.rex" */
 {
 	  /* Back to start*/
 	  yyStart(STD);
@@ -1395,15 +1076,11 @@ yySetPosition
 	  strcpy (expr_scan_Attribute.string_const.Value, string); 
 	  return 1;
 	
-<<<<<<< HEAD
-/* line 1058 "expr_scan.c" */
-=======
-/* line 1086 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1080 "expr_scan.c" */
 } goto yyBegin;
 case 36:;
 yySetPosition
-/* line 248 "expr.rex" */
+/* line 249 "expr.rex" */
 {
 	  if (length + expr_scan_TokenLength+1 >= MAX_STRING_LEN) {
 	    Message ("String too long", xxError, expr_scan_Attribute.Position);
@@ -1413,15 +1090,11 @@ yySetPosition
 	    string[length++] = '"';
 	  }
 	
-<<<<<<< HEAD
-/* line 1072 "expr_scan.c" */
-=======
-/* line 1100 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1094 "expr_scan.c" */
 } goto yyBegin;
 case 35:;
 yySetPosition
-/* line 258 "expr.rex" */
+/* line 259 "expr.rex" */
 {
 	  if (length + expr_scan_TokenLength+1 >= MAX_STRING_LEN) {
 	    Message ("String too long", xxError, expr_scan_Attribute.Position);
@@ -1431,15 +1104,11 @@ yySetPosition
 	    string[length++] = '\n';
 	  }
 	
-<<<<<<< HEAD
-/* line 1086 "expr_scan.c" */
-=======
-/* line 1114 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1108 "expr_scan.c" */
 } goto yyBegin;
 case 34:;
 yySetPosition
-/* line 268 "expr.rex" */
+/* line 269 "expr.rex" */
 {
 	  if (length + expr_scan_TokenLength+1 >= MAX_STRING_LEN) {
 	    Message ("String too long", xxError, expr_scan_Attribute.Position);
@@ -1449,15 +1118,11 @@ yySetPosition
 	    string[length++] = '\\';
 	  }
 	
-<<<<<<< HEAD
-/* line 1100 "expr_scan.c" */
-=======
-/* line 1128 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1122 "expr_scan.c" */
 } goto yyBegin;
 case 33:;
 yySetPosition
-/* line 278 "expr.rex" */
+/* line 279 "expr.rex" */
 { /* error handling of typical errors:
 	   *  a string not closed at the end of a line
            */
@@ -1467,11 +1132,7 @@ yySetPosition
 	  expr_scan_Attribute.string_const.Value = "";
           return 1;
         
-<<<<<<< HEAD
-/* line 1114 "expr_scan.c" */
-=======
-/* line 1142 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1136 "expr_scan.c" */
 } goto yyBegin;
 case 29:;
 {/* BlankAction */
@@ -1480,29 +1141,17 @@ expr_scan_TokenPtr = (yytChar *) -- yyChBufferIndexReg;
 yyState = yyStartState;
 yyStatePtr = & yyStateStack [1];
 goto yyContinue;
-<<<<<<< HEAD
-/* line 1123 "expr_scan.c" */
-=======
-/* line 1151 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1145 "expr_scan.c" */
 } goto yyBegin;
 case 27:;
 {/* TabAction */
 yyTab;
-<<<<<<< HEAD
-/* line 1128 "expr_scan.c" */
-=======
-/* line 1156 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1150 "expr_scan.c" */
 } goto yyBegin;
 case 26:;
 {/* EolAction */
 yyEol (0);
-<<<<<<< HEAD
-/* line 1133 "expr_scan.c" */
-=======
-/* line 1161 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1155 "expr_scan.c" */
 } goto yyBegin;
 case 1:;
 case 2:;
@@ -1533,11 +1182,7 @@ case 25:
 	    xxError, expr_scan_Attribute.Position,
 	    xxCharacter, expr_scan_TokenPtr);
 
-<<<<<<< HEAD
-/* line 1164 "expr_scan.c" */
-=======
-/* line 1192 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1186 "expr_scan.c" */
 	 }
 	 goto yyBegin;
 
@@ -1654,11 +1299,7 @@ case 24:
 
   /* implicit: return the EofToken */
 
-<<<<<<< HEAD
-/* line 1281 "expr_scan.c" */
-=======
-/* line 1309 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1303 "expr_scan.c" */
 	    }
 	    if (yyFileStackPtr == yyFileStack) {
 	       expr_scan_ResetScanner ();
@@ -1691,11 +1332,7 @@ case 24:
 
   /* implicit: return the EofToken */
 
-<<<<<<< HEAD
-/* line 1314 "expr_scan.c" */
-=======
-/* line 1342 "expr_scan.c" */
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+/* line 1336 "expr_scan.c" */
 	    expr_scan_ResetScanner ();
 	    return expr_scan_EofToken;
 # endif

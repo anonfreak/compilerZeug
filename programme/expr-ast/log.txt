@@ -1,0 +1,12 @@
+lpp -cxzj  expr.pars
+rpp < expr.scan expr_scan.rpp > expr.rex
+ast -cdi -4wemRk expr.ast
+rex -cdis -y expr.rex
+rm -f expr_scanDrv.c
+lark -cdi -Dw      expr_pars.lrk
+gcc -I.. -I/home/cocktail/lib/cocktail/include -I /usr/X11R6/include -g -Wall -ansi -pedantic -DDRAWTREE -DCHECKTREE -DWRITETREE -DYYDEBUG   -c expr_scan.c
+gcc -I.. -I/home/cocktail/lib/cocktail/include -I /usr/X11R6/include -g -Wall -ansi -pedantic -DDRAWTREE -DCHECKTREE -DWRITETREE -DYYDEBUG   -c expr_scanSource.c
+gcc -I.. -I/home/cocktail/lib/cocktail/include -I /usr/X11R6/include -g -Wall -ansi -pedantic -DDRAWTREE -DCHECKTREE -DWRITETREE -DYYDEBUG   -c expr_pars.c
+gcc -I.. -I/home/cocktail/lib/cocktail/include -I /usr/X11R6/include -g -Wall -ansi -pedantic -DDRAWTREE -DCHECKTREE -DWRITETREE -DYYDEBUG   -c Tree.c
+gcc -I.. -I/home/cocktail/lib/cocktail/include -I /usr/X11R6/include -g -Wall -ansi -pedantic -DDRAWTREE -DCHECKTREE -DWRITETREE -DYYDEBUG   -c main.c
+gcc -lm -I.. -I/home/cocktail/lib/cocktail/include -I /usr/X11R6/include -g -Wall -ansi -pedantic -DDRAWTREE -DCHECKTREE -DWRITETREE -DYYDEBUG   -o expr-ast expr_scan.o expr_scanSource.o expr_pars.o Tree.o main.o -L/home/cocktail/lib/cocktail -lreuse -L/usr/X11R6/lib -ltcl8.6 -ltk8.6 -lX11 -ldl 

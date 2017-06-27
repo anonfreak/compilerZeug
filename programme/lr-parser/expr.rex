@@ -188,45 +188,24 @@ RULES
  #STD#"f"\l\o"a""t"	: { return 7; }
  #STD#\s"t""r"\i"n"\g	: { return 8; }
  #STD#\=	: { return 9; }
-<<<<<<< HEAD
  #STD#\+	: { return 10; }
  #STD#\*	: { return 11; }
  #STD#\(	: { return 12; }
  #STD#\)	: { return 13; }
  #STD#\-	: { return 14; }
- #STD#\/	: { return 15; }
- #STD#\;	: { return 16; }
- #STD#\i"f"	: { return 17; }
- #STD#\<	: { return 18; }
- #STD#\>	: { return 19; }
- #STD#\!\=	: { return 20; }
- #STD#"t"\h\e"n"	: { return 21; }
- #STD#\e\l\s\e\i"f"	: { return 22; }
- #STD#\e\l\s\e	: { return 23; }
- #STD#\w\h\i\l\e	: { return 24; }
- #STD#"f"\o"r"	: { return 25; }
- #STD#\e"n"\d	: { return 26; }
-=======
- #STD#\(	: { return 10; }
- #STD#\)	: { return 11; }
- #STD#\+	: { return 12; }
- #STD#\-	: { return 13; }
- #STD#\/	: { return 14; }
- #STD#\*	: { return 15; }
- #STD#\^	: { return 16; }
- #STD#lvariable_	: { return 17; }
- #STD#\;	: { return 18; }
- #STD#\i"f"	: { return 19; }
- #STD#\<	: { return 20; }
- #STD#\>	: { return 21; }
- #STD#\!\=	: { return 22; }
- #STD#"t"\h\e"n"	: { return 23; }
- #STD#\e\l\s\e\i"f"	: { return 24; }
- #STD#\e\l\s\e	: { return 25; }
- #STD#\w\h\i\l\e	: { return 26; }
- #STD#"f"\o"r"	: { return 27; }
- #STD#\e"n"\d	: { return 28; }
->>>>>>> 4aa210fc80c0da6faf9c69923958b897ae4900f4
+ #STD#lvariable_	: { return 15; }
+ #STD#\/	: { return 16; }
+ #STD#\;	: { return 17; }
+ #STD#\i"f"	: { return 18; }
+ #STD#\<	: { return 19; }
+ #STD#\>	: { return 20; }
+ #STD#\!\=	: { return 21; }
+ #STD#"t"\h\e"n"	: { return 22; }
+ #STD#\e\l\s\e\i"f"	: { return 23; }
+ #STD#\e\l\s\e	: { return 24; }
+ #STD#\w\h\i\l\e	: { return 25; }
+ #STD#"f"\o"r"	: { return 26; }
+ #STD#\e"n"\d	: { return 27; }
 #@ line 132
 
 /* Bezeichner */

@@ -22,7 +22,7 @@ EXTERN_C_END
 #  pragma warning (disable: 4100 4505 4514)
 # endif
 
-char Tree_module_does_not_match_evaluator_module_2851876;
+char Tree_module_does_not_match_evaluator_module_2709509;
 char generate_Tree_module_without_option_0;
 
 static FILE * yyf;
@@ -81,7 +81,7 @@ char Tree_DrawFileName [256] = "";
 rbool Tree_TreatTVAasChild = rfalse;
 # endif
 
-const unsigned short Tree_NodeSize [30] = { 0,
+const unsigned short Tree_NodeSize [29] = { 0,
  yyAlignedSize (sizeof (yPROGRAM)),
  yyAlignedSize (sizeof (yprogram)),
  yyAlignedSize (sizeof (yBLOCKEXEC)),
@@ -110,9 +110,8 @@ const unsigned short Tree_NodeSize [30] = { 0,
  yyAlignedSize (sizeof (ynokeyword)),
  yyAlignedSize (sizeof (ykeyword_while)),
  yyAlignedSize (sizeof (ykeyword_for)),
- yyAlignedSize (sizeof (yBLOCKSCOPED)),
 };
-const Tree_tKind Tree_TypeRange [30] = { 0,
+const Tree_tKind Tree_TypeRange [29] = { 0,
  kprogram,
  kprogram,
  kblocknostmt,
@@ -141,9 +140,8 @@ const Tree_tKind Tree_TypeRange [30] = { 0,
  knokeyword,
  kkeyword_while,
  kkeyword_for,
- kBLOCKSCOPED,
 };
-const char * const Tree_NodeName [30] = {
+const char * const Tree_NodeName [29] = {
  "NoTree",
  "PROGRAM",
  "program",
@@ -173,7 +171,6 @@ const char * const Tree_NodeName [30] = {
  "nokeyword",
  "keyword_while",
  "keyword_for",
- "BLOCKSCOPED",
 };
 
 tTree Tree_Alloc
@@ -648,18 +645,6 @@ tTree pBlock;
  return yyt;
 }
 
-tTree mBLOCKSCOPED
-# ifdef HAVE_ARGS
-(void)
-# else
-()
-# endif
-{
- register tTree yyt = yyALLOCt (sizeof (yBLOCKSCOPED));
- Tree_InitHead (yyt, kBLOCKSCOPED)
- return yyt;
-}
-
 static void yyMark
 # ifdef HAVE_ARGS
  (register tTree yyt)
@@ -674,8 +659,8 @@ static void yyMark
 case kprogram:
 yyt = yyt->program.Block; break;
 case kblocklist:
-yyMark (yyt->blocklist.Next);
-yyt = yyt->blocklist.Stmt; break;
+yyMark (yyt->blocklist.Stmt);
+yyt = yyt->blocklist.Next; break;
 case kdeclaration:
 yyt = yyt->declaration.Next; break;
 case kassignment:
@@ -1213,7 +1198,7 @@ static void yWriteblocklist
  (yyt) tTree yyt;
 # endif
 {
- yyIndentSelectorTree ("Next", yyt->blocklist.Next);
+ yyIndentSelectorTree ("Stmt", yyt->blocklist.Stmt);
 }
 
 static void yWritedeclaration
@@ -1456,8 +1441,8 @@ case kprogram: yWriteprogram (yyt);
 writeSELECTOR ("Block");
 yyt = yyt->program.Block; break;
 case kblocklist: yWriteblocklist (yyt);
-writeSELECTOR ("Stmt");
-yyt = yyt->blocklist.Stmt; break;
+writeSELECTOR ("Next");
+yyt = yyt->blocklist.Next; break;
 case kdeclaration: yWritedeclaration (yyt);
 writeSELECTOR ("Next");
 yyt = yyt->declaration.Next; break;
@@ -1524,8 +1509,8 @@ static void yyTraverseTreeTD
 case kprogram:
 yyt = yyt->program.Block; break;
 case kblocklist:
-yyTraverseTreeTD (yyt->blocklist.Next);
-yyt = yyt->blocklist.Stmt; break;
+yyTraverseTreeTD (yyt->blocklist.Stmt);
+yyt = yyt->blocklist.Next; break;
 case kdeclaration:
 yyt = yyt->declaration.Next; break;
 case kassignment:
@@ -1591,6 +1576,8 @@ tTree ReverseTree
  yyTail = yyOld;
  for (;;) {
   switch (yyOld->Kind) {
+case kblocklist: yyNext = yyOld->blocklist.Next;
+ yyOld->blocklist.Next = yyNew; break;
   default: goto yyExit;
   }
   yyNew = yyOld;
@@ -1598,6 +1585,7 @@ tTree ReverseTree
  }
 yyExit:
  switch (yyTail->Kind) {
+case kblocklist: yyTail->blocklist.Next = yyOld; break;
  default: ;
  }
  return yyNew;
@@ -1614,6 +1602,7 @@ void ForallTree
   tTree yyyt;
   if ((yyyt = yyt) == NoTree) return;
   switch (yyt->Kind) {
+case kblocklist: yyt = yyt->blocklist.Next; break;
   default: return;
   }
   yyProc (yyyt);
@@ -1711,11 +1700,11 @@ yyCheckChild2 (yyt, yyt->program.Block,
 kBLOCKEXEC, "Block");
 yyt = yyt->program.Block; break;
 case kblocklist:
-yyCheckChild (yyt, yyt->blocklist.Next,
-kBLOCKEXEC, "Next");
-yyCheckChild2 (yyt, yyt->blocklist.Stmt,
+yyCheckChild (yyt, yyt->blocklist.Stmt,
 kSTATEMENT, "Stmt");
-yyt = yyt->blocklist.Stmt; break;
+yyCheckChild2 (yyt, yyt->blocklist.Next,
+kBLOCKEXEC, "Next");
+yyt = yyt->blocklist.Next; break;
 case kdeclaration:
 yyCheckChild2 (yyt, yyt->declaration.Next,
 kDECLARATION, "Next");
@@ -1756,7 +1745,7 @@ kKEYWORD, "ElseIf");
 yyt = yyt->keyword_if.ElseIf; break;
 case kkeyword_else:
 yyCheckChild2 (yyt, yyt->keyword_else.Block,
-kBLOCKSCOPED, "Block");
+kBLOCKEXEC, "Block");
 yyt = yyt->keyword_else.Block; break;
 case kkeyword_while:
 yyCheckChild (yyt, yyt->keyword_while.Cond,
@@ -1927,10 +1916,9 @@ yy = yySetY (yyt, yyt->program.Block, yyy, yyk, 0);
 yymax = Max (yymax, yy);
 break;
 case kblocklist:
-yy = yySetY (yyt, yyt->blocklist.Next, yyy, yyk, 0);
-yymax = Max (yymax, yy);
 yy = yySetY (yyt, yyt->blocklist.Stmt, yyy, yyk, 0);
 yymax = Max (yymax, yy);
+yymax = yySetY (yyt, yyt->blocklist.Next, yymax - 1, yyk - 1, yyl);
 break;
 case kdeclaration:
 yy = yySetY (yyt, yyt->declaration.Next, yyy, yyk, 0);
@@ -2026,9 +2014,9 @@ case kprogram:
 yyx = yySetX (yyt, yyt->program.Block, yyx, & yyFirstLast);
 break;
 case kblocklist:
-yyx = yySetX (yyt, yyt->blocklist.Next, yyx, & yyFirstLast);
+yyw = yySetX (yyt, yyt->blocklist.Next, yyx ++, & yyFirstLast);
 yyx = yySetX (yyt, yyt->blocklist.Stmt, yyx, & yyFirstLast);
-break;
+goto yyList;
 case kdeclaration:
 yyx = yySetX (yyt, yyt->declaration.Next, yyx, & yyFirstLast);
 break;

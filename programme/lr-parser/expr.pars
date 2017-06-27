@@ -44,14 +44,13 @@ block_scoped = <
 
 block_exec = <
 	= block_exec statement.
-	= statement.
+	= .
 >.
 
 statement = <
 	= declaration ';'.
 	= assignment ';'.
 	= keyword.
-	= .
 >.
 
 declaration = <

@@ -9,21 +9,42 @@
 # endif
 # include "ratc.h"
 
-/* line 10 "expr.rex" */
+/* line 11 "expr.rex" */
 
+/* code to be put intp Scanner.h */
 # include "Position.h"
 
-typedef int tToken;
-typedef struct {tPosition Pos; char* Value;} tidentifier;
+/* Token Attributes.
+ * For each token with user defined attributes, we need a typedef for the
+ * token attributes.
+ * LPP extracts the token-attribute declaration from the parser specification.
+ * They are inserted here.
+ */
+
+/* line 23 "expr.rex" */
+# ifndef CommonScanAttrs
+# define CommonScanAttrs
+# endif
+
+# define zzCommonScanAttrs tPosition Position; CommonScanAttrs
+
+typedef struct { zzCommonScanAttrs long Value; } zz_expr_scan_int_const;
+typedef struct { zzCommonScanAttrs double Value; } zz_expr_scan_float_const;
 
 typedef union {
-  tPosition   Position;
-  tidentifier identifier;
+tPosition Position;
+struct { zzCommonScanAttrs } Common;
+zz_expr_scan_int_const int_const;
+zz_expr_scan_float_const float_const;
 } expr_scan_tScanAttribute;
 
-# define tok_identifier 1
+# undef zzCommonScanAttrs
 
-/* line 27 "expr_scan.h" */
+extern void expr_scan_ErrorAttribute ARGS((int Token, expr_scan_tScanAttribute * pAttribute));
+/* line 43 "expr.rex" */
+
+
+/* line 48 "expr_scan.h" */
 
 # define expr_scan_EofToken	0
 # define expr_scan_xxMaxCharacter	255

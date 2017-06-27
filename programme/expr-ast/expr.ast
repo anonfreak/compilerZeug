@@ -53,7 +53,7 @@ PROGRAM = [Pos:tPosition] <
 
 
 BLOCKEXEC = <
-  blocklist = Next: BLOCKEXEC
+  blocklist = Next: BLOCKEXEC REV
 	      Stmt: STATEMENT.
   blocknostmt = .
 >.
@@ -97,7 +97,7 @@ KEYWORD = <
   keyword_if = Cond: COMPUTATION
 		Block: BLOCKEXEC
 		ElseIf: KEYWORD.
-  keyword_else = Block: BLOCKSCOPED.
+  keyword_else = Block: BLOCKEXEC.
   nokeyword = .
   keyword_while = Cond: COMPUTATION
 		  Block: BLOCKEXEC.

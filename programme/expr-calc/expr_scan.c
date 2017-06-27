@@ -48,13 +48,16 @@ EXTERN_C_END
 # define yyFirstCh	(yytusChar) '\0'
 # define yyEolCh	(yytusChar) '\12'
 # define yyEobCh	(yytusChar) '\177'
-# define yyDStateCount	15
-# define yyTableSize	453
-# define yyEobState	7
-# define yyDefaultState	8
+# define yyDStateCount	48
+# define yyTableSize	1089
+# define yyEobState	20
+# define yyDefaultState	21
 # define yyToClassArraySize	0
 # define STD	1
+# define COMMENT	3
+# define COMMENT2	5
 # define xxGetWord
+# define xxinput
 
 static void yyExit ARGS ((void))
 { rExit (1); }
@@ -75,110 +78,251 @@ static	void		yyLess		ARGS ((int));
 
 static	yyCombType	yyComb		[yyTableSize   + 1] = {
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   1,   10}, 
-{   1,    9}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   1,   23}, 
+{   1,   22}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   1,   11}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   1,   24}, {   1,   28}, {   0,    0}, 
+{   0,    0}, {   3,   23}, {   3,   22}, {   1,   30}, {   0,    0}, 
+{   1,   42}, {   1,   41}, {   1,   39}, {   1,   40}, {   1,   27}, 
+{   1,   38}, {   2,   10}, {   1,   37}, {   1,    9}, {   1,    9}, 
+{   1,    9}, {   1,    9}, {   1,    9}, {   1,    9}, {   1,    9}, 
+{   1,    9}, {   1,    9}, {   1,    9}, {   1,   34}, {   3,   25}, 
+{   1,   32}, {   1,   31}, {   1,   33}, {   1,   35}, {   5,   23}, 
+{   5,   22}, {   8,   47}, {  10,   15}, {   9,   17}, {   3,    8}, 
+{   9,    9}, {   9,    9}, {   9,    9}, {   9,    9}, {   9,    9}, 
+{   9,    9}, {   9,    9}, {   9,    9}, {   9,    9}, {   9,    9}, 
+{  18,   16}, {   0,    0}, {  18,   16}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   5,   26}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   1,   36}, 
+{   5,   46}, {   0,    0}, {   5,   43}, {  12,   12}, {  12,   12}, 
+{  12,   12}, {  12,   12}, {  12,   12}, {  12,   12}, {  12,   12}, 
+{  12,   12}, {  12,   12}, {  12,   12}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {   0,    0}, {   1,   29}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  19,   20}, 
+{  13,   13}, {  37,   48}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  42,   45}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, {  13,   13}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  43,   44}, 
+{  46,   45}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {   0,    0}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {   0,    0}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, {  14,   14}, 
+{  14,   14}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   11}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {   0,    0}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {   0,    0}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, {  15,   15}, 
+{  15,   15}, {  15,   15}, {  17,   17}, {  17,   17}, {  17,   17}, 
+{  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, {  17,   17}, 
+{  17,   17}, {  17,   17}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   1,   13}, {   1,   12}, {   1,   14}, {   1,   15}, {   0,    0}, 
-{   2,    4}, {   4,    5}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {  17,   18}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
-{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
-{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
-{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
-{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
-{   1,    3}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   1,    3}, {   0,    0}, {   1,    3}, {   1,    3}, {   1,    3}, 
-{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
-{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
-{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
-{   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, {   1,    3}, 
-{   1,    3}, {   1,    3}, {   1,    3}, {   3,    3}, {   3,    3}, 
-{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
-{   3,    3}, {   3,    3}, {   3,    3}, {   6,    7}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
-{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
-{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
-{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
-{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
-{   3,    3}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   3,    3}, {   0,    0}, {   3,    3}, {   3,    3}, {   3,    3}, 
-{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
-{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
-{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
-{   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, {   3,    3}, 
-{   3,    3}, {   3,    3}, {   3,    3}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   0,    0}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   0,    0}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   0,    0}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
-{   5,    5}, {   5,    5}, {   5,    5}, {   5,    5}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{  17,   18}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 };
 static	yyCombType *	yyBasePtr	[yyDStateCount + 1] = { 0,
-& yyComb [   0], & yyComb [   0], & yyComb [  75], & yyComb [   1], 
-& yyComb [ 198], & yyComb [   6], & yyComb [   0], & yyComb [   0], 
+& yyComb [   0], & yyComb [   1], & yyComb [  27], & yyComb [   0], 
+& yyComb [  55], & yyComb [   0], & yyComb [   0], & yyComb [  19], 
+& yyComb [  22], & yyComb [  22], & yyComb [   0], & yyComb [  50], 
+& yyComb [ 114], & yyComb [ 370], & yyComb [ 626], & yyComb [   0], 
+& yyComb [ 834], & yyComb [  37], & yyComb [  27], & yyComb [   0], 
 & yyComb [   0], & yyComb [   0], & yyComb [   0], & yyComb [   0], 
-& yyComb [   0], & yyComb [   0], & yyComb [   0], 
+& yyComb [   0], & yyComb [   0], & yyComb [   0], & yyComb [   0], 
+& yyComb [   0], & yyComb [   0], & yyComb [   0], & yyComb [   0], 
+& yyComb [   0], & yyComb [   0], & yyComb [   0], & yyComb [   0], 
+& yyComb [ 114], & yyComb [   0], & yyComb [   0], & yyComb [   0], 
+& yyComb [   0], & yyComb [ 199], & yyComb [ 338], & yyComb [   0], 
+& yyComb [   0], & yyComb [ 338], & yyComb [   0], & yyComb [   0], 
 };
 static	yyStateRange	yyDefault	[yyDStateCount + 1] = { 0,
-    6,     1,     6,     6,     4,     0,     0,     0,     0,     0, 
-    0,     0,     0,     0,     0, 
+   19,     1,    14,     3,    13,     5,    19,    19,    19,    19, 
+    0,    19,    19,    19,    10,    12,    19,    12,     0,     0, 
+    0,     0,     0,     0,    14,    13,     0,     0,     0,     0, 
+    0,     0,     0,     0,     0,     0,    19,     0,     0,     0, 
+    0,    19,     7,     0,     0,     7,     0,     0, 
 };
 static	yyStateRange	yyEobTrans	[yyDStateCount + 1] = { 0,
-    0,     0,     0,     0,     5,     0,     0,     0,     0,     0, 
-    0,     0,     0,     0,     0, 
+    0,     0,    14,    14,    13,    13,     0,     0,     0,     0, 
+    0,     0,    13,    14,    15,     0,     0,     0,     0,     0, 
+    0,     0,     0,     0,    14,    13,     0,     0,     0,     0, 
+    0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
+    0,     0,     0,     0,     0,     0,     0,     0, 
 };
 
 # if expr_scan_xxMaxCharacter < 256
@@ -289,15 +433,38 @@ static void yyTab1	ARGS ((int yya));
 # define yyTab		yyTab1 (0)
 # define yyTab2(a,b)	yyTab1 (a)
 
+/* line 46 "expr.rex" */
+
+/* code to be put into Scanner.c */
+# include <stdlib.h>
+# include "Errors.h"
+
+/* Insert the routine computing "error-values" of attributes, in case the
+ * parser decides during error repair to insert a token.
+ */
+
+/* line 56 "expr.rex" */
 void expr_scan_ErrorAttribute
 # ifdef HAVE_ARGS
-   (int Token, expr_scan_tScanAttribute * Attribute)
+ (int Token, expr_scan_tScanAttribute * pAttribute)
 # else
-   (Token, Attribute)
-   int Token;
-   expr_scan_tScanAttribute * Attribute;
+ (Token, pAttribute) int Token; expr_scan_tScanAttribute * pAttribute;
 # endif
-   { }
+{
+ pAttribute->Position = expr_scan_Attribute.Position;
+ switch (Token) {
+ case /* int_const */ 1: 
+pAttribute->int_const.Value = 0;
+   break;
+ case /* float_const */ 2: 
+pAttribute->float_const.Value = 0.0;
+ break;
+ }
+}
+/* line 74 "expr.rex" */
+
+
+/* line 468 "expr_scan.c" */
 
 # ifndef yySetPosition
 # define yySetPosition expr_scan_Attribute.Position.Line = yyLineCount; \
@@ -460,6 +627,14 @@ int expr_scan_GetToken ARGS ((void))
    register	yyStateRange *	yyStatePtr;
    register	yytusChar *	yyChBufferIndexReg;
    register	yyCombType * *	yyBasePtrReg = yyBasePtr;
+/* line 77 "expr.rex" */
+
+/* user-defined local variables of the generated GetToken routine */
+# define MAX_STRING_LEN 2048
+char string[MAX_STRING_LEN];
+int nesting = 0;
+
+/* line 638 "expr_scan.c" */
 
 yyBegin:
    yyState		= yyStartState;		/* initialize */
@@ -489,92 +664,235 @@ yyContinue:		/* continue after sentinel or skipping blanks */
 	    (int) (yyChBufferIndexReg - (yytusChar *) expr_scan_TokenPtr);
       yyChBufferIndex = yyChBufferIndexReg;
 switch (* -- yyStatePtr) {
-case 3:;
+case 9:;
 yySetPosition
-/* line 37 "expr.rex" */
-{expr_scan_Attribute.identifier.Value =
-			(char*) malloc (expr_scan_TokenLength + 1);
-	 expr_scan_GetWord (expr_scan_Attribute.identifier.Value);
-	 return tok_identifier;
+/* line 126 "expr.rex" */
+{expr_scan_GetWord (string);
+	 expr_scan_Attribute.int_const.Value = atol (string);
+	 return 1;
 	
-/* line 501 "expr_scan.c" */
-} goto yyBegin;
-case 15:;
-yySetPosition
-/* line 43 "expr.rex" */
-{return '+';
-/* line 507 "expr_scan.c" */
-} goto yyBegin;
-case 14:;
-yySetPosition
-/* line 44 "expr.rex" */
-{return '*';
-/* line 513 "expr_scan.c" */
-} goto yyBegin;
-case 13:;
-yySetPosition
-/* line 45 "expr.rex" */
-{return '(';
-/* line 519 "expr_scan.c" */
+/* line 675 "expr_scan.c" */
 } goto yyBegin;
 case 12:;
+case 17:;
 yySetPosition
-/* line 46 "expr.rex" */
-{return ')';
-/* line 525 "expr_scan.c" */
-} goto yyBegin;
-case 5:;
-yySetPosition
-/* line 49 "expr.rex" */
-{ /* comment up to end of line, nothing to do */
-        
-/* line 532 "expr_scan.c" */
+/* line 133 "expr.rex" */
+{expr_scan_GetWord (string);
+	 expr_scan_Attribute.float_const.Value = atof (string);
+	 return 2;
+	
+/* line 685 "expr_scan.c" */
 } goto yyBegin;
 case 11:;
+yyChBufferIndex -= 1;
+expr_scan_TokenLength -= 1;
+yySetPosition
+/* line 139 "expr.rex" */
+{ /* comment up to end of line, nothing to do */
+        
+/* line 694 "expr_scan.c" */
+} goto yyBegin;
+case 48:;
+yySetPosition
+/* line 144 "expr.rex" */
+{ /**/
+	  yyStart (COMMENT);
+	
+/* line 702 "expr_scan.c" */
+} goto yyBegin;
+case 8:;
+case 14:;
+case 25:;
+yySetPosition
+/* line 149 "expr.rex" */
+{
+/* line 710 "expr_scan.c" */
+} goto yyBegin;
+case 47:;
+yySetPosition
+/* line 152 "expr.rex" */
+{yyStart (STD);
+	
+/* line 717 "expr_scan.c" */
+} goto yyBegin;
+case 45:;
+yySetPosition
+/* line 157 "expr.rex" */
+{ yyStart (COMMENT2);
+	  nesting ++;
+	
+/* line 725 "expr_scan.c" */
+} goto yyBegin;
+case 7:;
+case 13:;
+case 26:;
+case 43:;
+case 46:;
+yySetPosition
+/* line 162 "expr.rex" */
+{
+/* line 735 "expr_scan.c" */
+} goto yyBegin;
+case 44:;
+yySetPosition
+/* line 165 "expr.rex" */
+{ nesting --;
+	  if (nesting == 0) {
+	    yyStart (STD);
+	  }
+	
+/* line 745 "expr_scan.c" */
+} goto yyBegin;
+case 42:;
+yySetPosition
+/* line 173 "expr.rex" */
+{ return 3; 
+/* line 751 "expr_scan.c" */
+} goto yyBegin;
+case 41:;
+yySetPosition
+/* line 174 "expr.rex" */
+{ return 4; 
+/* line 757 "expr_scan.c" */
+} goto yyBegin;
+case 40:;
+yySetPosition
+/* line 175 "expr.rex" */
+{ return 5; 
+/* line 763 "expr_scan.c" */
+} goto yyBegin;
+case 39:;
+yySetPosition
+/* line 176 "expr.rex" */
+{ return 6; 
+/* line 769 "expr_scan.c" */
+} goto yyBegin;
+case 10:;
+case 38:;
+yySetPosition
+/* line 177 "expr.rex" */
+{ return 7; 
+/* line 776 "expr_scan.c" */
+} goto yyBegin;
+case 37:;
+yySetPosition
+/* line 178 "expr.rex" */
+{ return 8; 
+/* line 782 "expr_scan.c" */
+} goto yyBegin;
+case 36:;
+yySetPosition
+/* line 179 "expr.rex" */
+{ return 9; 
+/* line 788 "expr_scan.c" */
+} goto yyBegin;
+case 35:;
+yySetPosition
+/* line 180 "expr.rex" */
+{ return 10; 
+/* line 794 "expr_scan.c" */
+} goto yyBegin;
+case 34:;
+yySetPosition
+/* line 181 "expr.rex" */
+{ return 11; 
+/* line 800 "expr_scan.c" */
+} goto yyBegin;
+case 33:;
+yySetPosition
+/* line 182 "expr.rex" */
+{ return 12; 
+/* line 806 "expr_scan.c" */
+} goto yyBegin;
+case 32:;
+yySetPosition
+/* line 183 "expr.rex" */
+{ return 13; 
+/* line 812 "expr_scan.c" */
+} goto yyBegin;
+case 31:;
+yySetPosition
+/* line 184 "expr.rex" */
+{ return 14; 
+/* line 818 "expr_scan.c" */
+} goto yyBegin;
+case 30:;
+yySetPosition
+/* line 185 "expr.rex" */
+{ return 15; 
+/* line 824 "expr_scan.c" */
+} goto yyBegin;
+case 29:;
+yySetPosition
+/* line 186 "expr.rex" */
+{ return 16; 
+/* line 830 "expr_scan.c" */
+} goto yyBegin;
+case 28:;
+yySetPosition
+/* line 187 "expr.rex" */
+{ return 17; 
+/* line 836 "expr_scan.c" */
+} goto yyBegin;
+case 27:;
+yySetPosition
+/* line 188 "expr.rex" */
+{ return 18; 
+/* line 842 "expr_scan.c" */
+} goto yyBegin;
+case 24:;
 {/* BlankAction */
 while (* yyChBufferIndexReg ++ == ' ') ;
 expr_scan_TokenPtr = (yytChar *) -- yyChBufferIndexReg;
 yyState = yyStartState;
 yyStatePtr = & yyStateStack [1];
 goto yyContinue;
-/* line 541 "expr_scan.c" */
+/* line 851 "expr_scan.c" */
 } goto yyBegin;
-case 10:;
+case 23:;
 {/* TabAction */
 yyTab;
-/* line 546 "expr_scan.c" */
+/* line 856 "expr_scan.c" */
 } goto yyBegin;
-case 9:;
+case 22:;
 {/* EolAction */
 yyEol (0);
-/* line 551 "expr_scan.c" */
+/* line 861 "expr_scan.c" */
 } goto yyBegin;
 case 1:;
 case 2:;
+case 3:;
 case 4:;
+case 5:;
 case 6:;
+case 15:;
+case 16:;
+case 18:;
+case 19:;
 	 /* non final states */
 	 yyChBufferIndexReg --;			/* return character */
 	 break;
 
-case 8:
+case 21:
 	 yySetPosition
       expr_scan_TokenLength   = 1;
 	 yyChBufferIndex = ++ yyChBufferIndexReg;
 	 {
-/* line 24 "expr.rex" */
+/* line 84 "expr.rex" */
 
-  WritePosition (stderr, expr_scan_Attribute.Position);
-  fprintf (stderr, " Illegal character [%c]\n", *expr_scan_TokenPtr);
+  /* What happens if no scanner rule matches the input */
+  MessageI ("Illegal character",
+	    xxError, expr_scan_Attribute.Position,
+	    xxCharacter, expr_scan_TokenPtr);
 
-/* line 571 "expr_scan.c" */
+/* line 889 "expr_scan.c" */
 	 }
 	 goto yyBegin;
 
       case yyDNoState:
 	 goto yyBegin;
 
-case 7:
+case 20:
 	 yyChBufferIndex = -- yyChBufferIndexReg; /* undo last state transit */
 	 if (-- expr_scan_TokenLength == 0) {		/* get previous state */
 	    yyState = yyStartState;
@@ -659,6 +977,32 @@ case 7:
 	    expr_scan_CloseFile ();
 # if yyInitFileStackSize != 0
 	    if (yyFileStackPtr == yyFileStack) {
+/* line 91 "expr.rex" */
+
+  /* What should be done if the end-of-input-file has been reached? */
+
+  /* E.g.: check hat strings and comments are closed. */
+  switch (yyStartState) {
+  case STD:
+    /* ok */
+    break;
+  case COMMENT:
+    Message ("unclosed C-comment",
+	     xxError, expr_scan_Attribute.Position);
+    break;
+  case COMMENT2:
+    Message ("unclosed Modula-comment",
+	     xxError, expr_scan_Attribute.Position);
+    break;
+  default:
+    Message ("OOPS: that should not happen!!",
+	     xxFatal, expr_scan_Attribute.Position);
+    break;
+  }
+
+  /* implicit: return the EofToken */
+
+/* line 1006 "expr_scan.c" */
 	    }
 	    if (yyFileStackPtr == yyFileStack) {
 	       expr_scan_ResetScanner ();
@@ -666,6 +1010,32 @@ case 7:
 	    }
 	    goto yyBegin;
 # else
+/* line 91 "expr.rex" */
+
+  /* What should be done if the end-of-input-file has been reached? */
+
+  /* E.g.: check hat strings and comments are closed. */
+  switch (yyStartState) {
+  case STD:
+    /* ok */
+    break;
+  case COMMENT:
+    Message ("unclosed C-comment",
+	     xxError, expr_scan_Attribute.Position);
+    break;
+  case COMMENT2:
+    Message ("unclosed Modula-comment",
+	     xxError, expr_scan_Attribute.Position);
+    break;
+  default:
+    Message ("OOPS: that should not happen!!",
+	     xxFatal, expr_scan_Attribute.Position);
+    break;
+  }
+
+  /* implicit: return the EofToken */
+
+/* line 1039 "expr_scan.c" */
 	    expr_scan_ResetScanner ();
 	    return expr_scan_EofToken;
 # endif

@@ -5,16 +5,12 @@ c
 
 # define zzCommonScanAttrs tPosition Position; CommonScanAttrs
 
-typedef struct { zzCommonScanAttrs tIdent Value; } zz_expr_scan_string_const;
-typedef struct { zzCommonScanAttrs tIdent Ident; } zz_expr_scan_identifier;
 typedef struct { zzCommonScanAttrs long Value; } zz_expr_scan_int_const;
 typedef struct { zzCommonScanAttrs double Value; } zz_expr_scan_float_const;
 
 typedef union {
 tPosition Position;
 struct { zzCommonScanAttrs } Common;
-zz_expr_scan_string_const string_const;
-zz_expr_scan_identifier identifier;
 zz_expr_scan_int_const int_const;
 zz_expr_scan_float_const float_const;
 } expr_scan_tScanAttribute;
@@ -32,45 +28,30 @@ void expr_scan_ErrorAttribute
 {
  pAttribute->Position = expr_scan_Attribute.Position;
  switch (Token) {
- case /* string_const */ 1: 
-pAttribute->string_const.Value = NoIdent;
- break;
- case /* identifier */ 2: 
-pAttribute->identifier.Ident = NoIdent;
- break;
- case /* int_const */ 3: 
+ case /* int_const */ 1: 
 pAttribute->int_const.Value = 0;
- break;
- case /* float_const */ 4: 
+   break;
+ case /* float_const */ 2: 
 pAttribute->float_const.Value = 0.0;
  break;
  }
 }
 %%
-1 S string_const string_const
-2 S identifier identifier
-3 S int_const int_const
-4 S float_const float_const
-5 N yy69 'begin'
-6 N yy70 'int'
-7 N yy71 'float'
-8 N yy72 'string'
-9 N yy73 '='
-10 N yy74 '+'
-11 N yy75 '*'
-12 N yy76 '('
-13 N yy77 ')'
-14 N yy78 '-'
-15 N yy79 lvariable_
-16 N yy80 '/'
-17 N yy81 ';'
-18 N yy82 'if'
-19 N yy83 '<'
-20 N yy84 '>'
-21 N yy85 '!='
-22 N yy86 'then'
-23 N yy87 'elseif'
-24 N yy88 'else'
-25 N yy89 'while'
-26 N yy90 'for'
-27 N yy91 'end'
+1 S int_const int_const
+2 S float_const float_const
+3 N yy27 '('
+4 N yy28 ')'
+5 N yy29 '+'
+6 N yy30 '*'
+7 N yy31 '-'
+8 N yy32 '/'
+9 N yy33 '^'
+10 N yy34 '?'
+11 N yy35 ':'
+12 N yy36 '>'
+13 N yy37 '<'
+14 N yy38 '='
+15 N yy39 '&'
+16 N yy40 '|'
+17 N yy41 '!'
+18 N yy42 ','

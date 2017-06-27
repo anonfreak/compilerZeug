@@ -1,7 +1,7 @@
 # ifndef yyTree
 # define yyTree
 
-extern char Tree_module_does_not_match_evaluator_module_2851876;
+extern char Tree_module_does_not_match_evaluator_module_2709509;
 extern char generate_Tree_module_without_option_0;
 
 # include "ratc.h"
@@ -46,7 +46,6 @@ extern char generate_Tree_module_without_option_0;
 # define knokeyword 26
 # define kkeyword_while 27
 # define kkeyword_for 28
-# define kBLOCKSCOPED 29
 # define yyBlockSize 20480
 
 typedef unsigned char Tree_tKind;
@@ -60,7 +59,6 @@ typedef tTree tDECLARATION;
 typedef tTree tASSIGNMENT;
 typedef tTree tCOMPUTATION;
 typedef tTree tKEYWORD;
-typedef tTree tBLOCKSCOPED;
 typedef void (* Tree_tProcTree) ARGS ((tTree));
 typedef tTree * yytTreePtr;
 typedef struct { tTree yyOld, yyNew; } yytTreeOldToNew;
@@ -147,8 +145,6 @@ typedef struct { Tree_tNodeHead yyHead;
 tTree Cond; tTree Block; } ykeyword_while;
 typedef struct { Tree_tNodeHead yyHead;
 tTree Decl; tTree Cond; tTree Ass; tTree Block; } ykeyword_for;
-typedef struct { Tree_tNodeHead yyHead;
-} yBLOCKSCOPED;
 
 union Tree_Node {
  Tree_tKind Kind;
@@ -181,11 +177,10 @@ union Tree_Node {
  ynokeyword nokeyword;
  ykeyword_while keyword_while;
  ykeyword_for keyword_for;
- yBLOCKSCOPED BLOCKSCOPED;
 };
 
-extern const unsigned short Tree_NodeSize [30];
-extern const Tree_tKind Tree_TypeRange [30];
+extern const unsigned short Tree_NodeSize [29];
+extern const Tree_tKind Tree_TypeRange [29];
 extern const char * const Tree_NodeName [];
 
 extern rbool Tree_CheckReportNoTree, Tree_CheckReportNodes;
@@ -265,8 +260,6 @@ extern tTree mkeyword_while
  ARGS ((tTree pCond, tTree pBlock));
 extern tTree mkeyword_for
  ARGS ((tTree pDecl, tTree pCond, tTree pAss, tTree pBlock));
-extern tTree mBLOCKSCOPED
- ARGS ((void));
 
 extern void ReleaseTree ARGS ((tTree yyt));
 extern void ReleaseTreeModule ARGS ((void));

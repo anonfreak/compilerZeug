@@ -1,0 +1,189 @@
+SCANNER expr_scan PARSER expr_pars
+IMPORT {
+}
+
+EXPORT {
+}
+
+GLOBAL {
+
+#@ line 20 "expr.pars"
+
+ # include <stdio.h>
+ # include <math.h>
+
+
+#@ line 17 "expr_pars.lrk"
+# ifdef CommonParsAttrs
+typedef struct { CommonParsAttrs } yytCommonParsAttrs;
+#  define yyCommon yytCommonParsAttrs Common;
+#  define yyCommonParsAttrs CommonParsAttrs
+# else
+#  define yyCommon
+#  define yyCommonParsAttrs
+# endif
+
+typedef struct { yyCommonParsAttrs double Value; } zz_expr;
+
+typedef union {
+expr_scan_tScanAttribute Scan;
+yyCommon
+zz_expr expr;
+} tParsAttribute;
+}
+
+LOCAL {
+}
+
+BEGIN {
+}
+
+CLOSE {
+}
+
+TOKEN
+
+int_const = 1
+float_const = 2
+'(' = 3
+')' = 4
+'+' = 5
+'*' = 6
+'-' = 7
+'/' = 8
+'^' = 9
+'?' = 10
+':' = 11
+'>' = 12
+'<' = 13
+'=' = 14
+'&' = 15
+'|' = 16
+'!' = 17
+',' = 18
+
+OPER
+
+LEFT  '?'
+LEFT  '|'
+LEFT  '&'
+LEFT  '!'
+NONE  '<' '>' '='
+LEFT  '+' '-'
+LEFT  '*' '/'
+RIGHT '^'
+LEFT  UNARY
+
+RULE
+
+root : expr_l .
+
+#@ line 39 "expr.pars"
+expr_l : .
+
+
+expr_l : expr {
+{  printf (" ==> %6.2f\n", $1.expr.Value); } } .
+
+expr_l : exprs ',' expr {
+{  printf (" ==> %6.2f\n", $3.expr.Value); } } .
+
+#@ line 42 "expr.pars"
+exprs : expr {
+{  printf (" ==> %6.2f\n", $1.expr.Value); } } .
+
+exprs : exprs ',' expr {
+{  printf (" ==> %6.2f\n", $3.expr.Value); } } .
+
+#@ line 52 "expr.pars"
+expr : int_const {
+$$.expr.Value  =  $1.Scan.int_const.Value;} .
+
+expr : float_const {
+#@ line 104 "expr_pars.lrk"
+$$.expr.Value = $1.Scan.float_const.Value;
+} .
+
+#@ line 57 "expr.pars"
+expr : '(' expr ')' {
+#@ line 110 "expr_pars.lrk"
+$$.expr.Value = $2.expr.Value;
+} .
+
+#@ line 59 "expr.pars"
+expr : expr '+' expr {
+$$.expr.Value    = $1.expr.Value + $3.expr.Value; } .
+
+expr : expr '*' expr {
+$$.expr.Value    = $1.expr.Value * $3.expr.Value; } .
+
+expr : expr '-' expr {
+#@ line 122 "expr_pars.lrk"
+$$.expr.Value = $3.expr.Value;
+} .
+
+#@ line 68 "expr.pars"
+expr : expr '/' expr {
+#@ line 128 "expr_pars.lrk"
+$$.expr.Value = $3.expr.Value;
+} .
+
+#@ line 70 "expr.pars"
+expr : expr '^' expr {
+#@ line 134 "expr_pars.lrk"
+$$.expr.Value = $3.expr.Value;
+} .
+
+#@ line 73 "expr.pars"
+expr : expr '?' expr ':' expr {
+#@ line 140 "expr_pars.lrk"
+$$.expr.Value = $5.expr.Value;
+} .
+
+#@ line 75 "expr.pars"
+expr : '+' expr PREC UNARY {
+#@ line 146 "expr_pars.lrk"
+$$.expr.Value = $2.expr.Value;
+} .
+
+#@ line 77 "expr.pars"
+expr : '-' expr PREC UNARY {
+#@ line 152 "expr_pars.lrk"
+$$.expr.Value = $2.expr.Value;
+} .
+
+#@ line 79 "expr.pars"
+expr : expr '>' expr {
+#@ line 158 "expr_pars.lrk"
+$$.expr.Value = $3.expr.Value;
+} .
+
+#@ line 81 "expr.pars"
+expr : expr '<' expr {
+#@ line 164 "expr_pars.lrk"
+$$.expr.Value = $3.expr.Value;
+} .
+
+#@ line 83 "expr.pars"
+expr : expr '=' expr {
+#@ line 170 "expr_pars.lrk"
+$$.expr.Value = $3.expr.Value;
+} .
+
+#@ line 85 "expr.pars"
+expr : expr '&' expr {
+#@ line 176 "expr_pars.lrk"
+$$.expr.Value = $3.expr.Value;
+} .
+
+#@ line 87 "expr.pars"
+expr : expr '|' expr {
+#@ line 182 "expr_pars.lrk"
+$$.expr.Value = $3.expr.Value;
+} .
+
+#@ line 89 "expr.pars"
+expr : '!' expr PREC UNARY {
+#@ line 188 "expr_pars.lrk"
+$$.expr.Value = $2.expr.Value;
+} .
